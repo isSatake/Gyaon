@@ -13,13 +13,17 @@ AWS.config.secretAccessKey = process.env.secretAccessKey;
 AWS.config.region = process.env.region;
 var bucket = new AWS.S3({params: {Bucket: 'gyaon'}});
 
-var gyaonId = 0;
 var s3EndPoint = 'https://s3-us-west-2.amazonaws.com/gyaon/';
 
 var md5_hex = function(src) {
   var md5 = crypto.createHash('md5');
   md5.update(src, 'utf8');
   return md5.digest('hex');
+}
+
+var idGenerator = function() {
+  var seed = Math.random() * Date.now();
+  return md5_hex(String(seed));
 }
 
 //create tmp folder
@@ -35,16 +39,11 @@ var promiseUploadDir = function() {
 /* GET home page. */
 router.get('/', function(req, res, next) {
   //cookie
-  var parsedCookie = cookie.parse(String(req.headers.cookie));
-  gyaonId = parsedCookie.gyaonId;
-  debug("gyaonId : " + gyaonId);
+  var gyaonId = req.cookies.gyaonId;
   if(typeof gyaonId === "undefined"){
-    var serializedCookie = cookie.serialize('gyaonId', md5_hex(String(Date.now())), {
-      expires: new Date(2020, 1, 1)
-    });
-    debug("new gyaonId : " + serializedCookie);
-    res.setHeader('Set-Cookie', serializedCookie);
+    gyaonId = res.cookie('gyaonId', idGenerator());
   }
+  debug("gyaonId : " + gyaonId);
 
   //get file list in s3
   var params = {Delimiter: '/', Prefix: gyaonId + '/'}
@@ -56,6 +55,7 @@ router.get('/', function(req, res, next) {
       files.push({name: file.Key.replace(gyaonId + '/', ''), url: s3EndPoint + file.Key});
     });
     debug(files);
+
     res.render('index', {
       title: 'Gyaon',
       fileList: files
@@ -65,6 +65,8 @@ router.get('/', function(req, res, next) {
 
 /* 音声データ受け取り */
 router.post('/upload', function(req, res) {
+  var gyaonId = req.cookies.gyaonId;
+
   promiseUploadDir().then(function() {
     var form = new formidable.IncomingForm();
     form.encoding = "utf-8";
