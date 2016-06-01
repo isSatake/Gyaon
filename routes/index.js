@@ -104,4 +104,14 @@ router.post('/upload', function(req, res) {
   }).catch(debug)
 });
 
+router.delete('/:id', function(req, res){
+  var gyaonId = req.cookies.gyaonId;
+  var fileName = req.params.id;
+  console.log(gyaonId + "/" + fileName);
+  bucket.deleteObject({Key: gyaonId + "/" + fileName}, function(err, data){
+    if(err) throw err;
+    res.status(200).end();
+  });
+});
+
 module.exports = router;

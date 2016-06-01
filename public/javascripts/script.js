@@ -59,7 +59,7 @@ $(function() {
       contentType: false
     }).done(function(done) {
       console.log(done);
-      var memo = $("<li class=\"memo\">" + done.file + "<audio src=\"" + done.url + "\" /></li>");
+      var memo = $("<li class=\"memo\">" + done.file + "<div class=\"deleteButton\"></div><audio src=\"" + done.url + "\" /></li>");
       $("#memos").prepend(memo);
     }).fail(function(e) {
       alert("export failed");
@@ -86,5 +86,18 @@ $(function() {
         break;
       default:
     }
+  });
+  $(document).on("click", ".deleteButton", function(){
+    console.log("del");
+    var $this = $(this);
+    var fileName = $this.parent().text();
+    $.ajax("/" + fileName, {
+      method: "DELETE"
+    }).done(function(done) {
+    $this.parent().remove();
+      console.log(done);
+    }).fail(function(e) {
+      alert("delete failed");
+    });
   });
 });

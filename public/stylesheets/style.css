@@ -23,3 +23,12 @@ a {
 .memo[data-playing="true"] {
 	background: #555;
 }
+
+.deleteButton {
+  height: 20px;
+  width: 20px;
+  background: #FFF;
+  cursor: pointer;
+  margin-left: 5px;
+  margin-top: 60px;
+}

@@ -6,6 +6,7 @@ block content
   ul#memos
     each file in fileList
       li.memo=file.name
+        div.deleteButton
         audio(src=file.url)
 
 block scripts
