@@ -1,7 +1,7 @@
 $(function() {
-  navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia ||
-    navigator.msGetUserMedia);
+navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+  navigator.mozGetUserMedia ||
+  navigator.msGetUserMedia);
   var $recordButton = $("#recordButton");
   var permissionResolved = false;
   var audioContext = new AudioContext();
@@ -19,14 +19,14 @@ $(function() {
   };
   // 録音のパーミッションの状態を設定する
   var setPermissionResolved = function(resolved) {
-      permissionResolved = resolved;
-      if (resolved) {
-        $recordButton.removeAttr("disabled");
-      } else {
-        $recordButton.attr("disabled", "disabled");
-      }
+    permissionResolved = resolved;
+    if (resolved) {
+      $recordButton.removeAttr("disabled");
+    } else {
+      $recordButton.attr("disabled", "disabled");
     }
-    // マイクのパーミッションをリクエスト
+  }
+  // マイクのパーミッションをリクエスト
   requestPermission(function(localMediaStream) {
     setPermissionResolved(true);
   }, function(err) {
@@ -70,20 +70,23 @@ $(function() {
   $(document).on("mouseenter mouseout", ".memo", function(e) {
     var $this = $(this);
     var audio = $this.find("audio")[0];
+    var audioUrl = audio.src;
     switch (e.type) {
       case "mouseenter":
-        {
-          audio.play();
-          $this.attr("data-playing", true);
-        }
-        break;
+      {
+        audio.play();
+        $this.attr("data-playing", true);
+        $this.attr("data-clipboard-text", audioUrl);
+      }
+      break;
       case "mouseout":
-        {
-          $this.removeAttr("data-playing");
-          audio.pause();
-          audio.currentTime = 0;
-        }
-        break;
+      {
+        $this.removeAttr("data-playing");
+        $this.removeAttr("data-clipboard-text");
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      break;
       default:
     }
   });
@@ -94,10 +97,18 @@ $(function() {
     $.ajax("/" + fileName, {
       method: "DELETE"
     }).done(function(done) {
-    $this.parent().remove();
+      $this.parent().remove();
       console.log(done);
     }).fail(function(e) {
       alert("delete failed");
     });
+  });
+  //ファイル名クリック→URLをクリップボードにコピー
+  var clipboard = new Clipboard(".memo");
+  clipboard.on('success', function(e) {
+    console.log("audio url copied!");
+  });
+  clipboard.on('error', function(e) {
+    console.log("audio url copy failed");
   });
 });
