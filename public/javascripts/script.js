@@ -67,7 +67,7 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
     console.log(blob);
   });
   // 録音一覧
-  $(document).on("mouseenter mouseout", ".memo", function(e) {
+  $(document).on("mouseenter mouseleave", ".memo", function(e) {
     var $this = $(this);
     var audio = $this.find("audio")[0];
     var audioUrl = audio.src;
@@ -79,7 +79,7 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
         $this.attr("data-clipboard-text", audioUrl);
       }
       break;
-      case "mouseout":
+      case "mouseleave":
       {
         $this.removeAttr("data-playing");
         $this.removeAttr("data-clipboard-text");
