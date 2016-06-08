@@ -74,7 +74,14 @@ router.post('/upload', function(req, res) {
     form.multiples = false;
 
     form.on("file", function(name, file) {
-      var fn = path.basename(file.path) + ".wav";
+      var date = new Date();
+      var y = date.getFullYear();
+      var m = date.getMonth() + 1;
+      var d = date.getDate();
+      var h = date.getHours();
+      var min = date.getMinutes();
+      var s = date.getSeconds();
+      var fn = y + "-" + m + "-" + d + " " + h + ":" + min + ":" + s + ".wav";
 
       //upload to s3
       fs.readFile(file.path, function(err, data){
