@@ -36,6 +36,14 @@ var promiseUploadDir = function() {
   });
 }
 
+// var toDoubleDigits = function(num) {
+//   num += "";
+//   if (num.length === 1) {
+//     num = "0" + num;
+//   }
+//  return num;
+// };
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   //cookie
@@ -53,6 +61,11 @@ router.get('/', function(req, res, next) {
     var files = [];
     data.Contents.forEach(function(file){
       files.push({name: file.Key.replace(gyaonId + '/', ''), url: s3EndPoint + file.Key});
+    });
+    files.sort(function(a,b){
+      if( a > b ) return -1;
+      if( a < b ) return 1;
+      return 0;
     });
     debug(files);
 
@@ -74,14 +87,15 @@ router.post('/upload', function(req, res) {
     form.multiples = false;
 
     form.on("file", function(name, file) {
-      var date = new Date();
-      var y = date.getFullYear();
-      var m = date.getMonth() + 1;
-      var d = date.getDate();
-      var h = date.getHours();
-      var min = date.getMinutes();
-      var s = date.getSeconds();
-      var fn = y + "-" + m + "-" + d + " " + h + ":" + min + ":" + s + ".wav";
+      // var date = new Date();
+      // var y = date.getFullYear();
+      // var m = toDoubleDigits(date.getMonth() + 1);
+      // var d = toDoubleDigits(date.getDate());
+      // var h = toDoubleDigits(date.getHours());
+      // var min = toDoubleDigits(date.getMinutes());
+      // var s = toDoubleDigits(date.getSeconds());
+      // var fn = y + "-" + m + "-" + d + " " + h + ":" + min + ":" + s + ".wav";
+      var fn = Date.now() + "wav";
 
       //upload to s3
       fs.readFile(file.path, function(err, data){
