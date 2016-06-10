@@ -36,7 +36,7 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
   // 録音ボタン
   $recordButton.mousedown(function(e) {
     requestPermission(function(localMediaStream) {
-      recorder.start(localMediaStream);
+      setTimeout(function(){recorder.start(localMediaStream)}, 50);
     }, alert);
   }).mouseup(function(e) {
     recorder.stop();
