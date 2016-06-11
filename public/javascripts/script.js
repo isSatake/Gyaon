@@ -21,9 +21,9 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
   var setPermissionResolved = function(resolved) {
     permissionResolved = resolved;
     if (resolved) {
-      $recordButton.removeAttr("disabled");
+      $recordButton.removeClass("disabled");
     } else {
-      $recordButton.attr("disabled", "disabled");
+      $recordButton.addClass("disabled");
     }
   }
   // マイクのパーミッションをリクエスト
@@ -36,9 +36,11 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
   // 録音ボタン
   $recordButton.mousedown(function(e) {
     requestPermission(function(localMediaStream) {
+      $('i').text("mic");
       setTimeout(function(){recorder.start(localMediaStream)}, 50);
     }, alert);
   }).mouseup(function(e) {
+    $('i').text("mic_none");
     recorder.stop();
     var src = audioContext.createBufferSource();
     var buf = recorder.getAudioBuffer();
