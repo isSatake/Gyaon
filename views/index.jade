@@ -2,11 +2,12 @@ extends layout
 
 block content
   button#recordButton.btn-floating.btn-large.red.disabled
-    i.large.material-icons="mic_none"
+    i.material-icons="mic_none"
   ul#memos
     each file in fileList
-      li.memo=file.name
+      li.memo.z-depth-1.hoverable=file.name
         div.deleteButton
+          i.tiny.material-icons="clear"
         audio(src=file.url)
 
 block scripts
