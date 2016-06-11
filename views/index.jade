@@ -5,9 +5,11 @@ block content
     i.material-icons="mic_none"
   ul#memos
     each file in fileList
-      li.memo.z-depth-1.hoverable=file.name
-        div.deleteButton
-          i.tiny.material-icons="clear"
+      li.memo.z-depth-1.hoverable.waves-effect
+        span.memoTitle=file.name
+        div.actions
+          i.deleteButton.tiny.material-icons="clear"
+          i.copyButton.tiny.material-icons="content_copy"
         audio(src=file.url)
 
 block scripts

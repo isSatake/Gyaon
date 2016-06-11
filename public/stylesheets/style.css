@@ -18,11 +18,14 @@ a {
   position: relative;
 }
 
-.deleteButton {
-  cursor: pointer;
-  /*margin-left: 5px;*/
+.actions {
   bottom: 5px;
   position: absolute;
+}
+
+.actions i {
+  cursor: pointer;
+  margin-right: 5px;
 }
 
 #recordButton {

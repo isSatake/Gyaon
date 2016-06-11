@@ -26,6 +26,10 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
       $recordButton.addClass("disabled");
     }
   }
+  // .memoを追加
+  var createMemo = function(fileName, url){
+    return $("<li class=\"memo z-depth-1 hoverable waves-effect\"><span class=\"memoTitle\">" + fileName + "</span><div class=\"actions\"><i class=\"deleteButton tiny material-icons\">clear</i><i class=\"copyButton tiny material-icons\">content_copy</i></div><audio src=\"" + url + "\" /></li>");
+  }
   // マイクのパーミッションをリクエスト
   requestPermission(function(localMediaStream) {
     setPermissionResolved(true);
@@ -36,11 +40,11 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
   // 録音ボタン
   $recordButton.mousedown(function(e) {
     requestPermission(function(localMediaStream) {
-      $('i').text("mic");
+      $('#recordButton i').text("mic");
       setTimeout(function(){recorder.start(localMediaStream)}, 50);
     }, alert);
   }).mouseup(function(e) {
-    $('i').text("mic_none");
+    $('#recordButton i').text("mic_none");
     recorder.stop();
     var src = audioContext.createBufferSource();
     var buf = recorder.getAudioBuffer();
@@ -61,8 +65,7 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
       contentType: false
     }).done(function(done) {
       console.log(done);
-      var memo = $("<li class=\"memo\">" + done.file + "<div class=\"deleteButton\"></div><audio src=\"" + done.url + "\" /></li>");
-      $("#memos").prepend(memo);
+      $("#memos").prepend(createMemo(done.file, done.url));
     }).fail(function(e) {
       alert("export failed");
     });
@@ -78,13 +81,11 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
       {
         audio.play();
         $this.attr("data-playing", true);
-        $this.attr("data-clipboard-text", audioUrl);
       }
       break;
       case "mouseleave":
       {
         $this.removeAttr("data-playing");
-        $this.removeAttr("data-clipboard-text");
         audio.pause();
         audio.currentTime = 0;
       }
@@ -92,23 +93,44 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
       default:
     }
   });
+  // 削除
   $(document).on("click", ".deleteButton", function(){
-    console.log("del");
-    var $this = $(this);
-    var fileName = $this.parent().text();
+    console.log("delete");
+    var $memo = $(this).parents('.memo');
+    var fileName = $memo.find("span").text();
     $.ajax("/" + fileName, {
       method: "DELETE"
     }).done(function(done) {
-      $this.parent().remove();
-      console.log(done);
+      $memo.remove();
+      console.log("delete completed");
     }).fail(function(e) {
       alert("delete failed");
     });
   });
+  // URLコピー
+  $(document).on("mouseenter mouseleave", ".copyButton", function(e){
+    var $this = $(this);
+    var $memo = $this.parents('.memo');
+    var url = $memo.find("audio").attr("src")
+    switch(e.type){
+      case "mouseenter":
+      {
+        $this.attr("data-clipboard-text", url);
+      }
+      break;
+      case "mouseleave":
+      {
+        $this.removeAttr("data-clipboard-text");
+      }
+      break;
+      default:
+    }
+  });
   //ファイル名クリック→URLをクリップボードにコピー
-  var clipboard = new Clipboard(".memo");
+  var clipboard = new Clipboard(".copyButton");
   clipboard.on('success', function(e) {
     console.log("audio url copied!");
+    Materialize.toast('Copied!', 1000);
   });
   clipboard.on('error', function(e) {
     console.log("audio url copy failed");
