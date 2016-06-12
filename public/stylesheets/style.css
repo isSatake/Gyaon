@@ -37,7 +37,19 @@ a {
   float: left;
 }
 
-#meter {
+#volumeMeter {
   margin-top: 3px;
   margin-left: 15px;
+}
+
+.memo .progress {
+  width: 110%;
+  bottom: 0;
+  left: -10px;
+  position: absolute;
+  margin: 0;
+}
+
+.determinate {
+  transition: none !important;
 }

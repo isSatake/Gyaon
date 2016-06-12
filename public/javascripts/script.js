@@ -10,12 +10,13 @@ $(function() {
     audioContext: audioContext
   });
   var localMediaStream;
-  var meterCanvas = $("#meter");
-  var canvasContext = document.getElementById( "meter" ).getContext("2d");
-  var canvasWidth = meterCanvas.attr("width");
-  var canvasHeight = meterCanvas.attr("height");
-  var meter = createAudioMeter(audioContext);
-  var rafID;
+  var volumeMeterCanvas = $("#volumeMeter");
+  var canvasContext = document.getElementById("volumeMeter").getContext("2d");
+  var canvasWidth = volumeMeterCanvas.attr("width");
+  var canvasHeight = volumeMeterCanvas.attr("height");
+  var volumeMeter = createAudioMeter(audioContext);
+  var volumeMeterRafID;
+  var playTimeMeterRafID;
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
     navigator.getUserMedia({
@@ -34,32 +35,40 @@ $(function() {
   }
   // .memoを追加
   var createMemo = function(fileName, url){
-    return $("<li class=\"memo z-depth-1 hoverable waves-effect\"><span class=\"memoTitle\">" + fileName + "</span><div class=\"actions\"><i class=\"deleteButton tiny material-icons\">clear</i><i class=\"copyButton tiny material-icons\">content_copy</i></div><audio src=\"" + url + "\" /></li>");
+    return $("<li class=\"memo z-depth-1 hoverable waves-effect\"><span class=\"memoTitle\">" + fileName + "</span><div class=\"actions\"><i class=\"deleteButton tiny material-icons\">clear</i><i class=\"copyButton tiny material-icons\">content_copy</i></div><div class=\"progress transparent\"><div class=\"determinate\"></div><div class=\"indeterminate\"></div></div><audio src=\"" + url + "\" /></li>");
   }
   //音量メータ描画
-  var drawMeter = function() {
+  var drawVolumeMeter = function() {
     canvasContext.clearRect(0,0,canvasWidth,canvasHeight);
-    if (meter.checkClipping())
+    if (volumeMeter.checkClipping())
         canvasContext.fillStyle = "red";
     else
         canvasContext.fillStyle = "green";
-    canvasContext.fillRect(0, 0, meter.volume*canvasWidth*1.4, canvasHeight);
-    rafID = window.requestAnimationFrame(drawMeter);
+    canvasContext.fillRect(0, 0, volumeMeter.volume*canvasWidth*1.4, canvasHeight);
+    volumeMeterRafID = window.requestAnimationFrame(drawVolumeMeter);
   }
-  var startMeter = function() {
-    meterCanvas.css("visibility", "visible");
+  var startVolumeMeter = function() {
+    volumeMeterCanvas.css("visibility", "visible");
     requestPermission(function(localMediaStream){
       mediaStreamSource = audioContext.createMediaStreamSource(localMediaStream);
-      mediaStreamSource.connect(meter);
-      drawMeter();
+      mediaStreamSource.connect(volumeMeter);
+      drawVolumeMeter();
     }, function(err){
       console.log(err);
     });
   }
-  var stopMeter = function() {
-    meterCanvas.css("visibility", "hidden");
-    mediaStreamSource.disconnect(meter);
-    window.cancelAnimationFrame(rafID);
+  var stopVolumeMeter = function() {
+    volumeMeterCanvas.css("visibility", "hidden");
+    mediaStreamSource.disconnect(volumeMeter);
+    window.cancelAnimationFrame(volumeMeterRafID);
+  }
+  var drawPlayTimeMeter = function(audioElement, determinateBar) {
+    var update = function(){
+      console.log(audioElement[0].currentTime);
+      determinateBar.css("width", audioElement[0].currentTime / audioElement[0].duration*100 + "%");
+      playTimeMeterRafID = window.requestAnimationFrame(update);
+    }
+    update();
   }
   // マイクのパーミッションをリクエスト
   requestPermission(function(localMediaStream) {
@@ -74,13 +83,13 @@ $(function() {
       $('#recordButton i').text("mic");
       setTimeout(function(){
         recorder.start(localMediaStream);
-        startMeter();
+        startVolumeMeter();
       }, 50);
     }, alert);
   }).mouseup(function(e) {
     $('#recordButton i').text("mic_none");
     recorder.stop();
-    stopMeter();
+    stopVolumeMeter();
     var src = audioContext.createBufferSource();
     var buf = recorder.getAudioBuffer();
     src.buffer = buf;
@@ -171,5 +180,40 @@ $(function() {
   });
   clipboard.on('error', function(e) {
     console.log("audio url copy failed");
+  });
+  //プログレスバー
+  $("audio").on("loadstart loadeddata play pause timeupdate", function(e){
+    var $this = $(this);
+    var $determinate = $this.parent().find('.determinate');
+    var $indeterminate = $this.parent().find('.indeterminate');
+    switch(e.type){
+      case "loadstart":
+      {
+        $determinate.hide();
+        $inderminate.show();
+      }
+      break;
+      case "loadeddata":
+      {
+        $determinate.hide();
+        $indeterminate.hide();
+      }
+      break;
+      case "play":
+      {
+        $determinate.show();
+        $indeterminate.hide();
+        drawPlayTimeMeter($this, $determinate);
+      }
+      break;
+      case "pause":
+      {
+        $determinate.hide();
+        $indeterminate.hide();
+        window.cancelAnimationFrame(playTimeMeterRafID);
+      }
+      break;
+      default:
+    }
   });
 });

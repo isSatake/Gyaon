@@ -4,7 +4,7 @@ block content
   div#recorder
     button#recordButton.btn-floating.btn-large.red.disabled
       i.material-icons="mic_none"
-    canvas#meter("width=500 height=50")
+    canvas#volumeMeter("width=500 height=50")
   ul#memos
     each file in fileList
       li.memo.z-depth-1.hoverable.waves-effect
@@ -12,6 +12,9 @@ block content
         div.actions
           i.deleteButton.tiny.material-icons="clear"
           i.copyButton.tiny.material-icons="content_copy"
+        div.progress.transparent
+          div.determinate
+          div.indeterminate
         audio(src=file.url)
 
 block scripts
