@@ -35,7 +35,7 @@ $(function() {
   }
   // .memoを追加
   var createMemo = function(fileName, url){
-    return $("<li class=\"memo z-depth-1 hoverable waves-effect\"><span class=\"memoTitle\">" + fileName + "</span><div class=\"actions\"><i class=\"deleteButton tiny material-icons\">clear</i><i class=\"copyButton tiny material-icons\">content_copy</i></div><div class=\"progress transparent\"><div class=\"determinate\"></div><div class=\"indeterminate\"></div></div><audio src=\"" + url + "\" /></li>");
+    return $("<li class=\"memo z-depth-1 hoverable waves-effect\"><span class=\"memoTitle\">" + fileName + "</span><div class=\"actions\"><i class=\"deleteButton tiny material-icons\">clear</i><i class=\"copyButton tiny material-icons\">content_copy</i></div><audio src=\"" + url + "\" /></li>");
   }
   //音量メータ描画
   var drawVolumeMeter = function() {
@@ -64,7 +64,6 @@ $(function() {
   }
   var drawPlayTimeMeter = function(audioElement, determinateBar) {
     var update = function(){
-      console.log(audioElement[0].currentTime);
       determinateBar.css("width", audioElement[0].currentTime / audioElement[0].duration*100 + "%");
       playTimeMeterRafID = window.requestAnimationFrame(update);
     }
@@ -182,15 +181,15 @@ $(function() {
     console.log("audio url copy failed");
   });
   //プログレスバー
-  $("audio").on("loadstart loadeddata play pause timeupdate", function(e){
+  $("audio").on("progress loadeddata play pause", function(e){
     var $this = $(this);
     var $determinate = $this.parent().find('.determinate');
     var $indeterminate = $this.parent().find('.indeterminate');
     switch(e.type){
-      case "loadstart":
+      case "progress":
       {
         $determinate.hide();
-        $inderminate.show();
+        $indeterminate.show();
       }
       break;
       case "loadeddata":
