@@ -1,5 +1,5 @@
 $(function() {
-navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+  navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
   navigator.mozGetUserMedia ||
   navigator.msGetUserMedia);
   var $recordButton = $("#recordButton");
@@ -10,6 +10,12 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
     audioContext: audioContext
   });
   var localMediaStream;
+  var meterCanvas = $("#meter");
+  var canvasContext = document.getElementById( "meter" ).getContext("2d");
+  var canvasWidth = meterCanvas.attr("width");
+  var canvasHeight = meterCanvas.attr("height");
+  var meter = createAudioMeter(audioContext);
+  var rafID;
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
     navigator.getUserMedia({
@@ -30,6 +36,31 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
   var createMemo = function(fileName, url){
     return $("<li class=\"memo z-depth-1 hoverable waves-effect\"><span class=\"memoTitle\">" + fileName + "</span><div class=\"actions\"><i class=\"deleteButton tiny material-icons\">clear</i><i class=\"copyButton tiny material-icons\">content_copy</i></div><audio src=\"" + url + "\" /></li>");
   }
+  //音量メータ描画
+  var drawMeter = function() {
+    canvasContext.clearRect(0,0,canvasWidth,canvasHeight);
+    if (meter.checkClipping())
+        canvasContext.fillStyle = "red";
+    else
+        canvasContext.fillStyle = "green";
+    canvasContext.fillRect(0, 0, meter.volume*canvasWidth*1.4, canvasHeight);
+    rafID = window.requestAnimationFrame(drawMeter);
+  }
+  var startMeter = function() {
+    meterCanvas.css("visibility", "visible");
+    requestPermission(function(localMediaStream){
+      mediaStreamSource = audioContext.createMediaStreamSource(localMediaStream);
+      mediaStreamSource.connect(meter);
+      drawMeter();
+    }, function(err){
+      console.log(err);
+    });
+  }
+  var stopMeter = function() {
+    meterCanvas.css("visibility", "hidden");
+    mediaStreamSource.disconnect(meter);
+    window.cancelAnimationFrame(rafID);
+  }
   // マイクのパーミッションをリクエスト
   requestPermission(function(localMediaStream) {
     setPermissionResolved(true);
@@ -41,11 +72,15 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
   $recordButton.mousedown(function(e) {
     requestPermission(function(localMediaStream) {
       $('#recordButton i').text("mic");
-      setTimeout(function(){recorder.start(localMediaStream)}, 50);
+      setTimeout(function(){
+        recorder.start(localMediaStream);
+        startMeter();
+      }, 50);
     }, alert);
   }).mouseup(function(e) {
     $('#recordButton i').text("mic_none");
     recorder.stop();
+    stopMeter();
     var src = audioContext.createBufferSource();
     var buf = recorder.getAudioBuffer();
     src.buffer = buf;
@@ -79,12 +114,14 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
     switch (e.type) {
       case "mouseenter":
       {
+        // startMeter();
         audio.play();
         $this.attr("data-playing", true);
       }
       break;
       case "mouseleave":
       {
+        // stopMeter();
         $this.removeAttr("data-playing");
         audio.pause();
         audio.currentTime = 0;

@@ -1,8 +1,10 @@
 extends layout
 
 block content
-  button#recordButton.btn-floating.btn-large.red.disabled
-    i.material-icons="mic_none"
+  div#recorder
+    button#recordButton.btn-floating.btn-large.red.disabled
+      i.material-icons="mic_none"
+    canvas#meter("width=500 height=50")
   ul#memos
     each file in fileList
       li.memo.z-depth-1.hoverable.waves-effect
@@ -20,4 +22,5 @@ block scripts
   script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js')
   script(src='javascripts/recorder.js')
   script(src='javascripts/exporter.js')
+  script(src='javascripts/volume-meter.js')
   script(src='javascripts/script.js')

@@ -28,6 +28,16 @@ a {
   margin-right: 5px;
 }
 
+#recorder {
+  min-width: 585px;
+}
+
 #recordButton {
   margin-left: 10px;
+  float: left;
+}
+
+#meter {
+  margin-top: 3px;
+  margin-left: 15px;
 }
