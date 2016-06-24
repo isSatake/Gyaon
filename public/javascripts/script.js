@@ -1,5 +1,5 @@
 $(function() {
-navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+  navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
   navigator.mozGetUserMedia ||
   navigator.msGetUserMedia);
   var $recordButton = $("#recordButton");
@@ -10,6 +10,13 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
     audioContext: audioContext
   });
   var localMediaStream;
+  var volumeMeterCanvas = $("#volumeMeter");
+  var canvasContext = document.getElementById("volumeMeter").getContext("2d");
+  var canvasWidth = volumeMeterCanvas.attr("width");
+  var canvasHeight = volumeMeterCanvas.attr("height");
+  var volumeMeter = createAudioMeter(audioContext);
+  var volumeMeterRafID;
+  var playTimeMeterRafID;
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
     navigator.getUserMedia({
@@ -21,10 +28,46 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
   var setPermissionResolved = function(resolved) {
     permissionResolved = resolved;
     if (resolved) {
-      $recordButton.removeAttr("disabled");
+      $recordButton.removeClass("disabled");
     } else {
-      $recordButton.attr("disabled", "disabled");
+      $recordButton.addClass("disabled");
     }
+  }
+  // .memoを追加
+  var createMemo = function(fileName, url){
+    return $("<li class=\"memo z-depth-1 hoverable waves-effect\"><span class=\"memoTitle\">" + fileName + "</span><div class=\"actions\"><i class=\"deleteButton tiny material-icons\">clear</i><i class=\"copyButton tiny material-icons\">content_copy</i></div><audio src=\"" + url + "\" /></li>");
+  }
+  //音量メータ描画
+  var drawVolumeMeter = function() {
+    canvasContext.clearRect(0,0,canvasWidth,canvasHeight);
+    if (volumeMeter.checkClipping())
+        canvasContext.fillStyle = "red";
+    else
+        canvasContext.fillStyle = "green";
+    canvasContext.fillRect(0, 0, volumeMeter.volume*canvasWidth*1.4, canvasHeight);
+    volumeMeterRafID = window.requestAnimationFrame(drawVolumeMeter);
+  }
+  var startVolumeMeter = function() {
+    volumeMeterCanvas.css("visibility", "visible");
+    requestPermission(function(localMediaStream){
+      mediaStreamSource = audioContext.createMediaStreamSource(localMediaStream);
+      mediaStreamSource.connect(volumeMeter);
+      drawVolumeMeter();
+    }, function(err){
+      console.log(err);
+    });
+  }
+  var stopVolumeMeter = function() {
+    volumeMeterCanvas.css("visibility", "hidden");
+    mediaStreamSource.disconnect(volumeMeter);
+    window.cancelAnimationFrame(volumeMeterRafID);
+  }
+  var drawPlayTimeMeter = function(audioElement, determinateBar) {
+    var update = function(){
+      determinateBar.css("width", audioElement[0].currentTime / audioElement[0].duration*100 + "%");
+      playTimeMeterRafID = window.requestAnimationFrame(update);
+    }
+    update();
   }
   // マイクのパーミッションをリクエスト
   requestPermission(function(localMediaStream) {
@@ -36,10 +79,16 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
   // 録音ボタン
   $recordButton.mousedown(function(e) {
     requestPermission(function(localMediaStream) {
-      setTimeout(function(){recorder.start(localMediaStream)}, 50);
+      $('#recordButton i').text("mic");
+      setTimeout(function(){
+        recorder.start(localMediaStream);
+        startVolumeMeter();
+      }, 50);
     }, alert);
   }).mouseup(function(e) {
+    $('#recordButton i').text("mic_none");
     recorder.stop();
+    stopVolumeMeter();
     var src = audioContext.createBufferSource();
     var buf = recorder.getAudioBuffer();
     src.buffer = buf;
@@ -59,8 +108,7 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
       contentType: false
     }).done(function(done) {
       console.log(done);
-      var memo = $("<li class=\"memo\">" + done.file + "<div class=\"deleteButton\"></div><audio src=\"" + done.url + "\" /></li>");
-      $("#memos").prepend(memo);
+      $("#memos").prepend(createMemo(done.file, done.url));
     }).fail(function(e) {
       alert("export failed");
     });
@@ -74,15 +122,15 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
     switch (e.type) {
       case "mouseenter":
       {
+        // startMeter();
         audio.play();
         $this.attr("data-playing", true);
-        $this.attr("data-clipboard-text", audioUrl);
       }
       break;
       case "mouseleave":
       {
+        // stopMeter();
         $this.removeAttr("data-playing");
-        $this.removeAttr("data-clipboard-text");
         audio.pause();
         audio.currentTime = 0;
       }
@@ -90,25 +138,81 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
       default:
     }
   });
+  // 削除
   $(document).on("click", ".deleteButton", function(){
-    console.log("del");
-    var $this = $(this);
-    var fileName = $this.parent().text();
+    console.log("delete");
+    var $memo = $(this).parents('.memo');
+    var fileName = $memo.find("span").text();
     $.ajax("/" + fileName, {
       method: "DELETE"
     }).done(function(done) {
-      $this.parent().remove();
-      console.log(done);
+      $memo.remove();
+      console.log("delete completed");
     }).fail(function(e) {
       alert("delete failed");
     });
   });
+  // URLコピー
+  $(document).on("mouseenter mouseleave", ".copyButton", function(e){
+    var $this = $(this);
+    var $memo = $this.parents('.memo');
+    var url = $memo.find("audio").attr("src")
+    switch(e.type){
+      case "mouseenter":
+      {
+        $this.attr("data-clipboard-text", url);
+      }
+      break;
+      case "mouseleave":
+      {
+        $this.removeAttr("data-clipboard-text");
+      }
+      break;
+      default:
+    }
+  });
   //ファイル名クリック→URLをクリップボードにコピー
-  var clipboard = new Clipboard(".memo");
+  var clipboard = new Clipboard(".copyButton");
   clipboard.on('success', function(e) {
     console.log("audio url copied!");
+    Materialize.toast('Copied!', 1000);
   });
   clipboard.on('error', function(e) {
     console.log("audio url copy failed");
+  });
+  //プログレスバー
+  $("audio").on("progress loadeddata play pause", function(e){
+    var $this = $(this);
+    var $determinate = $this.parent().find('.determinate');
+    var $indeterminate = $this.parent().find('.indeterminate');
+    switch(e.type){
+      case "progress":
+      {
+        $determinate.hide();
+        $indeterminate.show();
+      }
+      break;
+      case "loadeddata":
+      {
+        $determinate.hide();
+        $indeterminate.hide();
+      }
+      break;
+      case "play":
+      {
+        $determinate.show();
+        $indeterminate.hide();
+        drawPlayTimeMeter($this, $determinate);
+      }
+      break;
+      case "pause":
+      {
+        $determinate.hide();
+        $indeterminate.hide();
+        window.cancelAnimationFrame(playTimeMeterRafID);
+      }
+      break;
+      default:
+    }
   });
 });

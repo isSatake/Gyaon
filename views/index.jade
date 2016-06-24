@@ -1,17 +1,30 @@
 extends layout
 
 block content
-  h1= title
-  button#recordButton(disabled="disabled")="rec"
+  div#recorder
+    button#recordButton.btn-floating.btn-large.red.disabled
+      i.material-icons="mic_none"
+    canvas#volumeMeter("width=500 height=50")
   ul#memos
     each file in fileList
-      li.memo=file.name
-        div.deleteButton
+      li.memo.z-depth-1.hoverable.waves-effect
+        span.memoTitle=file.name
+        div.actions
+          i.deleteButton.tiny.material-icons="clear"
+          i.copyButton.tiny.material-icons="content_copy"
+        div.progress.transparent
+          div.determinate
+          div.indeterminate
         audio(src=file.url)
 
 block scripts
+  link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')
+  link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css')
+  link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js')
   script(src='javascripts/recorder.js')
   script(src='javascripts/exporter.js')
+  script(src='javascripts/volume-meter.js')
   script(src='javascripts/script.js')

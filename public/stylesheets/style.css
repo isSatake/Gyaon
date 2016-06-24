@@ -1,6 +1,5 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
@@ -12,27 +11,45 @@ a {
   height: 100px;
   float: left;
   margin: 10px;
-  background: #EEE;
+  padding: 10px;
   list-style: none;
   cursor: pointer;
   word-wrap: break-word;
   position: relative;
 }
 
-.onplay {
-  border: solid 5px #FF0000;
-}
-
-.memo[data-playing="true"] {
-	background: #555;
-}
-
-.deleteButton {
-  height: 20px;
-  width: 20px;
-  background: #FFF;
-  cursor: pointer;
-  margin-left: 5px;
+.actions {
   bottom: 5px;
   position: absolute;
+}
+
+.actions i {
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+#recorder {
+  min-width: 585px;
+}
+
+#recordButton {
+  margin-left: 10px;
+  float: left;
+}
+
+#volumeMeter {
+  margin-top: 3px;
+  margin-left: 15px;
+}
+
+.memo .progress {
+  width: 110%;
+  bottom: 0;
+  left: -10px;
+  position: absolute;
+  margin: 0;
+}
+
+.determinate {
+  transition: none !important;
 }
