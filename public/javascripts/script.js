@@ -140,17 +140,19 @@ $(function() {
   });
   // 削除
   $(document).on("click", ".deleteButton", function(){
-    console.log("delete");
-    var $memo = $(this).parents('.memo');
-    var fileName = $memo.find("span").text();
-    $.ajax("/" + fileName, {
-      method: "DELETE"
-    }).done(function(done) {
-      $memo.remove();
-      console.log("delete completed");
-    }).fail(function(e) {
-      alert("delete failed");
-    });
+    if(window.confirm('削除しますか?')){
+      console.log("delete");
+      var $memo = $(this).parents('.memo');
+      var fileName = $memo.find("span").text();
+      $.ajax("/" + fileName, {
+        method: "DELETE"
+      }).done(function(done) {
+        $memo.remove();
+        console.log("delete completed");
+      }).fail(function(e) {
+        alert("delete failed");
+      });
+    }
   });
   // URLコピー
   $(document).on("mouseenter mouseleave", ".copyButton", function(e){
