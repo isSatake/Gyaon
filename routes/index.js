@@ -71,6 +71,7 @@ router.get('/', function(req, res, next) {
     debug(files);
 
     res.render('index', {
+      id: gyaonId,
       title: 'Gyaon',
       fileList: files
     });
