@@ -124,10 +124,11 @@ router.post('/upload', function(req, res) {
     });
     form.parse(req);
     form.on('error', function(err){
+      console.log(err);
       console.log("formidable error");
     });
     form.on('aborted', function(){
-      console.log("formidable aborted");
+      console.log("upload aborted");
     });
   }).catch(debug)
 });
