@@ -124,10 +124,9 @@ router.post('/upload', function(req, res) {
     });
     form.parse(req);
     form.on('error', function(err){
-      console.log("formidable error");
-      console.log(err);
+      console.error(err.stack || err);
     });
-  }).catch(debug)
+  }).catch(function (err) { console.error(err.stack || err) })
 });
 
 router.delete('/:id', function(req, res){
