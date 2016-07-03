@@ -4,27 +4,9 @@ var fs = require('fs');
 var path = require('path');
 var formidable = require('formidable');
 var debug = require("debug")("index");
-var crypto = require('crypto');
 var cookie = require('cookie');
-var AWS = require('aws-sdk');
-
-AWS.config.accessKeyId = process.env.accessKeyId;
-AWS.config.secretAccessKey = process.env.secretAccessKey;
-AWS.config.region = process.env.region;
-var bucket = new AWS.S3({params: {Bucket: 'gyaon'}});
-
-var s3EndPoint = 'https://s3-us-west-2.amazonaws.com/gyaon/';
-
-var md5_hex = function(src) {
-  var md5 = crypto.createHash('md5');
-  md5.update(src, 'utf8');
-  return md5.digest('hex');
-}
-
-var idGenerator = function() {
-  var seed = Math.random() * Date.now();
-  return md5_hex(String(seed));
-}
+var id = require('../util/id');
+var s3 = require('../util/s3');
 
 //create tmp folder
 var promiseUploadDir = function() {
@@ -34,106 +16,59 @@ var promiseUploadDir = function() {
       err ? resolve(err) : resolve();
     });
   });
-}
-
-var toDoubleDigits = function(num) {
-  num += "";
-  if (num.length === 1) {
-    num = "0" + num;
-  }
- return num;
 };
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  //cookie
-  var gyaonId = req.cookies.gyaonId;
-  if(typeof gyaonId === "undefined"){
-    gyaonId = res.cookie('gyaonId', idGenerator());
-  }
+  var gyaonId = (
+      typeof req.cookies.gyaonId === "undefined"
+    ? res.cookie('gyaonId', id.generate())
+    : req.cookies.gyaonId
+  );
   debug("gyaonId : " + gyaonId);
-
-  //get file list in s3
-  var params = {Delimiter: '/', Prefix: gyaonId + '/'}
-  bucket.listObjects(params, function(err, data){
-    if(err) throw err;
-
-    var files = [];
-    data.Contents.forEach(function(file){
-      files.push({name: file.Key.replace(gyaonId + '/', ''), url: s3EndPoint + file.Key});
-    });
-    //降順ソート
-    files.sort(function(a,b){
-      if( a.name > b.name ) return -1;
-      if( a.name < b.name ) return 1;
-      return 0;
-    });
-    debug(files);
-
+  s3.promiseGetUserFileList(gyaonId).then(function(list){
     res.render('index', {
       id: gyaonId,
       title: 'Gyaon',
-      fileList: files
+      fileList: list
     });
-  });
+  }).catch(function (err) { console.error(err.stack || err) });
 });
 
 /* 音声データ受け取り */
 router.post('/upload', function(req, res) {
   var gyaonId = req.cookies.gyaonId;
-
   promiseUploadDir().then(function() {
     var form = new formidable.IncomingForm();
     form.encoding = "utf-8";
     form.uploadDir = "./public/tmp";
     form.multiples = false;
-
     form.on("file", function(name, file) {
-      var date = new Date();
-      var y = date.getFullYear();
-      var m = toDoubleDigits(date.getMonth() + 1);
-      var d = toDoubleDigits(date.getDate());
-      var h = toDoubleDigits(date.getHours());
-      var min = toDoubleDigits(date.getMinutes());
-      var s = toDoubleDigits(date.getSeconds());
-      var fn = y + "-" + m + "-" + d + " " + h + ":" + min + ":" + s;
-
-      //upload to s3
       fs.readFile(file.path, function(err, data){
         if(err) throw err;
-        var keyName = gyaonId + "/" + fn
-        var params = {Key: keyName, ContentType: file.type, Body: data};
-
-        bucket.upload(params, function(err, data) {
-          if (err)
-          console.log(err)
-          else
-          var fileUrl = data.Location;
-          debug("Successfully uploaded data to " + fileUrl);
+        s3.promiseUploadAndGetUrl(gyaonId, data).then(function(fileObj){
           res.status(200).set("Content-Type", "application/json").json({
-            file: fn,
-            url: fileUrl
+            file: fileObj.name,
+            url: fileObj.url
           }).end();
-
-          //delete tmp file
-          fs.unlink(file.path, function(err){
-            if(err) throw err;
-          });
         });
+      });
+      fs.unlink(file.path, function(err){
+        if(err) throw err;
       });
     });
     form.parse(req);
     form.on('error', function(err){
       console.error(err.stack || err);
     });
-  }).catch(function (err) { console.error(err.stack || err) })
+  }).catch(function (err) { console.error(err.stack || err) });
 });
 
+/* 音声削除 */
 router.delete('/:id', function(req, res){
   var gyaonId = req.cookies.gyaonId;
   var fileName = req.params.id;
-  console.log(gyaonId + "/" + fileName);
-  bucket.deleteObject({Key: gyaonId + "/" + fileName}, function(err, data){
+  s3.deleteObject({Key: gyaonId + "/" + fileName}, function(err, data){
     if(err) throw err;
     res.status(200).end();
   });
