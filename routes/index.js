@@ -59,7 +59,6 @@ router.get('/', function(req, res, next) {
   Sound.find({user: gyaonId}).sort({lastmodified: -1}).exec(function(err, docs){
     res.render('index', {
       id: gyaonId,
-      title: 'Gyaon',
       endpoint: 'https://s3-us-west-2.amazonaws.com/gyaon/',
       fileList: docs
     });
