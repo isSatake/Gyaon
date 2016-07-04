@@ -5,8 +5,38 @@ var path = require('path');
 var formidable = require('formidable');
 var debug = require("debug")("index");
 var cookie = require('cookie');
+var mongoose = require('mongoose');
 var id = require('../util/id');
-var s3 = require('../util/s3');
+var filename = require('../util/filename.js');
+var AWS = require('aws-sdk');
+
+AWS.config.accessKeyId = process.env.accessKeyId;
+AWS.config.secretAccessKey = process.env.secretAccessKey;
+AWS.config.region = process.env.region;
+var bucket = new AWS.S3({params: {Bucket: 'gyaon'}});
+var endPoint = 'https://s3-us-west-2.amazonaws.com/gyaon/';
+
+mongoose.connect(
+  process.env.MONGODB_URI
+  || "mongodb://heroku_hlhb8pkb:hv9mijd72nlonst1gnmdhrr6i@ds011785.mlab.com:11785/heroku_hlhb8pkb"
+  , function(err){
+    if(err) throw err;
+    debug("connected mongo");
+  }
+);
+
+var soundSchema = mongoose.Schema({
+  lastmodified: Date,
+  user: String,
+  name: String,
+  key: String,
+  size: Number,
+  time: Number,
+  memo: String,
+  location: String
+});
+
+var Sound = mongoose.model('Sound', soundSchema);
 
 //create tmp folder
 var promiseUploadDir = function() {
@@ -21,18 +51,19 @@ var promiseUploadDir = function() {
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var gyaonId = (
-      typeof req.cookies.gyaonId === "undefined"
+    typeof req.cookies.gyaonId === "undefined"
     ? res.cookie('gyaonId', id.generate())
     : req.cookies.gyaonId
   );
   debug("gyaonId : " + gyaonId);
-  s3.promiseGetUserFileList(gyaonId).then(function(list){
+  Sound.find({user: gyaonId}).sort({lastmodified: -1}).exec(function(err, docs){
     res.render('index', {
       id: gyaonId,
       title: 'Gyaon',
-      fileList: list
+      endpoint: 'https://s3-us-west-2.amazonaws.com/gyaon/',
+      fileList: docs
     });
-  }).catch(function (err) { console.error(err.stack || err) });
+  });
 });
 
 /* 音声データ受け取り */
@@ -46,11 +77,28 @@ router.post('/upload', function(req, res) {
     form.on("file", function(name, file) {
       fs.readFile(file.path, function(err, data){
         if(err) throw err;
-        s3.promiseUploadAndGetUrl(gyaonId, data).then(function(fileObj){
+        var fn = filename.generate();
+        var params = {
+          Key: gyaonId + "/" + fn,
+          Body: data
+        };
+        bucket.upload(params, function(err, s3data) {
+          if (err)
+          console.error(err.stack || err);
+          else
           res.status(200).set("Content-Type", "application/json").json({
-            file: fileObj.name,
-            url: fileObj.url
+            file: fn,
+            url: s3data.Location
           }).end();
+          new Sound({
+            key: s3data.key,
+            lastmodified: Date.now(),
+            name: fn,
+            size: file.size,
+            user: s3data.key.split("/")[0]
+          }).save(function(err){
+            console.log("saved mongo");
+          });
         });
       });
       fs.unlink(file.path, function(err){
@@ -68,9 +116,12 @@ router.post('/upload', function(req, res) {
 router.delete('/:id', function(req, res){
   var gyaonId = req.cookies.gyaonId;
   var fileName = req.params.id;
-  s3.deleteObject({Key: gyaonId + "/" + fileName}, function(err, data){
+  bucket.deleteObject({Key: gyaonId + "/" + fileName}, function(err, data){
     if(err) throw err;
-    res.status(200).end();
+    Sound.remove({key: `${gyaonId}/${fileName}`}, function(err, result){
+      if(err) throw err;
+      res.status(200).end();
+    });
   });
 });
 

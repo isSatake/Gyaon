@@ -8,15 +8,15 @@ block content
     canvas#volumeMeter("width=500 height=50")
   ul#memos
     each file in fileList
-      li.memo.z-depth-1.hoverable.waves-effect
-        span.memoTitle=file.name
+      li.memo.z-depth-1.hoverable.waves-effect(id=file._id)
+        span.memoTitle=file.lastmodified
         div.actions
           i.deleteButton.tiny.material-icons="clear"
           i.copyButton.tiny.material-icons="content_copy"
         div.progress.transparent
           div.determinate
           div.indeterminate
-        audio(src=file.url)
+        audio(src=endpoint+file.key)
 
 block scripts
   link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')
