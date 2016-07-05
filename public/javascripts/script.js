@@ -34,8 +34,17 @@ $(function() {
     }
   }
   // .memoを追加
-  var createMemo = function(fileName, url){
-    return $("<li class=\"memo z-depth-1 hoverable waves-effect\"><span class=\"memoTitle\">" + fileName + "</span><div class=\"actions\"><i class=\"deleteButton tiny material-icons\">clear</i><i class=\"copyButton tiny material-icons\">content_copy</i></div><audio src=\"" + url + "\" /></li>");
+  var createMemo = function(endpoint, sound){
+    return $(
+        `<li class="memo z-depth-1 hoverable waves-effect" key="${sound.key}">`
+      +   `<span class="memoTitle">${sound.lastmodified}</span>`
+      +     `<div class="actions">`
+      +       `<i class="deleteButton tiny material-icons">clear</i>`
+      +       `<i class="copyButton tiny material-icons">content_copy</i>`
+      +     `</div>`
+      +   `<audio src="${endpoint + sound.key}" />`
+      + `</li>`
+    );
   }
   //音量メータ描画
   var drawVolumeMeter = function() {
@@ -108,7 +117,7 @@ $(function() {
       contentType: false
     }).done(function(done) {
       console.log(done);
-      $("#memos").prepend(createMemo(done.file, done.url));
+      $("#memos").prepend(createMemo(done.endpoint, done.object));
     }).fail(function(e) {
       alert("export failed");
     });

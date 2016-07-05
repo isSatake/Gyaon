@@ -85,18 +85,18 @@ router.post('/upload', function(req, res) {
           if (err)
           console.error(err.stack || err);
           else
-          res.status(200).set("Content-Type", "application/json").json({
-            file: fn,
-            url: s3data.Location
-          }).end();
           new Sound({
             key: s3data.key,
             lastmodified: Date.now(),
             name: fn,
             size: file.size,
             user: s3data.key.split("/")[0]
-          }).save(function(err){
+          }).save(function(err, sound){
             console.log("saved mongo");
+            res.status(200).set("Content-Type", "application/json").json({
+              endpoint: endPoint,
+              object: sound
+            }).end();
           });
         });
       });
