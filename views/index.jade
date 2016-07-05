@@ -8,7 +8,7 @@ block content
     canvas#volumeMeter("width=500 height=50")
   ul#memos
     each file in fileList
-      li.memo.z-depth-1.hoverable.waves-effect
+      li.memo.z-depth-1.hoverable.waves-effect(key=file.key)
         span.memoTitle=file.lastmodified
         div.actions
           i.deleteButton.tiny.material-icons="clear"

@@ -112,10 +112,10 @@ router.post('/upload', function(req, res) {
 });
 
 /* 音声削除 */
-router.delete('/:id', function(req, res){
-  var gyaonId = req.cookies.gyaonId;
-  var fileName = req.params.id;
-  bucket.deleteObject({Key: gyaonId + "/" + fileName}, function(err, data){
+router.delete('/:id/:name', function(req, res){
+  var gyaonId = req.params.id;
+  var fileName = req.params.name;
+  bucket.deleteObject({Key: `${gyaonId}/${fileName}`}, function(err, data){
     if(err) throw err;
     Sound.remove({key: `${gyaonId}/${fileName}`}, function(err, result){
       if(err) throw err;

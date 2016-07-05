@@ -143,8 +143,8 @@ $(function() {
     if(window.confirm('削除しますか?')){
       console.log("delete");
       var $memo = $(this).parents('.memo');
-      var fileName = $memo.find("span").text();
-      $.ajax("/" + fileName, {
+      var key = $memo.attr("key");
+      $.ajax("/" + key, {
         method: "DELETE"
       }).done(function(done) {
         $memo.remove();
