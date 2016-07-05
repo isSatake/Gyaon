@@ -37,6 +37,32 @@ var soundSchema = mongoose.Schema({
 
 var Sound = mongoose.model('Sound', soundSchema);
 
+var getSoundsByDate = function(gyaonId){
+  Sound.aggregate([
+    { $match: {
+      user: gyaonId
+    }},
+    { $project: {
+      ymd: {
+        year: { $year: "$lastmodified" },
+        month: { $month: "$lastmodified" },
+        date: { $dayOfMonth: "$lastmodified" }
+      }
+    }},
+    { $group: {
+      _id: "$ymd",
+      sounds: { $push: "$$ROOT" }
+    }},
+    { $sort: {
+      _id: -1
+    }}
+  ], function(err, result){
+    if(err) console.error(err.stack || err);
+    console.log(result);
+    return result
+  });
+}
+
 //create tmp folder
 var promiseUploadDir = function() {
   return new Promise(function(resolve, reject) {
@@ -45,7 +71,7 @@ var promiseUploadDir = function() {
       err ? resolve(err) : resolve();
     });
   });
-};
+}
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -55,6 +81,7 @@ router.get('/', function(req, res, next) {
     : req.cookies.gyaonId
   );
   debug("gyaonId : " + gyaonId);
+  getSoundsByDate(gyaonId);
   Sound.find({user: gyaonId}).sort({lastmodified: -1}).exec(function(err, docs){
     res.render('index', {
       id: gyaonId,
