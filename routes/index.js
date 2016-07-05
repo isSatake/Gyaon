@@ -5,10 +5,9 @@ var path = require('path');
 var formidable = require('formidable');
 var debug = require("debug")("index");
 var cookie = require('cookie');
+var AWS = require('aws-sdk');
 var mongoose = require('mongoose');
 var id = require('../util/id');
-var filename = require('../util/filename.js');
-var AWS = require('aws-sdk');
 
 AWS.config.accessKeyId = process.env.accessKeyId;
 AWS.config.secretAccessKey = process.env.secretAccessKey;
@@ -76,7 +75,7 @@ router.post('/upload', function(req, res) {
     form.on("file", function(name, file) {
       fs.readFile(file.path, function(err, data){
         if(err) throw err;
-        var fn = filename.generate();
+        var fn = id.generate();
         var params = {
           Key: gyaonId + "/" + fn,
           Body: data
