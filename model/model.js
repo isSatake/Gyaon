@@ -4,37 +4,12 @@ var id = require("../util/id");
 var fs = require("fs");
 var debug = require("debug")("model");
 
-var promiseGetRecordDates = function(gyaonId){
+exports.promiseGetSounds = function(gyaonId){
   return new Promise(function(resolve, reject){
-    debug("get record dates");
-    db.promiseGetRecordDates(gyaonId).then(function(dates){
-      debug(dates);
-      resolve(dates);
+    debug("get sounds");
+    db.promiseGetSounds(gyaonId).then(function(sounds){
+      resolve(sounds);
     }).catch(function (err) { console.error(err.stack || err) });
-  });
-};
-
-exports.promiseGetSoundsEachDay = function(gyaonId){
-  return new Promise(function(_resolve, _reject){
-    debug("get sounds each day");
-    promiseGetRecordDates(gyaonId).then(function(_dates){
-      var dates = _dates;
-      var promises = [];
-      dates.forEach(function(date, index){
-        promises.push(
-          new Promise(function(resolve, reject){
-            db.promiseGetSoundsByDate(gyaonId, date).then(function(_sounds){
-              dates[index].sounds = _sounds;
-              resolve();
-            }).catch(function (err) { console.error(err.stack || err) });
-          })
-        );
-      });
-      Promise.all(promises).then(function(){
-        debug(dates);
-        _resolve(dates);
-      }).catch(function (err) { console.error(err.stack || err) });
-    });
   });
 };
 

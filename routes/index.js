@@ -6,6 +6,7 @@ var formidable = require('formidable');
 var debug = require("debug")("index");
 var cookie = require('cookie');
 var model = require('../model/model');
+var formatDate = require('../util/formatdate');
 
 var endPoint = 'https://s3-us-west-2.amazonaws.com/gyaon/';
 
@@ -27,11 +28,12 @@ router.get('/', function(req, res, next) {
     : req.cookies.gyaonId
   );
   debug("gyaonId : " + gyaonId);
-  model.promiseGetSoundsEachDay(gyaonId).then(function(result){
+  model.promiseGetSounds(gyaonId).then(function(result){
     res.render('index', {
       id: gyaonId,
       endpoint: 'https://s3-us-west-2.amazonaws.com/gyaon/',
-      list: result
+      sounds: result,
+      format: formatDate
     });
   }).catch(function (err) { console.error(err.stack || err) });
 });

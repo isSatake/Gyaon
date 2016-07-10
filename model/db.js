@@ -47,37 +47,10 @@ var createSound = function(s3Data, file){
   })
 }
 
-exports.promiseGetRecordDates = function(gyaonId){
-  return new Promise(function(resolve, reject){
-    debug("get record dates");
-    Sound.aggregate([
-      { $match: { user: gyaonId }},
-      { $project: {
-        ymd: {
-          year: { $year: "$lastmodified" },
-          month: { $month: "$lastmodified" },
-          date: { $dayOfMonth: "$lastmodified" }
-        }
-      }},
-      { $group: { _id: "$ymd" }},
-      { $sort: { _id: -1 }}
-    ], function(err, dates){
-      debug(dates);
-      err ? resolve(err) : resolve(dates);
-    });
-  });
-}
-
-exports.promiseGetSoundsByDate = function(gyaonId, date){
+exports.promiseGetSounds = function(gyaonId){
   return new Promise(function(resolve, result){
-    debug(`find : ${date}`);
-    var params = {
-      user: gyaonId,
-      year: date._id.year,
-      month: date._id.month,
-      date: date._id.date
-    }
-    Sound.find(params).sort({lastmodified: -1}).exec(function(err, sounds){
+    debug(`find : ${gyaonId}`);
+    Sound.find({user: gyaonId}).sort({lastmodified: -1}).exec(function(err, sounds){
       debug(sounds);
       err ? resolve(err) : resolve(sounds);
     });
