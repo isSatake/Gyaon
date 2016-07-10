@@ -5,63 +5,9 @@ var path = require('path');
 var formidable = require('formidable');
 var debug = require("debug")("index");
 var cookie = require('cookie');
-var AWS = require('aws-sdk');
-var mongoose = require('mongoose');
-var id = require('../util/id');
+var model = require('../model/model');
 
-AWS.config.accessKeyId = process.env.accessKeyId;
-AWS.config.secretAccessKey = process.env.secretAccessKey;
-AWS.config.region = process.env.region;
-var bucket = new AWS.S3({params: {Bucket: 'gyaon'}});
 var endPoint = 'https://s3-us-west-2.amazonaws.com/gyaon/';
-
-mongoose.connect(
-  process.env.MONGODB_URI
-  || "mongodb://heroku_hlhb8pkb:hv9mijd72nlonst1gnmdhrr6i@ds011785.mlab.com:11785/heroku_hlhb8pkb"
-  , function(err){
-    if(err) throw err;
-    debug("connected mongo");
-  }
-);
-
-var soundSchema = mongoose.Schema({
-  lastmodified: Date,
-  user: String,
-  name: String,
-  key: String,
-  size: Number,
-  time: Number,
-  memo: String,
-  location: String
-});
-
-var Sound = mongoose.model('Sound', soundSchema);
-
-var getSoundsByDate = function(gyaonId){
-  Sound.aggregate([
-    { $match: {
-      user: gyaonId
-    }},
-    { $project: {
-      ymd: {
-        year: { $year: "$lastmodified" },
-        month: { $month: "$lastmodified" },
-        date: { $dayOfMonth: "$lastmodified" }
-      }
-    }},
-    { $group: {
-      _id: "$ymd",
-      sounds: { $push: "$$ROOT" }
-    }},
-    { $sort: {
-      _id: -1
-    }}
-  ], function(err, result){
-    if(err) console.error(err.stack || err);
-    console.log(result);
-    return result
-  });
-}
 
 //create tmp folder
 var promiseUploadDir = function() {
@@ -81,14 +27,13 @@ router.get('/', function(req, res, next) {
     : req.cookies.gyaonId
   );
   debug("gyaonId : " + gyaonId);
-  getSoundsByDate(gyaonId);
-  Sound.find({user: gyaonId}).sort({lastmodified: -1}).exec(function(err, docs){
+  model.promiseGetSoundsEachDay(gyaonId).then(function(result){
     res.render('index', {
       id: gyaonId,
       endpoint: 'https://s3-us-west-2.amazonaws.com/gyaon/',
-      fileList: docs
+      list: result
     });
-  });
+  }).catch(function (err) { console.error(err.stack || err) });
 });
 
 /* 音声データ受け取り */
@@ -100,34 +45,11 @@ router.post('/upload', function(req, res) {
     form.uploadDir = "./public/tmp";
     form.multiples = false;
     form.on("file", function(name, file) {
-      fs.readFile(file.path, function(err, data){
-        if(err) throw err;
-        var fn = id.generate();
-        var params = {
-          Key: gyaonId + "/" + fn,
-          Body: data
-        };
-        bucket.upload(params, function(err, s3data) {
-          if (err)
-          console.error(err.stack || err);
-          else
-          new Sound({
-            key: s3data.key,
-            lastmodified: Date.now(),
-            name: fn,
-            size: file.size,
-            user: s3data.key.split("/")[0]
-          }).save(function(err, sound){
-            console.log("saved mongo");
-            res.status(200).set("Content-Type", "application/json").json({
-              endpoint: endPoint,
-              object: sound
-            }).end();
-          });
-        });
-      });
-      fs.unlink(file.path, function(err){
-        if(err) throw err;
+      model.promiseUploadSound(gyaonId, file).then(function(sound){
+        res.status(200).set("Content-Type", "application/json").json({
+          endpoint: endPoint,
+          object: sound
+        }).end();
       });
     });
     form.parse(req);
@@ -139,15 +61,11 @@ router.post('/upload', function(req, res) {
 
 /* 音声削除 */
 router.delete('/:id/:name', function(req, res){
-  var gyaonId = req.params.id;
-  var fileName = req.params.name;
-  bucket.deleteObject({Key: `${gyaonId}/${fileName}`}, function(err, data){
-    if(err) throw err;
-    Sound.remove({key: `${gyaonId}/${fileName}`}, function(err, result){
-      if(err) throw err;
-      res.status(200).end();
-    });
-  });
+  var key = `${req.params.id}/${req.params.name}`;
+  debug(key);
+  model.promiseDeleteSound(key).then(function(){
+    res.status(200).end();
+  }).catch(function (err) { console.error(err.stack || err) });
 });
 
 module.exports = router;

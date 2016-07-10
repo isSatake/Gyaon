@@ -7,16 +7,19 @@ block content
       i.material-icons="mic_none"
     canvas#volumeMeter("width=500 height=50")
   ul#memos
-    each file in fileList
-      li.memo.z-depth-1.hoverable.waves-effect(key=file.key)
-        span.memoTitle=file.lastmodified
-        div.actions
-          i.deleteButton.tiny.material-icons="clear"
-          i.copyButton.tiny.material-icons="content_copy"
-        div.progress.transparent
-          div.determinate
-          div.indeterminate
-        audio(src=endpoint+file.key)
+    each date in list
+      ul #{date._id.year}-#{date._id.month}-#{date._id.date}
+        div
+          each sound in date.sounds
+            li.memo.z-depth-1.hoverable.waves-effect(key=sound.key)
+              span.memoTitle #{sound.hour}:#{sound.minute}:#{sound.second}
+              div.actions
+                i.deleteButton.tiny.material-icons="clear"
+                i.copyButton.tiny.material-icons="content_copy"
+              div.progress.transparent
+                div.determinate
+                div.indeterminate
+              audio(src=endpoint+sound.key)
 
 block scripts
   link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')
