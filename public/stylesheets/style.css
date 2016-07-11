@@ -50,7 +50,7 @@ td.delete-button, td.copy-button {
   font-weight: 300;
 }
 
-/*.actions {
+.actions {
   bottom: 5px;
   position: absolute;
 }

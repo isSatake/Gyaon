@@ -55,7 +55,6 @@ router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
   }).catch(function (err) {
     res.status(500).end();
   });
-
 });
 
 /* 音声データ受け取り */
@@ -81,11 +80,23 @@ router.post('/upload', function(req, res) {
   }).catch(function (err) { console.error(err.stack || err) });
 });
 
+/* コメント編集 */
+router.post('/comment/:id/:name', function(req, res) {
+  var gyaonId = req.params.id;
+  var fileName = req.params.name;
+  var text = req.body.value;
+  debug(`comment on ${gyaonId}/${fileName} : ${text}`);
+  model.promiseEditComment(gyaonId, fileName, text).then(function(){
+    res.status(200).end();
+  });
+});
+
 /* 音声削除 */
 router.delete('/:id/:name', function(req, res){
-  var key = `${req.params.id}/${req.params.name}`;
+  var gyaonId = req.params.id;
+  var fileName = req.params.name;
   debug(key);
-  model.promiseDeleteSound(key).then(function(){
+  model.promiseDeleteSound(gyaonId, fileName).then(function(){
     res.status(200).end();
   }).catch(function (err) { console.error(err.stack || err) });
 });

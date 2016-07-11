@@ -64,10 +64,26 @@ exports.promiseUpload = function(s3Data, fileName, file){
   });
 }
 
-exports.promiseDelete = function(_key){
+exports.promiseDelete = function(gyaonId, name){
   return new Promise(function(resolve, result){
+    debug(`find : ${gyaonId}/${name}`);
+    var _key = `${gyaonId}/${name}`;
     Sound.remove({key: _key}, function(err, result){
       debug("deleted");
+      err ? resolve(err) : resolve();
+    });
+  });
+}
+
+exports.promiseUpdateComment = function(gyaonId, name, text){
+  return new Promise(function(resolve, result){
+    var _key = `${gyaonId}/${name}`;
+    debug(`comment on ${_key} : ${text}`);
+    Sound.update(
+      {key: _key},
+      {$set: {comment: text}
+    }).exec(function(err, sound){
+      debug(sound);
       err ? resolve(err) : resolve();
     });
   });
