@@ -15,8 +15,10 @@ exports.promiseUpload = function(params){
   });
 }
 
-exports.promiseDelete = function(_key){
+exports.promiseDelete = function(gyaonId, name){
   return new Promise(function(resolve, reject){
+    debug(`delete : ${gyaonId}/${name}`);
+    var _key = `${gyaonId}/${name}`;
     bucket.deleteObject({Key: _key}, function(err, data){
       debug("deleted");
       err ? resolve(err) : resolve();

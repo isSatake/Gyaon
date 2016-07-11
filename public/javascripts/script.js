@@ -247,4 +247,18 @@ $(function() {
       default:
     }
   });
+  //コメント
+  $(document).on("blur", ".comment", function(e){
+    var $this = $(this);
+    var key = $this.parent().attr('key');
+    var text = $this.find('input')[0].value;
+    $.ajax(`/comment/${key}`, {
+      method: "POST",
+      data: { "value": text }
+    }).done(function(done) {
+      console.log(done);
+    }).fail(function(e) {
+      alert("save failed");
+    });
+  });
 });

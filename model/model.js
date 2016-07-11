@@ -44,13 +44,22 @@ exports.promiseUploadSound = function(gyaonId, file){
   });
 }
 
-exports.promiseDeleteSound = function(key){
+exports.promiseDeleteSound = function(gyaonId, name){
   return new Promise(function(resolve, result){
-    s3.promiseDelete(key).then(function(){
-      db.promiseDelete(key).then(function(){
+    s3.promiseDelete(gyaonId, name).then(function(){
+      db.promiseDelete(gyaonId, name).then(function(){
         debug("deleted");
         resolve();
       }).catch(function (err) { console.error(err.stack || err) });
+    }).catch(function (err) { console.error(err.stack || err) });
+  });
+}
+
+exports.promiseEditComment = function(gyaonId, name, text){
+  return new Promise(function(resolve, result){
+    db.promiseUpdateComment(gyaonId, name, text).then(function(){
+      debug("complete edit comment");
+      resolve();
     }).catch(function (err) { console.error(err.stack || err) });
   });
 }
