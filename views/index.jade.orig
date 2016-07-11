@@ -10,7 +10,7 @@ block content
     each sound in sounds
       tr.memo(key=sound.key)
         td.date #{format(sound.lastmodified)}
-          audio(src=endpoint+"/sounds/"+sound.key)
+          audio(src=endpoint+sound.key)
           div.progress.transparent
             div.determinate
             div.indeterminate
@@ -20,7 +20,14 @@ block content
           i.deleteButton.tiny.material-icons="clear"
         td.copy-button
           i.copyButton.tiny.material-icons="content_copy"
+<<<<<<< HEAD
 
+=======
+        div.progress.transparent
+          div.determinate
+          div.indeterminate
+        audio(src=endpoint+"/sounds/"+sound.key)
+>>>>>>> master
 
 block scripts
   link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')

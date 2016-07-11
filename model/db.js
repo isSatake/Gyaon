@@ -12,12 +12,6 @@ mongoose.connect(
 
 var soundSchema = mongoose.Schema({
   lastmodified: Date,
-  year: Number,
-  month: Number,
-  date: Number,
-  hour: Number,
-  minute: Number,
-  second: Number,
   user: String,
   name: String,
   key: String,
@@ -35,12 +29,6 @@ var createSound = function(s3Data, file){
   return new Sound({
     key: s3Data.key,
     lastmodified: Date.now(),
-    year: now.getFullYear(),
-    month: now.getMonth(),
-    date: now.getDate(),
-    hour: now.getHours(),
-    minute: now.getMinutes(),
-    second: now.getSeconds(),
     name: s3Data.key.split("/")[1],
     size: file.size,
     user: s3Data.key.split("/")[0]
@@ -53,6 +41,17 @@ exports.promiseGetSounds = function(gyaonId){
     Sound.find({user: gyaonId}).sort({lastmodified: -1}).exec(function(err, sounds){
       debug(sounds);
       err ? resolve(err) : resolve(sounds);
+    });
+  });
+}
+
+exports.promiseFind = function(gyaonId, name){
+  return new Promise(function(resolve, result){
+    debug(`find : ${gyaonId}/${name}`);
+    var _key = `${gyaonId}/${name}`;
+    Sound.find({key: _key}).exec(function(err, sound){
+      debug(sound);
+      err ? resolve(err) : resolve(sound);
     });
   });
 }
