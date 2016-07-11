@@ -3,7 +3,6 @@ var debug = require("debug")("db");
 
 mongoose.connect(
   process.env.MONGODB_URI
-  || "mongodb://heroku_hlhb8pkb:hv9mijd72nlonst1gnmdhrr6i@ds011785.mlab.com:11785/heroku_hlhb8pkb"
   , function(err){
     if(err) throw err;
     debug("connected mongo");
@@ -17,7 +16,7 @@ var soundSchema = mongoose.Schema({
   key: String,
   size: Number,
   time: Number,
-  memo: String,
+  comment: String,
   location: String
 });
 
