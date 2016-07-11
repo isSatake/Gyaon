@@ -33,17 +33,38 @@ $(function() {
       $recordButton.addClass("disabled");
     }
   }
+  var toDoubleDigits = function(num){
+    num += "";
+    if(num.length === 1){
+      num = "0" + num;
+    }
+    return num;
+  }
+  var formatDate = function(_date){
+    var date = new Date(_date);
+    var Y = date.getFullYear();
+    var M = toDoubleDigits(date.getMonth() + 1);
+    var D = toDoubleDigits(date.getDate());
+    var h = toDoubleDigits(date.getHours());
+    var m = toDoubleDigits(date.getMinutes());
+    return `${Y}-${M}-${D} ${h}:${m}`;
+  };
   // .memoを追加
   var createMemo = function(endpoint, sound){
     return $(
-        `<li class="memo z-depth-1 hoverable waves-effect" key="${sound.key}">`
-      +   `<span class="memoTitle">${sound.lastmodified}</span>`
-      +     `<div class="actions">`
-      +       `<i class="deleteButton tiny material-icons">clear</i>`
-      +       `<i class="copyButton tiny material-icons">content_copy</i>`
-      +     `</div>`
-      +   `<audio src="${endpoint}/sounds/${sound.key}" />`
-      + `</li>`
+        `<tr key="${sound.key}" class="memo">`
+      +   `<td class="date">`
+      +     `${formatDate(sound.lastmodified)}`
+      +     `<audio src="${endpoint}/sounds/${sound.key}" />`
+      +   `</td>`
+      +   `<td class="comment"><input type="text"></td>`
+      +   `<td class="delete-button">`
+      +     `<i class="deleteButton tiny material-icons">clear</i>`
+      +   `</td>`
+      +   `<td class="copy-button">`
+      +     `<i class="copyButton tiny material-icons">content_copy</i>`
+      +   `</td>`
+      + `</tr>`
     );
   }
   //音量メータ描画
