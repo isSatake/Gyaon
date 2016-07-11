@@ -95,7 +95,7 @@ router.post('/comment/:id/:name', function(req, res) {
 router.delete('/:id/:name', function(req, res){
   var gyaonId = req.params.id;
   var fileName = req.params.name;
-  debug(key);
+  debug(`delete ${gyaonId}/${fileName}`);
   model.promiseDeleteSound(gyaonId, fileName).then(function(){
     res.status(200).end();
   }).catch(function (err) { console.error(err.stack || err) });

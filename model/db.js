@@ -66,7 +66,7 @@ exports.promiseUpload = function(s3Data, fileName, file){
 
 exports.promiseDelete = function(gyaonId, name){
   return new Promise(function(resolve, result){
-    debug(`find : ${gyaonId}/${name}`);
+    debug(`delete : ${gyaonId}/${name}`);
     var _key = `${gyaonId}/${name}`;
     Sound.remove({key: _key}, function(err, result){
       debug("deleted");
