@@ -1,26 +1,31 @@
 extends layout
 
 block content
-  p="your id : " + id
+  p your id : #{id}
   div#recorder
     button#recordButton.btn-floating.btn-large.red.disabled
-      i.material-icons="mic_none"
+      i.material-icons mic_none
     canvas#volumeMeter("width=500 height=50")
-  ul#memos
+  table#memos.highlight
     each sound in sounds
-      li.memo.z-depth-1.hoverable.waves-effect(key=sound.key)
-        span.memoTitle=format(sound.lastmodified)
-        div.actions
+      tr.memo(key=sound.key)
+        td.date #{format(sound.lastmodified)}
+          audio(src=endpoint+sound.key)
+          div.progress.transparent
+            div.determinate
+            div.indeterminate
+        td.comment #{sound.memo}
+          input(type="text")
+        td.delete-button
           i.deleteButton.tiny.material-icons="clear"
+        td.copy-button
           i.copyButton.tiny.material-icons="content_copy"
-        div.progress.transparent
-          div.determinate
-          div.indeterminate
-        audio(src=endpoint+sound.key)
+
 
 block scripts
   link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')
   link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
   link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js')

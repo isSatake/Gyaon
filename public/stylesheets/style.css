@@ -7,17 +7,50 @@ a {
 }
 
 .memo {
-  width: 100px;
-  height: 100px;
-  margin: 10px;
-  padding: 10px;
-  list-style: none;
   cursor: pointer;
-  word-wrap: break-word;
+}
+
+#memos {
+  margin-top: 20px;
+}
+
+td {
+  font-size: 20px;
+  font-weight: 300;
+  padding: 5px;
+}
+
+.date {
+  width: 200px;
+  letter-spacing: 2px;
   position: relative;
 }
 
-.actions {
+td.delete-button, td.copy-button {
+  width: 10px;
+}
+
+.progress {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  margin: 0;
+}
+
+.determinate {
+  transition: none !important;
+}
+
+.comment input {
+  border: none;
+  font-size: 15px;
+  height: inherit;
+  margin-bottom: 8px;
+  padding-bottom: 2px;
+  font-weight: 300;
+}
+
+/*.actions {
   bottom: 5px;
   position: absolute;
 }
@@ -40,15 +73,4 @@ a {
   margin-top: 3px;
   margin-left: 15px;
 }
-
-.memo .progress {
-  width: 110%;
-  bottom: 0;
-  left: -10px;
-  position: absolute;
-  margin: 0;
-}
-
-.determinate {
-  transition: none !important;
-}
+*/
