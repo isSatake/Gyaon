@@ -7,6 +7,7 @@ var formidable = require('formidable');
 var debug = require("debug")("index");
 var cookie = require('cookie');
 var model = require('../model/model');
+var id = require('../util/id');
 var formatDate = require('../util/formatdate');
 
 var endPoint = process.env.BASE_URL || 'http://localhost:3000';
