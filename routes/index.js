@@ -8,7 +8,8 @@ var cookie = require('cookie');
 var model = require('../model/model');
 var formatDate = require('../util/formatdate');
 
-var endPoint = 'https://s3-us-west-2.amazonaws.com/gyaon/';
+var endPoint = process.env.BASE_URL || 'http://localhost:3000';
+var strageEndPoint = 'https://s3-us-west-2.amazonaws.com/gyaon';
 
 //create tmp folder
 var promiseUploadDir = function() {
@@ -31,11 +32,18 @@ router.get('/', function(req, res, next) {
   model.promiseGetSounds(gyaonId).then(function(result){
     res.render('index', {
       id: gyaonId,
-      endpoint: 'https://s3-us-west-2.amazonaws.com/gyaon/',
+      endpoint: endPoint,
       sounds: result,
       format: formatDate
     });
   }).catch(function (err) { console.error(err.stack || err) });
+});
+
+//音声データをリダイレクト
+router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
+  var gyaonId = req.params.id;
+  var fileName = req.params.name;
+  res.redirect(strageEndPoint + "/" + gyaonId + "/" + fileName);
 });
 
 /* 音声データ受け取り */

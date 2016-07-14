@@ -42,7 +42,7 @@ $(function() {
       +       `<i class="deleteButton tiny material-icons">clear</i>`
       +       `<i class="copyButton tiny material-icons">content_copy</i>`
       +     `</div>`
-      +   `<audio src="${endpoint + sound.key}" />`
+      +   `<audio src="${endpoint}/sounds/${sound.key}" />`
       + `</li>`
     );
   }
