@@ -45,17 +45,7 @@ router.get('/', function(req, res, next) {
 router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
   var gyaonId = req.params.id;
   var fileName = req.params.name;
-  model.promiseFindSound(gyaonId, fileName).then(function(sound){
-    if(sound.length == 0){
-      res.render('error', {
-        error: { status: 404 }
-      });
-    }else{
-      request(strageEndPoint + "/" + gyaonId + "/" + fileName).pipe(res);
-    }
-  }).catch(function (err) {
-    res.status(500).end();
-  });
+  res.redirect(strageEndPoint + "/" + gyaonId + "/" + fileName);
 });
 
 /* 音声データ受け取り */
