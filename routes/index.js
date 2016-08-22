@@ -58,6 +58,7 @@ router.post('/upload', function(req, res) {
     form.multiples = false;
     form.on("file", function(name, file) {
       model.promiseUploadSound(gyaonId, file).then(function(sound){
+        res.setHeader("Access-Control-Allow-Origin", "*");
         res.status(200).set("Content-Type", "application/json").json({
           endpoint: endPoint,
           object: sound
