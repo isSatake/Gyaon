@@ -99,6 +99,8 @@ $(function() {
     }
     update();
   }
+  //url末尾にgyaonIdを挿入
+  window.history.replaceState('', '', $('#gyaonId').text());
   // マイクのパーミッションをリクエスト
   requestPermission(function(localMediaStream) {
     setPermissionResolved(true);

@@ -41,6 +41,20 @@ router.get('/', function(req, res, next) {
   }).catch(function (err) { console.error(err.stack || err) });
 });
 
+router.get('/:id', function(req, res, next) {
+  var gyaonId = req.params.id;
+  res.cookie('gyaonId', gyaonId)
+  debug("gyaonId : " + gyaonId);
+  model.promiseGetSounds(gyaonId).then(function(result){
+    res.render('index', {
+      id: gyaonId,
+      endpoint: endPoint,
+      sounds: result,
+      format: formatDate
+    });
+  }).catch(function (err) { console.error(err.stack || err) });
+});
+
 //音声データをリダイレクト
 router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
   var gyaonId = req.params.id;
