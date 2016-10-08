@@ -24,11 +24,7 @@ var promiseUploadDir = function() {
 }
 
 /* GET home page. */
-//gyaon.herokuapp.com/:id
-//id==null && cookie.gyaonId==null →id生成
-//id==null && cookie.gyaonId!=null →cookie.gyaonIdを優先、表示(URLも)
 router.get('/', function(req, res, next) {
-  console.log(req.params.id);
   var gyaonId = (
     typeof req.cookies.gyaonId === "undefined"
     ? res.cookie('gyaonId', id.generate())
@@ -45,14 +41,9 @@ router.get('/', function(req, res, next) {
   }).catch(function (err) { console.error(err.stack || err) });
 });
 
-//id!=null →id指定、cookie変更
-router.get('/', function(req, res, next) {
-  console.log(req.params.id);
-  var gyaonId = (
-    typeof req.cookies.gyaonId === "undefined"
-    ? res.cookie('gyaonId', id.generate())
-    : req.cookies.gyaonId
-  );
+router.get('/:id', function(req, res, next) {
+  var gyaonId = req.params.id;
+  res.cookie('gyaonId', gyaonId)
   debug("gyaonId : " + gyaonId);
   model.promiseGetSounds(gyaonId).then(function(result){
     res.render('index', {
