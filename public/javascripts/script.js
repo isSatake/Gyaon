@@ -218,31 +218,16 @@ $(function() {
   $("audio").on("progress loadeddata play pause", function(e){
     var $this = $(this);
     var $determinate = $this.parent().find('.determinate');
-    var $indeterminate = $this.parent().find('.indeterminate');
     switch(e.type){
-      case "progress":
-      {
-        $determinate.hide();
-        $indeterminate.show();
-      }
-      break;
-      case "loadeddata":
-      {
-        $determinate.hide();
-        $indeterminate.hide();
-      }
-      break;
       case "play":
       {
         $determinate.show();
-        $indeterminate.hide();
         drawPlayTimeMeter($this, $determinate);
       }
       break;
       case "pause":
       {
         $determinate.hide();
-        $indeterminate.hide();
         window.cancelAnimationFrame(playTimeMeterRafID);
       }
       break;
