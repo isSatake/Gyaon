@@ -1,0 +1,1 @@
+console.error("Error: Cannot find module '/Users/stk/Dropbox/src/masuilab/Gyaon/assets/public/js/app.js' from '/Users/stk/Dropbox/src/masuilab/Gyaon'");
