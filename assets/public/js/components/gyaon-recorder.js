@@ -1,5 +1,9 @@
-import Debug from 'debug'
 import React from 'react'
+import Debug from 'debug'
+import { FloatingActionButton } from 'material-ui';
+import Mic from 'material-ui/svg-icons/av/mic'
+import MicOff from 'material-ui/svg-icons/av/mic-off'
+import MicNone from 'material-ui/svg-icons/av/mic-none'
 import Request from 'superagent'
 import AudioExporter from '../exporter'
 import AudioRecorder from '../recorder'
@@ -104,25 +108,30 @@ export default class GyaonRecorder extends React.Component {
     const text = this.state.recording ? "Stop" : "Rec"
     if(this.state.buttonDisabled){
       return (
-        <button disabled>
-        Rec
-        </button>
+        <FloatingActionButton
+          disabled={true}>
+          <MicOff />
+        </FloatingActionButton>
       )
     }
     if(this.state.recording){
       return (
         <div>
-          <button onMouseUp={::this.switchRecording}>
-          Recording
-          </button>
+          <FloatingActionButton
+            onMouseUp={::this.switchRecording}
+            backgroundColor={"red"}>
+            <Mic />
+          </FloatingActionButton>
           <Timer />
         </div>
       )
     }
     return (
-      <button onMouseDown={::this.switchRecording}>
-      Rec
-      </button>
+      <FloatingActionButton
+        onMouseDown={::this.switchRecording}
+        backgroundColor={"red"}>
+        <MicNone />
+      </FloatingActionButton>
     )
   }
 }
