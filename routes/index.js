@@ -23,17 +23,24 @@ var promiseUploadDir = function() {
   });
 }
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
   var gyaonId = (
     typeof req.cookies.gyaonId === "undefined"
     ? res.cookie('gyaonId', id.generate())
     : req.cookies.gyaonId
   );
-  debug("gyaonId : " + gyaonId);
+  res.render('index');
+});
+router.get('/:id', function(req, res, next) {
+  var gyaonId = req.params.id;
+  res.cookie('gyaonId', gyaonId)
+  res.render('index');
+});
+
+router.get('/sounds/:id', function(req, res){
+  //ユーザの音声リストを返却
   model.promiseGetSounds(gyaonId).then(function(result){
-    res.render('index', {
-      id: gyaonId,
+    res.send({
       endpoint: endPoint,
       sounds: result,
       format: formatDate
@@ -41,19 +48,36 @@ router.get('/', function(req, res, next) {
   }).catch(function (err) { console.error(err.stack || err) });
 });
 
-router.get('/:id', function(req, res, next) {
-  var gyaonId = req.params.id;
-  res.cookie('gyaonId', gyaonId)
-  debug("gyaonId : " + gyaonId);
-  model.promiseGetSounds(gyaonId).then(function(result){
-    res.render('index', {
-      id: gyaonId,
-      endpoint: endPoint,
-      sounds: result,
-      format: formatDate
-    });
-  }).catch(function (err) { console.error(err.stack || err) });
-});
+// router.get('/', function(req, res, next) {
+//   var gyaonId = (
+//     typeof req.cookies.gyaonId === "undefined"
+//     ? res.cookie('gyaonId', id.generate())
+//     : req.cookies.gyaonId
+//   );
+//   debug("gyaonId : " + gyaonId);
+//   model.promiseGetSounds(gyaonId).then(function(result){
+//     res.render('index', {
+//       id: gyaonId,
+//       endpoint: endPoint,
+//       sounds: result,
+//       format: formatDate
+//     });
+//   }).catch(function (err) { console.error(err.stack || err) });
+// });
+//
+// router.get('/:id', function(req, res, next) {
+//   var gyaonId = req.params.id;
+//   res.cookie('gyaonId', gyaonId)
+//   debug("gyaonId : " + gyaonId);
+//   model.promiseGetSounds(gyaonId).then(function(result){
+//     res.render('index', {
+//       id: gyaonId,
+//       endpoint: endPoint,
+//       sounds: result,
+//       format: formatDate
+//     });
+//   }).catch(function (err) { console.error(err.stack || err) });
+// });
 
 //音声データをリダイレクト
 router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
@@ -71,7 +95,9 @@ router.post('/upload', function(req, res) {
     form.uploadDir = "./public/tmp";
     form.multiples = false;
     form.on("file", function(name, file) {
+      debug(file);
       model.promiseUploadSound(gyaonId, file).then(function(sound){
+        debug(sound);
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.status(200).set("Content-Type", "application/json").json({
           endpoint: endPoint,

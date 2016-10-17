@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www --debug",
     "build": "watchify --verbose --debug assets/public/js/app.js --transform babelify --outfile public/javascripts/app.js"
   },
   "author": "",

@@ -1,71 +1,64 @@
-(function() {
-  navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia ||
-    navigator.msGetUserMedia);
-
-  function AudioRecorder(opts) {
-    var o = this;
-    o.state = AudioRecorder.STATE_PREPARE;
-    o.audioContext = opts.audioContext || new AudioContext();
-    o.bufferSize = opts.bufferSize || 4096;
-    o.localMediaStream = null;
-    o.audioBufferArray = [];
-  };
-  AudioRecorder.STATE_PREPARE = "STATE_PREPARE";
-  AudioRecorder.STATE_RECORDING = "STATE_RECORDING";
-  AudioRecorder.STATE_FINISHED = "STATE_FINISHED";
-  AudioRecorder.prototype.start = function(localMediaStream) {
-    var o = this;
-    console.log(o);
-    if (o.state === AudioRecorder.STATE_RECORDING) {
-      throw new Error("state is RECORDING: " + o.state);
+export default class AudioRecorder {
+//   navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+//     navigator.mozGetUserMedia ||
+//     navigator.msGetUserMedia);
+  constructor(opts) {
+    this.state = this.STATE_PREPARE;
+    this.audioContext = opts.audioContext || new AudioContext();
+    this.bufferSize = opts.bufferSize || 4096;
+    this.localMediaStream = null;
+    this.audioBufferArray = [];
+    this.STATE_PREPARE = "STATE_PREPARE";
+    this.STATE_RECORDING = "STATE_RECORDING"
+    this.STATE_FINISHED = "STATE_FINISHED"
+  }
+  start(localMediaStream){
+    if (this.state === this.STATE_RECORDING) {
+      throw new Error("state is RECORDING: " + this.state);
     }
     if (!localMediaStream) {
       throw new Error("mediastream is null or undefined");
     }
-    o.localMediaStream = localMediaStream;
+    this.localMediaStream = localMediaStream;
     var mediaStreamSource =
-      o.audioContext.createMediaStreamSource(localMediaStream);
+      this.audioContext.createMediaStreamSource(localMediaStream);
     var scriptProcessor =
-      o.audioContext.createScriptProcessor(o.bufferSize, 1, 1);
+      this.audioContext.createScriptProcessor(this.bufferSize, 1, 1);
     mediaStreamSource.connect(scriptProcessor);
-    o.audioBufferArray = [];
-    scriptProcessor.onaudioprocess = function(event) {
+    this.audioBufferArray = [];
+    scriptProcessor.onaudioprocess = (event) => {
         var channel = event.inputBuffer.getChannelData(0);
-        o.audioBufferArray.push(new Float32Array(channel));    };
+        this.audioBufferArray.push(new Float32Array(channel));    };
     //この接続でonaudioprocessが起動
-    scriptProcessor.connect(o.audioContext.destination);
-    o.scriptProcessor = scriptProcessor;
-    o.state = AudioRecorder.STATE_RECORDING;
+    scriptProcessor.connect(this.audioContext.destination);
+    this.scriptProcessor = scriptProcessor;
+    this.state = this.STATE_RECORDING;
   };
-  AudioRecorder.prototype.stop = function() {
-    var o = this;
-    o.scriptProcessor.disconnect();
-    if (o.localMediaStream) {
-      var stop = o.localMediaStream.stop;
+  stop() {
+    this.scriptProcessor.disconnect();
+    if (this.localMediaStream) {
+      var stop = this.localMediaStream.stop;
       stop && stop();
-      o.localMediaStream = null;
+      this.localMediaStream = null;
     }
-    o.state = AudioRecorder.STATE_FINISHED;
+    this.state = this.STATE_FINISHED;
   };
-  AudioRecorder.prototype.getAudioBufferArray = function() {
-    var o = this;
-    return o.audioBufferArray;
+  getAudioBufferArray() {
+    return this.audioBufferArray;
   };
-  AudioRecorder.prototype.getAudioBuffer = function() {
-    var o = this;
-    var buffer = o.audioContext.createBuffer(
+  getAudioBuffer() {
+    var buffer = this.audioContext.createBuffer(
       1,
-      o.audioBufferArray.length * o.bufferSize,
-      o.audioContext.sampleRate
+      this.audioBufferArray.length * this.bufferSize,
+      this.audioContext.sampleRate
     );
-    var channel = buffer.getChannelData(0);
-    for (var i = 0, imax = o.audioBufferArray.length; i < imax; i = (i + 1) | 0) {
-      for (var j = 0, jmax = o.bufferSize; j < jmax; j = (j + 1) | 0) {
-        channel[i * o.bufferSize + j] = o.audioBufferArray[i][j];
+    const channel = buffer.getChannelData(0);
+    for (var i = 0, imax = this.audioBufferArray.length; i < imax; i = (i + 1) | 0) {
+      for (var j = 0, jmax = this.bufferSize; j < jmax; j = (j + 1) | 0) {
+        channel[i * this.bufferSize + j] = this.audioBufferArray[i][j];
       }
     }
     return buffer;
   };
-  window.AudioRecorder = AudioRecorder;
-}).call(this);
+  // window.AudioRecorder = AudioRecorder;
+}
