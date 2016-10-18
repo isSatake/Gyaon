@@ -19,6 +19,9 @@ export default class GyaonRecorder extends React.Component {
       recording: false,
       buttonDisabled: false
     }
+    this.gyaonId = this.props.gyaonId
+
+    debug(this.gyaonId)
 
     navigator.getUserMedia = (navigator.getUserMedia ||
       navigator.webkitGetUserMedia ||
@@ -81,7 +84,7 @@ export default class GyaonRecorder extends React.Component {
       const formData = new FormData()
       formData.append("file", blob, "hoge.wav")
       Request
-        .post('/upload')
+        .post('/upload/' + this.gyaonId)
         .set('form')
         .send(formData)
         .then(this.onUpload)

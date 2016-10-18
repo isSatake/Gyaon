@@ -26,6 +26,7 @@ var Sound = mongoose.model('Sound', soundSchema);
 
 var createSound = function(s3Data, file){
   debug("createSound");
+  debug(s3Data);
   var now = new Date;
   return new Sound({
     key: s3Data.key,

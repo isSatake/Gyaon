@@ -31,19 +31,19 @@ router.get('/', function(req, res, next) {
   );
   res.render('index');
 });
-router.get('/:id', function(req, res, next) {
-  var gyaonId = req.params.id;
+router.get('/:gyaonId', function(req, res, next) {
+  var gyaonId = req.params.gyaonId;
   res.cookie('gyaonId', gyaonId)
   res.render('index');
 });
 
-router.get('/sounds/:id', function(req, res){
+router.get('/sounds/:gyaonId', function(req, res){
   //ユーザの音声リストを返却
+  var gyaonId = req.params.gyaonId
   model.promiseGetSounds(gyaonId).then(function(result){
     res.send({
       endpoint: endPoint,
-      sounds: result,
-      format: formatDate
+      sounds: result
     });
   }).catch(function (err) { console.error(err.stack || err) });
 });
@@ -87,8 +87,9 @@ router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
 });
 
 /* 音声データ受け取り */
-router.post('/upload', function(req, res) {
-  var gyaonId = req.cookies.gyaonId;
+router.post('/upload/:gyaonId', function(req, res) {
+  //TODO Cookieでやり取りしたくないが,Androidクライアントをfixしないといけない
+  var gyaonId = typeof req.params.gyaonId === undefined ? req.cookies.gyaonId : req.params.gyaonId;
   promiseUploadDir().then(function() {
     var form = new formidable.IncomingForm();
     form.encoding = "utf-8";
