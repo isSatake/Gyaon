@@ -9,10 +9,15 @@ const error = Debug('onmouse-audio:error')
 export default class OnMouseAudio extends ReactAudioPlayer {
   constructor(props){
     super(props)
-    this.state = {hovered: false}
+    this.state = {
+      hovered: false,
+      duration: {
+        sec: NaN,
+        min: NaN
+      }
+    }
     this.date = formatDate(this.props.data.lastmodified)
     this.src = this.props.endPoint + '/sounds/' + this.props.data.key
-      debug(this.audioEl.duration)
   }
   onMouseEnter(){
     this.setState({hovered: true})
@@ -23,8 +28,20 @@ export default class OnMouseAudio extends ReactAudioPlayer {
     this.pause()
   }
   play(){
-    debug(this.audioEl.duration)
     this.audioEl.play()
+  }
+  onCanPlay(){
+    const durationSec = Math.round(this.audioEl.duration)
+    const sec = durationSec % 60
+    const min = Math.round(durationSec / 60)
+    const displaySec = sec < 10 ? `0${sec}` : sec
+    const displayMin = min < 10 ? `0${min}` : min
+    this.setState({
+      duration: {
+        sec: displaySec,
+        min: displayMin
+      }
+    })
   }
   pause(){
     this.audioEl.pause()
@@ -41,7 +58,6 @@ export default class OnMouseAudio extends ReactAudioPlayer {
         onMouseLeave={::this.onMouseLeave}
         style={this.props.style}
       >
-        <td className={"date"}>{this.date}</td>
         <audio
           className="react-audio-player"
           src={this.src}
@@ -49,9 +65,12 @@ export default class OnMouseAudio extends ReactAudioPlayer {
           preload={this.props.preload}
           ref={(ref) => this.audioEl = ref}
           onPlay={this.onPlay}
+          onCanPlay={::this.onCanPlay}
         >
           {incompatibilityMessage}
         </audio>
+        <td className={"date"}>{this.date}</td>
+        <td className={"duration"}>{this.state.duration.min}:{this.state.duration.sec}</td>
       </tr>
       )
   }
