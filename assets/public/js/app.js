@@ -20,8 +20,6 @@ class App extends React.Component {
           </p>
           <GyaonRecorder gyaonId={this.gyaonId}/>
           <GyaonContainer gyaonId={this.gyaonId}/>
-          <div id={'gyaonContainer'} style={{ marginTop: '20px' }}>
-          </div>
         </div>
       </MuiThemeProvider>
     )

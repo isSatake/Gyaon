@@ -25,23 +25,53 @@ export default class GyaonContainer extends React.Component {
 
     Request
       .get('/sounds/' + this.gyaonId)
-      .then(onInit)
+      .then(::this.onInit)
       .catch(error)
   }
   onInit(data){
+    debug(data)
+    /**********************************
+      data: {
+        body: {
+          endpoint: {},
+          sounds: [
+            0: {
+              key: String,
+              lastmodified: Date,
+              name: String,
+              user: String
+            },
+            1: {}, ...
+          ]
+        }
+      }
+     **********************************/
     this.setState({
-      sounds: data.list
+      endPoint: data.body.endpoint,
+      sounds: data.body.sounds
     })
   }
   render(){
     const nodes = this.state.sounds.map((sound) => {
-      return <Gyaon data={sound} />
+      return(
+        <Gyaon
+          endPoint={this.state.endPoint}
+          data={sound}
+        />
+      )
     })
 
     return(
-      <div>
-        {nodes}
-      </div>
+      <table
+        id={'gyaonContainer'}
+        style={{
+          marginTop: '20px',
+          width: '100%'
+        }}>
+        <tbody>
+          {nodes}
+        </tbody>
+      </table>
     )
   }
 }
