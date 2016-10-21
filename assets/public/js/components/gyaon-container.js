@@ -10,7 +10,7 @@ socket.ioでアップロード時にその音声を取得
 import React from 'react'
 import Debug from 'debug'
 import Request from 'superagent'
-import Gyaon from './gyaon'
+import GyaonAudio from './gyaon-audio'
 
 const debug = Debug('gyaon-container:debug')
 const error = Debug('gyaon-container:error')
@@ -54,7 +54,7 @@ export default class GyaonContainer extends React.Component {
   render(){
     const nodes = this.state.sounds.map((sound) => {
       return(
-        <Gyaon
+        <GyaonAudio
           endPoint={this.state.endPoint}
           data={sound}
         />
@@ -65,6 +65,7 @@ export default class GyaonContainer extends React.Component {
       <table
         id={'gyaonContainer'}
         style={{
+          borderCollapse: 'collapse',
           marginTop: '20px',
           width: '100%'
         }}>

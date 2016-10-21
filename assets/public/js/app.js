@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import SocketIO from 'socket.io-client'
 import Cookie from 'cookie-cutter'
 import { getMuiTheme } from 'material-ui/styles';
 import { MuiThemeProvider } from 'material-ui/styles';
