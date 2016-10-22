@@ -146,6 +146,31 @@ $(function() {
     });
     console.log(blob);
   });
+  //スペースキーで録音
+  var isRec = false;
+  $(window).on('keydown keyup', function(e){
+    if(e.keyCode != 82){
+      return;
+    }
+    switch(e.type){
+      case 'keydown':
+      {
+        if(isRec){
+          return;
+        }
+        isRec = true;
+        $recordButton.trigger('mousedown');
+      }
+      break;
+      case 'keyup':
+      {
+        isRec = false;
+        $recordButton.trigger('mouseup');
+      }
+      break;
+      default:
+    }
+  });
   // 録音一覧
   $(document).on("mouseenter mouseleave", ".memo", function(e) {
     var $this = $(this);
