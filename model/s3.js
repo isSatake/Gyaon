@@ -1,6 +1,8 @@
 var AWS = require('aws-sdk');
 var debug = require("debug")("s3");
 
+require('dotenv').config();
+
 AWS.config.accessKeyId = process.env.accessKeyId;
 AWS.config.secretAccessKey = process.env.secretAccessKey;
 AWS.config.region = process.env.region;

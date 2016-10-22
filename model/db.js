@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var debug = require("debug")("db");
 
+require('dotenv').config();
+
 mongoose.connect(
   process.env.MONGODB_URI
   , function(err){
