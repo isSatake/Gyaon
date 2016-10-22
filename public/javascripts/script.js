@@ -3,6 +3,7 @@ $(function() {
   navigator.mozGetUserMedia ||
   navigator.msGetUserMedia);
   var $recordButton = $("#recordButton");
+  var isInputComment = false;
   var permissionResolved = false;
   var audioContext = new AudioContext();
   var exporter = new AudioExporter();
@@ -146,10 +147,10 @@ $(function() {
     });
     console.log(blob);
   });
-  //スペースキーで録音
+  //Rキーで録音
   var isRec = false;
   $(window).on('keydown keyup', function(e){
-    if(e.keyCode != 82){
+    if(e.keyCode != 82 || isInputComment){
       return;
     }
     switch(e.type){
@@ -260,7 +261,12 @@ $(function() {
     }
   });
   //コメント
-  $(document).on("blur", ".comment", function(e){
+  $(document).on("focusin focusout", ".comment", function(e){
+    if(e.type == "focusin"){
+      isInputComment = true;
+      return;
+    }
+    isInputComment = false;
     var $this = $(this);
     var key = $this.parent().attr('key');
     var text = $this.find('input')[0].value;
