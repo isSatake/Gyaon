@@ -3,11 +3,10 @@ var router = express.Router();
 var request = require('request');
 var fs = require('fs');
 var path = require('path');
+var shortid = require('shortid');
 var formidable = require('formidable');
 var debug = require("debug")("index");
-var cookie = require('cookie');
 var model = require('../model/model');
-var id = require('../util/id');
 var formatDate = require('../util/formatdate');
 
 var endPoint = process.env.BASE_URL || 'http://localhost:3000';
@@ -25,11 +24,7 @@ var promiseUploadDir = function() {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  var gyaonId = (
-    typeof req.cookies.gyaonId === "undefined"
-    ? res.cookie('gyaonId', id.generate())
-    : req.cookies.gyaonId
-  );
+  var gyaonId = shortid.generate();
   debug("gyaonId : " + gyaonId);
   model.promiseGetSounds(gyaonId).then(function(result){
     res.render('index', {
@@ -43,7 +38,6 @@ router.get('/', function(req, res, next) {
 
 router.get('/:id', function(req, res, next) {
   var gyaonId = req.params.id;
-  res.cookie('gyaonId', gyaonId)
   debug("gyaonId : " + gyaonId);
   model.promiseGetSounds(gyaonId).then(function(result){
     res.render('index', {
@@ -64,22 +58,20 @@ router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
 
 /* 音声データ受け取り */
 router.post('/upload', function(req, res) {
-  var gyaonId = req.cookies.gyaonId;
   promiseUploadDir().then(function() {
     var form = new formidable.IncomingForm();
     form.encoding = "utf-8";
     form.uploadDir = "./public/tmp";
-    form.multiples = false;
-    form.on("file", function(name, file) {
-      model.promiseUploadSound(gyaonId, file).then(function(sound){
+    form.parse(req, function(err, fields, files){
+      debug(fields);
+      model.promiseUploadSound(fields.gyaonId, files.file).then(function(sound){
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.status(200).set("Content-Type", "application/json").json({
           endpoint: endPoint,
           object: sound
         }).end();
       });
-    });
-    form.parse(req);
+    })
     form.on('error', function(err){
       console.error(err.stack || err);
     });
