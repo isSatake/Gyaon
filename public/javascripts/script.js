@@ -133,6 +133,7 @@ $(function() {
     );
     // file名は使ってない
     var formData = new FormData();
+    formData.append("gyaonId", $('#gyaonId').text());
     formData.append("file", blob, "hoge.wav");
     $.ajax("/upload", {
       method: "POST",
