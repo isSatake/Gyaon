@@ -1,13 +1,15 @@
-var express = require('express');
-var router = express.Router();
-var request = require('request');
-var fs = require('fs');
-var path = require('path');
-var shortid = require('shortid');
-var formidable = require('formidable');
-var debug = require("debug")("index");
-var model = require('../model/model');
-var formatDate = require('../util/formatdate');
+var express     = require('express');
+var router      = express.Router();
+
+var request     = require('request');
+var fs          = require('fs');
+var path        = require('path');
+var shortid     = require('shortid');
+var formidable  = require('formidable');
+var debug       = require("debug")("index");
+
+var model       = require('../model/model');
+var formatDate  = require('../util/formatdate');
 
 var endPoint = process.env.BASE_URL || 'http://localhost:3000';
 var strageEndPoint = 'https://s3-us-west-2.amazonaws.com/gyaon';
@@ -70,6 +72,8 @@ router.post('/upload', function(req, res) {
           endpoint: endPoint,
           object: sound
         }).end();
+        //socket.ioで通知
+        req.app.get('socket.io').of('/post').emit(fields.gyaonId, { endpoint: endPoint ,object: sound });
       });
     })
     form.on('error', function(err){
@@ -93,9 +97,11 @@ router.post('/comment/:id/:name', function(req, res) {
 router.delete('/:id/:name', function(req, res){
   var gyaonId = req.params.id;
   var fileName = req.params.name;
-  debug(`delete ${gyaonId}/${fileName}`);
+  var key = `${gyaonId}/${fileName}`;
+  debug(`delete ${key}`);
   model.promiseDeleteSound(gyaonId, fileName).then(function(){
     res.status(200).end();
+    req.app.get('socket.io').of('/delete').emit(gyaonId, key);
   }).catch(function (err) { console.error(err.stack || err) });
 });
 
