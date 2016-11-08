@@ -1,23 +1,29 @@
 $(function() {
-  navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
-  navigator.mozGetUserMedia ||
-  navigator.msGetUserMedia);
-  var $recordButton = $("#recordButton");
-  var isInputComment = false;
-  var permissionResolved = false;
-  var audioContext = new AudioContext();
-  var exporter = new AudioExporter();
-  var recorder = new AudioRecorder({
-    audioContext: audioContext
-  });
+  navigator.getUserMedia  = ( navigator.getUserMedia ||
+                              navigator.webkitGetUserMedia ||
+                              navigator.mozGetUserMedia ||
+                              navigator.msGetUserMedia );
+
+  var $recordButton       = $("#recordButton");
+  var isInputComment      = false;
+  var permissionResolved  = false;
+
+  var audioContext        = new AudioContext();
+  var exporter            = new AudioExporter();
+  var recorder            = new AudioRecorder({ audioContext: audioContext });
   var localMediaStream;
-  var volumeMeterCanvas = $("#volumeMeter");
-  var canvasContext = document.getElementById("volumeMeter").getContext("2d");
-  var canvasWidth = volumeMeterCanvas.attr("width");
-  var canvasHeight = volumeMeterCanvas.attr("height");
-  var volumeMeter = createAudioMeter(audioContext);
+
+  var volumeMeterCanvas   = $("#volumeMeter");
+  var canvasContext       = document.getElementById("volumeMeter").getContext("2d");
+  var canvasWidth         = volumeMeterCanvas.attr("width");
+  var canvasHeight        = volumeMeterCanvas.attr("height");
+  var volumeMeter         = createAudioMeter(audioContext);
   var volumeMeterRafID;
   var playTimeMeterRafID;
+
+  var postSound = io.connect('/post');
+  var deleteSound = io.connect('/delete');
+
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
     navigator.getUserMedia({
@@ -25,6 +31,7 @@ $(function() {
       audio: true
     }, success, fail);
   };
+
   // 録音のパーミッションの状態を設定する
   var setPermissionResolved = function(resolved) {
     permissionResolved = resolved;
@@ -34,6 +41,7 @@ $(function() {
       $recordButton.addClass("disabled");
     }
   }
+
   var toDoubleDigits = function(num){
     num += "";
     if(num.length === 1){
@@ -50,9 +58,10 @@ $(function() {
     var m = toDoubleDigits(date.getMinutes());
     return `${Y}-${M}-${D} ${h}:${m}`;
   };
+
   // .memoを追加
   var createMemo = function(endpoint, sound){
-    return $(
+    var $memo = $(
         `<tr key="${sound.key}" class="memo">`
       +   `<td class="date">`
       +     `${formatDate(sound.lastmodified)}`
@@ -67,7 +76,11 @@ $(function() {
       +   `</td>`
       + `</tr>`
     );
+    $memo.find("audio")[0].play();
+
+    return $memo;
   }
+
   //音量メータ描画
   var drawVolumeMeter = function() {
     canvasContext.clearRect(0,0,canvasWidth,canvasHeight);
@@ -100,8 +113,10 @@ $(function() {
     }
     update();
   }
+
   //url末尾にgyaonIdを挿入
   window.history.replaceState('', '', $('#gyaonId').text());
+
   // マイクのパーミッションをリクエスト
   requestPermission(function(localMediaStream) {
     setPermissionResolved(true);
@@ -109,6 +124,7 @@ $(function() {
     setPermissionResolved(false);
     console.error(err);
   });
+
   // 録音ボタン
   $recordButton.mousedown(function(e) {
     requestPermission(function(localMediaStream) {
@@ -125,8 +141,6 @@ $(function() {
     var src = audioContext.createBufferSource();
     var buf = recorder.getAudioBuffer();
     src.buffer = buf;
-    src.connect(audioContext.destination);
-    src.start();
     var blob = exporter.exportBlob(
       recorder.getAudioBufferArray(),
       audioContext.sampleRate
@@ -142,12 +156,13 @@ $(function() {
       contentType: false
     }).done(function(done) {
       console.log(done);
-      $("#memos").prepend(createMemo(done.endpoint, done.object));
+      // $("#memos").prepend(createMemo(done.endpoint, done.object));
     }).fail(function(e) {
       alert("export failed");
     });
     console.log(blob);
   });
+
   //Rキーで録音
   var isRec = false;
   $(window).on('keydown keyup', function(e){
@@ -173,6 +188,7 @@ $(function() {
       default:
     }
   });
+
   // 録音一覧
   $(document).on("mouseenter mouseleave", ".memo", function(e) {
     var $this = $(this);
@@ -197,6 +213,7 @@ $(function() {
       default:
     }
   });
+
   // 削除
   $(document).on("click", ".deleteButton", function(){
     if(window.confirm('削除しますか?')){
@@ -213,6 +230,7 @@ $(function() {
       });
     }
   });
+
   // URLコピー
   $(document).on("mouseenter mouseleave", ".copyButton", function(e){
     var $this = $(this);
@@ -232,6 +250,7 @@ $(function() {
       default:
     }
   });
+
   //ファイル名クリック→URLをクリップボードにコピー
   var clipboard = new Clipboard(".copyButton");
   clipboard.on('success', function(e) {
@@ -241,6 +260,7 @@ $(function() {
   clipboard.on('error', function(e) {
     console.log("audio url copy failed");
   });
+
   //プログレスバー
   $("audio").on("progress loadeddata play pause", function(e){
     var $this = $(this);
@@ -261,6 +281,7 @@ $(function() {
       default:
     }
   });
+
   //コメント
   $(document).on("focusin focusout", ".comment", function(e){
     if(e.type == "focusin"){
@@ -279,5 +300,15 @@ $(function() {
     }).fail(function(e) {
       alert("save failed");
     });
+  });
+
+  //アップロード,削除されたら同期
+  postSound.on($('#gyaonId').text(), function (data) {
+    console.log(`post: ${data.object.key}`);
+    $("#memos").prepend(createMemo(data.endpoint, data.object));
+  });
+  deleteSound.on($('#gyaonId').text(), function (data) {
+    console.log(`delete: ${data}`);
+    $("[key='" + data + "']").remove();
   });
 });
