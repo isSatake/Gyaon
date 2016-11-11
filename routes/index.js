@@ -105,4 +105,11 @@ router.delete('/:id/:name', function(req, res){
   }).catch(function (err) { console.error(err.stack || err) });
 });
 
+/* herokuを寝かさない */
+if(process.env.IS_HEROKU){
+  setInterval(function(){
+    request.head(endPoint)
+  }, 1000 * 60 * 20)
+}
+
 module.exports = router;
