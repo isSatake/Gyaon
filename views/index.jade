@@ -11,7 +11,7 @@ block content
     each sound in sounds
       tr.memo(key=sound.key)
         td.date #{format(sound.lastmodified)}
-          audio(src=endpoint+"/sounds/"+sound.key)
+          audio(src=endpoint+"/sounds/"+sound.key, preload="metadata")
           div.progress.transparent
             div.determinate
         td.comment #{sound.memo}
