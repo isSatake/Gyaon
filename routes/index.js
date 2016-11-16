@@ -3,11 +3,10 @@ var router = express.Router();
 var request = require('request');
 var fs = require('fs');
 var path = require('path');
+var shortid = require('shortid');
 var formidable = require('formidable');
 var debug = require("debug")("index");
-var cookie = require('cookie');
 var model = require('../model/model');
-var id = require('../util/id');
 var formatDate = require('../util/formatdate');
 
 var endPoint = process.env.BASE_URL || 'http://localhost:3000';
@@ -24,16 +23,12 @@ var promiseUploadDir = function() {
 }
 
 router.get('/', function(req, res, next) {
-  var gyaonId = (
-    typeof req.cookies.gyaonId === "undefined"
-    ? res.cookie('gyaonId', id.generate())
-    : req.cookies.gyaonId
-  );
-  res.render('index');
+  var gyaonId = shortid.generate();
+  res.redirect('/' + gyaonId);
 });
+
 router.get('/:gyaonId', function(req, res, next) {
   var gyaonId = req.params.gyaonId;
-  res.cookie('gyaonId', gyaonId)
   res.render('index');
 });
 
@@ -48,37 +43,6 @@ router.get('/sounds/:gyaonId', function(req, res){
   }).catch(function (err) { console.error(err.stack || err) });
 });
 
-// router.get('/', function(req, res, next) {
-//   var gyaonId = (
-//     typeof req.cookies.gyaonId === "undefined"
-//     ? res.cookie('gyaonId', id.generate())
-//     : req.cookies.gyaonId
-//   );
-//   debug("gyaonId : " + gyaonId);
-//   model.promiseGetSounds(gyaonId).then(function(result){
-//     res.render('index', {
-//       id: gyaonId,
-//       endpoint: endPoint,
-//       sounds: result,
-//       format: formatDate
-//     });
-//   }).catch(function (err) { console.error(err.stack || err) });
-// });
-//
-// router.get('/:id', function(req, res, next) {
-//   var gyaonId = req.params.id;
-//   res.cookie('gyaonId', gyaonId)
-//   debug("gyaonId : " + gyaonId);
-//   model.promiseGetSounds(gyaonId).then(function(result){
-//     res.render('index', {
-//       id: gyaonId,
-//       endpoint: endPoint,
-//       sounds: result,
-//       format: formatDate
-//     });
-//   }).catch(function (err) { console.error(err.stack || err) });
-// });
-
 //音声データをリダイレクト
 router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
   var gyaonId = req.params.id;
@@ -88,16 +52,13 @@ router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
 
 /* 音声データ受け取り */
 router.post('/upload/:gyaonId', function(req, res) {
-  //TODO Cookieでやり取りしたくないが,Androidクライアントをfixしないといけない
-  var gyaonId = typeof req.params.gyaonId === undefined ? req.cookies.gyaonId : req.params.gyaonId;
   promiseUploadDir().then(function() {
     var form = new formidable.IncomingForm();
     form.encoding = "utf-8";
     form.uploadDir = "./public/tmp";
-    form.multiples = false;
-    form.on("file", function(name, file) {
-      debug(file);
-      model.promiseUploadSound(gyaonId, file).then(function(sound){
+    form.parse(req, function(err, fields, files){
+      debug(fields);
+      model.promiseUploadSound(fields.gyaonId, files.file).then(function(sound){
         debug(sound);
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.status(200).set("Content-Type", "application/json").json({
@@ -106,7 +67,6 @@ router.post('/upload/:gyaonId', function(req, res) {
         }).end();
       });
     });
-    form.parse(req);
     form.on('error', function(err){
       console.error(err.stack || err);
     });

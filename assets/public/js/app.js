@@ -9,7 +9,7 @@ import GyaonRecorder from './components/gyaon-recorder.js'
 class App extends React.Component {
   constructor(props){
     super(props)
-    this.gyaonId = Cookie.get('gyaonId')
+    this.gyaonId = window.location.pathname.substring(1);
   }
   render(){
     return(

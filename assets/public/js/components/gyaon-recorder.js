@@ -82,6 +82,7 @@ export default class GyaonRecorder extends React.Component {
 
       //アップロード
       const formData = new FormData()
+      formData.append("gyaonId", this.gyaonId)
       formData.append("file", blob, "hoge.wav")
       Request
         .post('/upload/' + this.gyaonId)
