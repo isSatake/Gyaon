@@ -18,11 +18,7 @@ export default class GyaonAudio extends ReactAudioPlayer {
     super(props)
     this.state = {
       comment: this.props.data.comment,
-      hovered: false,
-      duration: {
-        sec: NaN,
-        min: NaN
-      }
+      hovered: false
     }
     this.buttonStyle = {width: '15px'}
     this.date = formatDate(this.props.data.lastmodified)
@@ -47,10 +43,7 @@ export default class GyaonAudio extends ReactAudioPlayer {
     const displaySec = sec < 10 ? `0${sec}` : sec
     const displayMin = min < 10 ? `0${min}` : min
     this.setState({
-      duration: {
-        sec: displaySec,
-        min: displayMin
-      },
+      duration: displayMin + ':' + displaySec,
       open: false
     })
   }
@@ -95,7 +88,7 @@ export default class GyaonAudio extends ReactAudioPlayer {
           className="react-audio-player"
           src={this.src}
           autoPlay={this.props.autoPlay}
-          preload={this.props.preload}
+          preload="metadata"
           ref={(ref) => this.audioEl = ref}
           onPlay={this.onPlay}
           onCanPlay={::this.onCanPlay}>
@@ -110,8 +103,13 @@ export default class GyaonAudio extends ReactAudioPlayer {
             }}
             onBlur={::this.onEditComment} />
         </td>
-        <td className={"duration"}>{this.state.duration.min}:{this.state.duration.sec}</td>
-        <td className={"delete-button"}
+        <td
+          className={"duration"}
+          style={{ width: '50px' }}>
+          {this.state.duration}
+        </td>
+        <td
+          className={"delete-button"}
           onClick={::this.deleteAudio}>
           <Clear style= {this.buttonStyle} />
         </td>
