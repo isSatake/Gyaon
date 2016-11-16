@@ -10,7 +10,14 @@ import GyaonRecorder from './components/gyaon-recorder.js'
 class App extends React.Component {
   constructor(props){
     super(props)
-    this.gyaonId = window.location.pathname.substring(1);
+    this.gyaonId = window.location.pathname.substring(1)
+    this.state = ({canRecord: true})
+  }
+  startEditComment(){
+    this.setState({canRecord: false})
+  }
+  finishEditComment(){
+    this.setState({canRecord: true})
   }
   render(){
     return(
@@ -19,8 +26,13 @@ class App extends React.Component {
           <p>
             id: {this.gyaonId}
           </p>
-          <GyaonRecorder gyaonId={this.gyaonId}/>
-          <GyaonContainer gyaonId={this.gyaonId}/>
+          <GyaonRecorder
+            gyaonId={this.gyaonId}
+            canRecord={this.state.canRecord}/>
+          <GyaonContainer
+            gyaonId={this.gyaonId}
+            startEditComment={::this.startEditComment}
+            finishEditComment={::this.finishEditComment}/>
         </div>
       </MuiThemeProvider>
     )

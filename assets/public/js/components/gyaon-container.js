@@ -51,12 +51,20 @@ export default class GyaonContainer extends React.Component {
       sounds: data.body.sounds
     })
   }
+  startEditComment(){
+    this.props.startEditComment()
+  }
+  finishEditComment(){
+    this.props.finishEditComment()
+  }
   render(){
     const nodes = this.state.sounds.map((sound) => {
       return(
         <GyaonAudio
           endPoint={this.state.endPoint}
           data={sound}
+          startEditComment={::this.startEditComment}
+          finishEditComment={::this.finishEditComment}
         />
       )
     })

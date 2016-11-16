@@ -17,9 +17,11 @@ export default class GyaonRecorder extends React.Component {
     super(props)
     this.state = {
       recording: false,
-      buttonDisabled: false
+      buttonDisabled: false,
+      keydown: false
     }
     this.gyaonId = this.props.gyaonId
+    this.recordKeyCode = 82
 
     debug(this.gyaonId)
 
@@ -47,6 +49,10 @@ export default class GyaonRecorder extends React.Component {
 
     //これが必要だった
     this.onUpload = ::this.onUpload
+  }
+  componentDidMount(){
+    window.addEventListener('keydown', ::this.handleKeyDown)
+    window.addEventListener('keyup', ::this.handleKeyUp)
   }
   requestPermission(success, fail) {
     navigator.getUserMedia({
@@ -100,6 +106,19 @@ export default class GyaonRecorder extends React.Component {
         this.setState({recording: true})
       }, 50);
     }
+  }
+  handleKeyDown(e){
+    if(this.state.keydown || e.keyCode != this.recordKeyCode || !this.props.canRecord){
+      return
+    }
+    this.setState({keydown: true})
+    this.switchRecording()
+  }
+  handleKeyUp(e){
+    if(e.keyCode != this.recordKeyCode || !this.props.canRecord){
+      return
+    }
+    this.switchRecording()
   }
   onUpload(data){
     debug("onUpload")

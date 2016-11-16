@@ -51,7 +51,11 @@ export default class GyaonAudio extends ReactAudioPlayer {
     this.audioEl.pause()
     this.audioEl.currentTime = 0
   }
-  onEditComment(){
+  startEditComment(){
+    this.props.startEditComment()
+  }
+  finishEditComment(){
+    this.props.finishEditComment()
     Request
       .post('/comment/' + this.key)
       .send({ value: this.comment })
@@ -101,7 +105,8 @@ export default class GyaonAudio extends ReactAudioPlayer {
             onChange={(text) => {
               this.comment = text.target.value
             }}
-            onBlur={::this.onEditComment} />
+            onFocus={::this.startEditComment}
+            onBlur={::this.finishEditComment} />
         </td>
         <td
           className={"duration"}
