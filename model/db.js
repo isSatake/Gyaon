@@ -33,7 +33,8 @@ var createSound = function(s3Data, file){
     lastmodified: Date.now(),
     name: s3Data.key.split("/")[1],
     size: file.size,
-    user: s3Data.key.split("/")[0]
+    user: s3Data.key.split("/")[0],
+    comment: ""
   })
 }
 

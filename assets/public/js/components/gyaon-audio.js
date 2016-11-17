@@ -16,6 +16,7 @@ const error = Debug('gyaon-audio:error')
 export default class GyaonAudio extends ReactAudioPlayer {
   constructor(props){
     super(props)
+    debug(this.props.data)
     this.state = {
       comment: this.props.data.comment,
       hovered: false
