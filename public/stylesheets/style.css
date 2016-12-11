@@ -73,4 +73,8 @@ td.delete-button, td.copy-button {
   margin-top: 3px;
   margin-left: 15px;
 }
-*/
+
+#map {
+  width: 300px;
+  height: 300px;
+}

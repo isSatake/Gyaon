@@ -141,6 +141,15 @@ $(function() {
     alert("failed to get sounds");
   });
 
+  //GoogleMap表示
+  window.initMap = function() {
+    var opts = {
+      zoom: 15,
+      center: new google.maps.LatLng(35.709984,139.810703)
+    };
+    var map = new google.maps.Map(document.getElementById("map"), opts);
+  }
+
   // 録音ボタン
   $recordButton.mousedown(function(e) {
     requestPermission(function(localMediaStream) {

@@ -7,6 +7,7 @@ block content
     button#recordButton.btn-floating.btn-large.red.disabled
       i.material-icons mic_none
     canvas#volumeMeter("width=500 height=50")
+  div#map
 
 block scripts
   link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')
@@ -16,6 +17,7 @@ block scripts
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js')
+  script(async, defer, src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAN7SkY8RnsOdznlD5-KKxNQFDFto8I_W0&callback=initMap')
   script(src='../javascripts/recorder.js')
   script(src='../javascripts/exporter.js')
   script(src='../javascripts/volume-meter.js')
