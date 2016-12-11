@@ -9,7 +9,7 @@ var bodyParser  = require('body-parser');
 var debug       = require('debug')('gyaon:server');
 
 var routes      = require('./routes/index');
-var users       = require('./routes/users');
+var map       = require('./routes/map');
 
 
 /**
@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
+app.use('/map', map);
 
 var server = http.createServer(app);
 var io = require('socket.io')(server);

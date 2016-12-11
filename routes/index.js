@@ -24,9 +24,7 @@ var promiseUploadDir = function() {
   });
 }
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  var gyaonId = shortid.generate();
+var index = function(req, res, gyaonId){
   debug("gyaonId : " + gyaonId);
   model.promiseGetSounds(gyaonId).then(function(result){
     res.render('index', {
@@ -36,19 +34,17 @@ router.get('/', function(req, res, next) {
       format: formatDate
     });
   }).catch(function (err) { console.error(err.stack || err) });
+}
+
+/* GET home page. */
+router.get('/', function(req, res) {
+  var gyaonId = shortid.generate();
+  index(req, res, gyaonId);
 });
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id', function(req, res) {
   var gyaonId = req.params.id;
-  debug("gyaonId : " + gyaonId);
-  model.promiseGetSounds(gyaonId).then(function(result){
-    res.render('index', {
-      id: gyaonId,
-      endpoint: endPoint,
-      sounds: result,
-      format: formatDate
-    });
-  }).catch(function (err) { console.error(err.stack || err) });
+  index(req, res, gyaonId);
 });
 
 //音声データをリダイレクト

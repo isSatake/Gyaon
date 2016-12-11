@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  p your id :
+    span#gyaonId #{id}
+  div#recorder
+    button#recordButton.btn-floating.btn-large.red.disabled
+      i.material-icons mic_none
+    canvas#volumeMeter("width=500 height=50")
+  table#memos.highlight
+    each sound in sounds
+      tr.memo(key=sound.key)
+        td.date #{format(sound.lastmodified)}
+          audio(src=endpoint+"/sounds/"+sound.key, preload="metadata")
+          div.progress.transparent
+            div.determinate
+        td.comment #{sound.memo}
+          input(type="text", value=sound.comment)
+        td.delete-button
+          i.deleteButton.tiny.material-icons="clear"
+        td.copy-button
+          i.copyButton.tiny.material-icons="content_copy"
+
+
+block scripts
+  link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')
+  link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js')
+  script(src='../javascripts/recorder.js')
+  script(src='../javascripts/exporter.js')
+  script(src='../javascripts/volume-meter.js')
+  script(src='../javascripts/script.js')
+  script(src='../javascripts/socket.io.js')
