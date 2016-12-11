@@ -128,6 +128,9 @@ $(function() {
     console.error(err);
   });
 
+  /* 緯度 == y軸 == latitude
+   * 経度 == x軸 == longitude
+   */
   //現在位置取得
   if(!navigator.geolocation){
     alert("failed to get location.");
@@ -144,6 +147,10 @@ $(function() {
       map = new google.maps.Map(document.getElementById("map"), opts);
     }
     map.panTo(new google.maps.LatLng(latitude, longitude));
+    var currentPositionMarker = new google.maps.Marker({
+      position: new google.maps.LatLng(latitude, longitude),
+      map: map
+    });
   }
   var onPositionError = function(err){
     //SFCに居ることにする
