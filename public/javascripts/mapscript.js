@@ -70,7 +70,7 @@ $(function() {
         `<tr key="${sound.key}" class="memo">`
       +   `<td class="date">`
       +     `${formatDate(sound.lastmodified)}`
-      +     `<audio src="${endpoint}/sounds/${sound.key}" />`
+      +     `<audio src="${endpoint}/sounds/${sound.key}" preload="metadata"/>`
       +   `</td>`
       +   `<td class="comment"><input type="text"></td>`
       +   `<td class="delete-button">`
