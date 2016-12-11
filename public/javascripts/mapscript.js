@@ -26,6 +26,7 @@ $(function() {
 
   var watchPositionId;
   var map;
+  var currentPositionMarker;
   var soundMarkers = [];
 
   // 録音のパーミッションをリクエストする
@@ -131,7 +132,7 @@ $(function() {
   /* 緯度 == y軸 == latitude
    * 経度 == x軸 == longitude
    */
-  //GoogleMap
+  //GoogleMap関連
   //初期化
   var initMap = function(){
     console.log("initialize Google Map.")
@@ -165,17 +166,25 @@ $(function() {
     var latitude = pos.coords.latitude;
     var longitude = pos.coords.longitude;
     console.log("moved to " + latitude + " " + longitude);
-    map.panTo(new google.maps.LatLng(latitude, longitude));
-    var currentPositionMarker = new google.maps.Marker({
-      position: new google.maps.LatLng(latitude, longitude),
-      map: map
-    });
+    var latlng = new google.maps.LatLng(latitude, longitude);
+    map.panTo(latlng);
+    if(!currentPositionMarker){
+      currentPositionMarker = new google.maps.Marker({
+        position: new google.maps.LatLng(latitude, longitude),
+        map: map
+      });
+      return;
+    }
+    currentPositionMarker.setPosition(latlng);
   }
   var onPositionError = function(err){
     initMap();
     alert("位置情報の利用を許可して下さい");
   }
-  var option = {enableHighAccuracy: true};
+  var option = {
+    enableHighAccuracy: true,
+    maximumAge: 3000
+  };
   watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
 
   //位置を指定して音声リストを取得
