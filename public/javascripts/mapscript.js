@@ -131,21 +131,40 @@ $(function() {
   /* 緯度 == y軸 == latitude
    * 経度 == x軸 == longitude
    */
-  //現在位置取得
+  //GoogleMap
+  //初期化
+  var initMap = function(){
+    console.log("initialize Google Map.")
+    var opts = {
+      zoom: 15,
+      center: new google.maps.LatLng(35.388664, 139.427951) //SFC学事
+    };
+    map = new google.maps.Map(document.getElementById("map"), opts);
+
+    //地図の移動イベント
+    map.addListener('idle', function() {
+      //表示領域の左下・右上座標を取得
+      var swLatlng = map.getBounds().getSouthWest();
+      var neLatlng = map.getBounds().getNorthEast();
+      getSoundsByLocation(swLatlng.lng(), swLatlng.lat(), neLatlng.lng(), neLatlng.lat());
+    });
+  }
+  window.initMap = function(){
+    initMap();
+  }
+
   if(!navigator.geolocation){
     alert("failed to get location.");
   }
+
   var onChangePosition = function(pos){
+    if(!map){
+      initMap();
+      return;
+    };
     var latitude = pos.coords.latitude;
     var longitude = pos.coords.longitude;
     console.log("moved to " + latitude + " " + longitude);
-    if(!map){
-      var opts = {
-        zoom: 15,
-        center: new google.maps.LatLng(latitude, longitude)
-      };
-      map = new google.maps.Map(document.getElementById("map"), opts);
-    }
     map.panTo(new google.maps.LatLng(latitude, longitude));
     var currentPositionMarker = new google.maps.Marker({
       position: new google.maps.LatLng(latitude, longitude),
@@ -153,32 +172,29 @@ $(function() {
     });
   }
   var onPositionError = function(err){
-    //SFCに居ることにする
-    var opts = {
-      zoom: 15,
-      center: new google.maps.LatLng(35.388664, 139.427951)
-    };
-    map = new google.maps.Map(document.getElementById("map"), opts);
+    initMap();
     alert("位置情報の利用を許可して下さい");
   }
   var option = {enableHighAccuracy: true};
   watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
 
   //位置を指定して音声リストを取得
-  $.ajax("/map/" + $('#gyaonId').text() + "/location", {
-    method: "GET",
-    data: {
-      "x1": 36,
-      "y1": 112,
-      "x2": 37,
-      "y2": 113
-    }
-  }).done(function(done) {
-    console.log(done);
-    // $("#memos").prepend(createMemo(done.endpoint, done.object));
-  }).fail(function(e) {
-    alert("failed to get sounds");
-  });
+  var getSoundsByLocation = function(x1, y1, x2, y2) {
+    $.ajax("/map/" + $('#gyaonId').text() + "/location", {
+      method: "GET",
+      data: {
+        "x1": x1,
+        "y1": y1,
+        "x2": x2,
+        "y2": y2
+      }
+    }).done(function(done) {
+      console.log(done);
+      // $("#memos").prepend(createMemo(done.endpoint, done.object));
+    }).fail(function(e) {
+      alert("failed to get sounds.");
+    });
+  }
 
   //GoogleMap初期化
   window.initMap = function() {
@@ -207,8 +223,8 @@ $(function() {
     // file名は使ってない
     var formData = new FormData();
     formData.append("gyaonId", $('#gyaonId').text());
-    formData.append("location_x", 36.5);
-    formData.append("location_y", 113);
+    formData.append("location_x", 113);
+    formData.append("location_y", 36);
     formData.append("file", blob, "hoge.wav");
     $.ajax("/upload", {
       method: "POST",
