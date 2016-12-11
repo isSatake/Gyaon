@@ -216,14 +216,18 @@ $(function() {
           icon: "../images/sound.png"
         });
         marker.addListener('mouseover', function(){
-          var audio = $('#memos').find(`tr[key="${sound.key}"]`).find('audio')[0];
-          audio.play();
+          var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
+          var $audio = $tr.find('audio')[0];
+          $audio.play();
+          $tr.attr("data-playing", true);
           this.setIcon("../images/sound_playing.png");
         });
         marker.addListener('mouseout', function(){
-          var audio = $('#memos').find(`tr[key="${sound.key}"]`).find('audio')[0];
-          audio.pause();
-          audio.currentTime = 0;
+          var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
+          var $audio = $tr.find('audio')[0];
+          $audio.pause();
+          $audio.currentTime = 0;
+          $tr.removeAttr("data-playing");
           this.setIcon("../images/sound.png");
         });
         soundMarkers.push({
@@ -439,14 +443,18 @@ $(function() {
       icon: "../images/sound.png"
     });
     marker.addListener('mouseover', function(){
-      var audio = $('#memos').find(`tr[key="${key}"]`).find('audio')[0];
-      audio.play();
+      var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
+      var $audio = $tr.find('audio')[0];
+      $audio.play();
+      $tr.attr("data-playing", true);
       this.setIcon("../images/sound_playing.png");
     });
     marker.addListener('mouseout', function(){
-      var audio = $('#memos').find(`tr[key="${key}"]`).find('audio')[0];
-      audio.pause();
-      audio.currentTime = 0;
+      var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
+      var $audio = $tr.find('audio')[0];
+      $audio.pause();
+      $audio.currentTime = 0;
+      $tr.removeAttr("data-playing");
       this.setIcon("../images/sound.png");
     });
     soundMarkers.push({

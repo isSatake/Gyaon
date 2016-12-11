@@ -97,3 +97,7 @@ td.delete-button, td.copy-button {
   vertical-align: top;
   width: 100%;
 }
+
+tr[data-playing] {
+  background: #F2F2F2;
+}
