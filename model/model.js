@@ -13,6 +13,15 @@ exports.promiseGetSounds = function(gyaonId){
   });
 };
 
+exports.promiseGetSoundsByLocation = function(gyaonId, location_1, location_2){
+  return new Promise(function(resolve, reject){
+    debug("get sounds by location");
+    db.promiseGetSoundsByLocation(gyaonId, location_1, location_2)
+      .then(resolve)
+      .catch(function (err) { console.error(err.stack || err) });
+  });
+};
+
 exports.promiseFindSound = function(gyaonId, name){
   return new Promise(function(resolve, reject){
     debug("find sound");

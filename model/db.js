@@ -19,13 +19,15 @@ var soundSchema = mongoose.Schema({
   size: Number,
   time: Number,
   comment: String,
-  location: String
+  location_x: Number,
+  location_y: Number
 });
 
 var Sound = mongoose.model('Sound', soundSchema);
 
 var createSound = function(s3Data, location, file){
   debug("createSound");
+  debug(location.x);
   var now = new Date;
   return new Sound({
     key: s3Data.key,
@@ -33,7 +35,8 @@ var createSound = function(s3Data, location, file){
     name: s3Data.key.split("/")[1],
     size: file.size,
     user: s3Data.key.split("/")[0],
-    location: location
+    location_x: location.x,
+    location_y: location.y
   })
 }
 
@@ -41,6 +44,27 @@ exports.promiseGetSounds = function(gyaonId){
   return new Promise(function(resolve, result){
     debug(`find : ${gyaonId}`);
     Sound.find({user: gyaonId}).sort({lastmodified: -1}).exec(function(err, sounds){
+      debug(sounds);
+      err ? resolve(err) : resolve(sounds);
+    });
+  });
+}
+
+exports.promiseGetSoundsByLocation = function(gyaonId, location_1, location_2){
+  return new Promise(function(resolve, result){
+    debug(`find : ${gyaonId} at ${location_1.x},${location_1.y} ~ ${location_2.x},${location_2.y}`);
+    var query = {
+      user: gyaonId,
+      location_x: {
+        $gte: location_1.x,
+        $lte: location_2.x
+      },
+      location_y: {
+        $gte: location_1.y,
+        $lte: location_2.y
+      }
+    };
+    Sound.find(query).sort({lastmodified: -1}).exec(function(err, sounds){
       debug(sounds);
       err ? resolve(err) : resolve(sounds);
     });

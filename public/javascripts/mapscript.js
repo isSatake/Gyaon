@@ -125,6 +125,22 @@ $(function() {
     console.error(err);
   });
 
+  //位置を指定して音声リストを取得
+  $.ajax("/map/" + $('#gyaonId').text() + "/location", {
+    method: "GET",
+    data: {
+      "x1": 36,
+      "y1": 112,
+      "x2": 37,
+      "y2": 113
+    }
+  }).done(function(done) {
+    console.log(done);
+    // $("#memos").prepend(createMemo(done.endpoint, done.object));
+  }).fail(function(e) {
+    alert("failed to get sounds");
+  });
+
   // 録音ボタン
   $recordButton.mousedown(function(e) {
     requestPermission(function(localMediaStream) {
