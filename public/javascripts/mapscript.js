@@ -204,12 +204,25 @@ $(function() {
         console.log(sound);
         $("#memos").prepend(createMemo(done.endpoint, sound));
         //ピンを立てる
-        soundMarkers.push(
-          new google.maps.Marker({
-            position: new google.maps.LatLng(sound.location_y, sound.location_x),
-            map: map
-          })
-        );
+        var marker = new google.maps.Marker({
+          position: new google.maps.LatLng(sound.location_y, sound.location_x),
+          map: map
+        });
+        marker.addListener('mouseover', function(){
+          var audio = $('#memos').find(`tr[key="${sound.key}"]`).find('audio')[0];
+          audio.play();
+          //色変更
+        });
+        marker.addListener('mouseout', function(){
+          var audio = $('#memos').find(`tr[key="${sound.key}"]`).find('audio')[0];
+          audio.pause();
+          audio.currentTime = 0;
+          //色変更
+        });
+        soundMarkers.push({
+          key: sound.key,
+          marker: marker
+        });
       });
     }).fail(function(e) {
       alert("failed to get sounds.");
@@ -224,7 +237,7 @@ $(function() {
   var initMemos = function(){
     $('#memos').empty();
     soundMarkers.map(function(marker){
-      marker.setMap(null);
+      marker.marker.setMap(null);
     });
   };
 
@@ -411,12 +424,13 @@ $(function() {
   postSound.on($('#gyaonId').text(), function (data) {
     console.log(`post: ${data.object.key}`);
     $("#memos").prepend(createMemo(data.endpoint, data.object));
-    soundMarkers.push(
-      new google.maps.Marker({
+    soundMarkers.push({
+      key: data.object.key,
+      marker: new google.maps.Marker({
         position: new google.maps.LatLng(data.object.location_y, data.object.location_x),
         map: map
       })
-    );
+    });
   });
   deleteSound.on($('#gyaonId').text(), function (data) {
     console.log(`delete: ${data}`);
