@@ -79,7 +79,6 @@ $(function() {
       +   `</td>`
       + `</tr>`
     );
-    $memo.find("audio")[0].play();
 
     return $memo;
   }
@@ -190,7 +189,11 @@ $(function() {
       }
     }).done(function(done) {
       console.log(done);
-      // $("#memos").prepend(createMemo(done.endpoint, done.object));
+      resetMemos();
+      done.sounds.map(function(sound){
+        console.log(sound);
+        $("#memos").prepend(createMemo(done.endpoint, sound));
+      });
     }).fail(function(e) {
       alert("failed to get sounds.");
     });
@@ -198,6 +201,11 @@ $(function() {
 
   //GoogleMap初期化
   window.initMap = function() {
+  }
+
+  //音声一覧初期化
+  var resetMemos = function(){
+    $('#memos').empty();
   }
 
   // 録音ボタン

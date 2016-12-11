@@ -7,7 +7,12 @@ block content
     button#recordButton.btn-floating.btn-large.red.disabled
       i.material-icons mic_none
     canvas#volumeMeter("width=500 height=50")
-  div#map
+  div#mapcontainer
+    div#map
+    div#tablecontainer
+      table#memos.highlight
+        tr
+
 
 block scripts
   link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')

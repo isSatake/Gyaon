@@ -41,7 +41,10 @@ router.get('/:id/location', function(req, res){
   debug(`get sounds by location`);
   model.promiseGetSoundsByLocation(gyaonId, location_1, location_2)
        .then(function(sounds){
-         res.send(sounds);
+         res.send({
+           endpoint: endPoint,
+           sounds: sounds
+         });
        })
        .catch(function (err) { console.error(err.stack || err) });
 });
