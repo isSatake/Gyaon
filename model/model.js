@@ -22,7 +22,7 @@ exports.promiseFindSound = function(gyaonId, name){
   });
 }
 
-exports.promiseUploadSound = function(gyaonId, file){
+exports.promiseUploadSound = function(gyaonId, location, file){
   return new Promise(function(resolve, result){
     fs.readFile(file.path, function(err, data){
       if(err) throw err;
@@ -32,7 +32,7 @@ exports.promiseUploadSound = function(gyaonId, file){
         Body: data
       };
       s3.promiseUpload(params).then(function(data){
-        db.promiseUpload(data, fn, file).then(function(sound){
+        db.promiseUpload(data, location, file).then(function(sound){
           debug(`uploaded : ${sound}`);
           err ? resolve(err) : resolve(sound);
         }).catch(function (err) { console.error(err.stack || err) });

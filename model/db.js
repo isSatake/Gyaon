@@ -24,7 +24,7 @@ var soundSchema = mongoose.Schema({
 
 var Sound = mongoose.model('Sound', soundSchema);
 
-var createSound = function(s3Data, file){
+var createSound = function(s3Data, location, file){
   debug("createSound");
   var now = new Date;
   return new Sound({
@@ -32,7 +32,8 @@ var createSound = function(s3Data, file){
     lastmodified: Date.now(),
     name: s3Data.key.split("/")[1],
     size: file.size,
-    user: s3Data.key.split("/")[0]
+    user: s3Data.key.split("/")[0],
+    location: location
   })
 }
 
@@ -57,9 +58,9 @@ exports.promiseFind = function(gyaonId, name){
   });
 }
 
-exports.promiseUpload = function(s3Data, fileName, file){
+exports.promiseUpload = function(s3Data, location, file){
   return new Promise(function(resolve, result){
-    createSound(s3Data, fileName, file).save(function(err, sound){
+    createSound(s3Data, location, file).save(function(err, sound){
       debug("uploaded");
       err ? resolve(err) : resolve(sound);
     });

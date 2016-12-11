@@ -62,7 +62,7 @@ router.post('/upload', function(req, res) {
     form.uploadDir = "./public/tmp";
     form.parse(req, function(err, fields, files){
       debug(fields);
-      model.promiseUploadSound(fields.gyaonId, files.file).then(function(sound){
+      model.promiseUploadSound(fields.gyaonId, fields.location || '', files.file).then(function(sound){
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.status(200).set("Content-Type", "application/json").json({
           endpoint: endPoint,
