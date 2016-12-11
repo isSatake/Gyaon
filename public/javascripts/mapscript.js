@@ -164,6 +164,8 @@ $(function() {
     // file名は使ってない
     var formData = new FormData();
     formData.append("gyaonId", $('#gyaonId').text());
+    formData.append("location_x", 36.5);
+    formData.append("location_y", 113);
     formData.append("file", blob, "hoge.wav");
     $.ajax("/upload", {
       method: "POST",
