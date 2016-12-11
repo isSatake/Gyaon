@@ -200,7 +200,7 @@ $(function() {
             position: new google.maps.LatLng(sound.location_y, sound.location_x),
             map: map
           })
-        )
+        );
       });
     }).fail(function(e) {
       alert("failed to get sounds.");
@@ -214,8 +214,10 @@ $(function() {
   //音声一覧初期化
   var initMemos = function(){
     $('#memos').empty();
-    soundMarkers = [];
-  }
+    soundMarkers.map(function(marker){
+      marker.setMap(null);
+    });
+  };
 
   // 録音ボタン
   $recordButton.mousedown(function(e) {
@@ -240,8 +242,8 @@ $(function() {
     // file名は使ってない
     var formData = new FormData();
     formData.append("gyaonId", $('#gyaonId').text());
-    formData.append("location_x", 113);
-    formData.append("location_y", 38);
+    formData.append("location_x", map.getCenter().lng());
+    formData.append("location_y", map.getCenter().lat());
     formData.append("file", blob, "hoge.wav");
     $.ajax("/upload", {
       method: "POST",
@@ -400,9 +402,16 @@ $(function() {
   postSound.on($('#gyaonId').text(), function (data) {
     console.log(`post: ${data.object.key}`);
     $("#memos").prepend(createMemo(data.endpoint, data.object));
+    soundMarkers.push(
+      new google.maps.Marker({
+        position: new google.maps.LatLng(data.object.location_y, data.object.location_x),
+        map: map
+      })
+    );
   });
   deleteSound.on($('#gyaonId').text(), function (data) {
     console.log(`delete: ${data}`);
     $("[key='" + data + "']").remove();
+    //TODO マーカーも消す
   });
 });
