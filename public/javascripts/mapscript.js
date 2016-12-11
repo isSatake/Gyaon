@@ -26,6 +26,7 @@ $(function() {
 
   var watchPositionId;
   var map;
+  var soundMarkers = [];
 
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
@@ -189,10 +190,17 @@ $(function() {
       }
     }).done(function(done) {
       console.log(done);
-      resetMemos();
+      initMemos();
       done.sounds.map(function(sound){
         console.log(sound);
         $("#memos").prepend(createMemo(done.endpoint, sound));
+        //ピンを立てる
+        soundMarkers.push(
+          new google.maps.Marker({
+            position: new google.maps.LatLng(sound.location_y, sound.location_x),
+            map: map
+          })
+        )
       });
     }).fail(function(e) {
       alert("failed to get sounds.");
@@ -204,8 +212,9 @@ $(function() {
   }
 
   //音声一覧初期化
-  var resetMemos = function(){
+  var initMemos = function(){
     $('#memos').empty();
+    soundMarkers = [];
   }
 
   // 録音ボタン
@@ -232,7 +241,7 @@ $(function() {
     var formData = new FormData();
     formData.append("gyaonId", $('#gyaonId').text());
     formData.append("location_x", 113);
-    formData.append("location_y", 36);
+    formData.append("location_y", 38);
     formData.append("file", blob, "hoge.wav");
     $.ajax("/upload", {
       method: "POST",
