@@ -24,6 +24,9 @@ $(function() {
   var postSound = io.connect('/post');
   var deleteSound = io.connect('/delete');
 
+  var watchPositionId;
+  var map;
+
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
     navigator.getUserMedia({
@@ -125,6 +128,35 @@ $(function() {
     console.error(err);
   });
 
+  //現在位置取得
+  if(!navigator.geolocation){
+    alert("failed to get location.");
+  }
+  var onChangePosition = function(pos){
+    var latitude = pos.coords.latitude;
+    var longitude = pos.coords.longitude;
+    console.log("moved to " + latitude + " " + longitude);
+    if(!map){
+      var opts = {
+        zoom: 15,
+        center: new google.maps.LatLng(latitude, longitude)
+      };
+      map = new google.maps.Map(document.getElementById("map"), opts);
+    }
+    map.panTo(new google.maps.LatLng(latitude, longitude));
+  }
+  var onPositionError = function(err){
+    //SFCに居ることにする
+    var opts = {
+      zoom: 15,
+      center: new google.maps.LatLng(35.388664, 139.427951)
+    };
+    map = new google.maps.Map(document.getElementById("map"), opts);
+    alert("位置情報の利用を許可して下さい");
+  }
+  var option = {enableHighAccuracy: true};
+  watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
+
   //位置を指定して音声リストを取得
   $.ajax("/map/" + $('#gyaonId').text() + "/location", {
     method: "GET",
@@ -141,13 +173,8 @@ $(function() {
     alert("failed to get sounds");
   });
 
-  //GoogleMap表示
+  //GoogleMap初期化
   window.initMap = function() {
-    var opts = {
-      zoom: 15,
-      center: new google.maps.LatLng(35.709984,139.810703)
-    };
-    var map = new google.maps.Map(document.getElementById("map"), opts);
   }
 
   // 録音ボタン
