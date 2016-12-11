@@ -187,6 +187,12 @@ $(function() {
   };
   watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
 
+  //マーカー用アイコン
+  // var soundIcon = new GIcon();
+  // soundIcon.image = "../images/sound.png";
+  // var playingSoundIcon = new GIcon();
+  // playingSoundIcon.image = "../images/sound_playing.png";
+
   //位置を指定して音声リストを取得
   var getSoundsByLocation = function(x1, y1, x2, y2) {
     $.ajax("/map/" + $('#gyaonId').text() + "/location", {
@@ -206,18 +212,19 @@ $(function() {
         //ピンを立てる
         var marker = new google.maps.Marker({
           position: new google.maps.LatLng(sound.location_y, sound.location_x),
-          map: map
+          map: map,
+          icon: "../images/sound.png"
         });
         marker.addListener('mouseover', function(){
           var audio = $('#memos').find(`tr[key="${sound.key}"]`).find('audio')[0];
           audio.play();
-          //色変更
+          this.setIcon("../images/sound_playing.png");
         });
         marker.addListener('mouseout', function(){
           var audio = $('#memos').find(`tr[key="${sound.key}"]`).find('audio')[0];
           audio.pause();
           audio.currentTime = 0;
-          //色変更
+          this.setIcon("../images/sound.png");
         });
         soundMarkers.push({
           key: sound.key,
@@ -422,16 +429,32 @@ $(function() {
 
   //アップロード,削除されたら同期
   postSound.on($('#gyaonId').text(), function (data) {
-    console.log(`post: ${data.object.key}`);
-    $("#memos").prepend(createMemo(data.endpoint, data.object));
+    var key = data.object.key;
+    var sound = data.object;
+    console.log(`post: ${key}`);
+    $("#memos").prepend(createMemo(data.endpoint, sound));
+    var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(sound.location_y, sound.location_x),
+      map: map,
+      icon: "../images/sound.png"
+    });
+    marker.addListener('mouseover', function(){
+      var audio = $('#memos').find(`tr[key="${key}"]`).find('audio')[0];
+      audio.play();
+      this.setIcon("../images/sound_playing.png");
+    });
+    marker.addListener('mouseout', function(){
+      var audio = $('#memos').find(`tr[key="${key}"]`).find('audio')[0];
+      audio.pause();
+      audio.currentTime = 0;
+      this.setIcon("../images/sound.png");
+    });
     soundMarkers.push({
-      key: data.object.key,
-      marker: new google.maps.Marker({
-        position: new google.maps.LatLng(data.object.location_y, data.object.location_x),
-        map: map
-      })
+      key: key,
+      marker: marker
     });
   });
+
   deleteSound.on($('#gyaonId').text(), function (data) {
     console.log(`delete: ${data}`);
     $("[key='" + data + "']").remove();
