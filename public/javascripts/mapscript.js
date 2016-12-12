@@ -4,6 +4,12 @@ $(function() {
                               navigator.mozGetUserMedia ||
                               navigator.msGetUserMedia );
 
+  if ((navigator.userAgent.indexOf('iPhone') > 0 && navigator.userAgent.indexOf('iPad') == -1) || navigator.userAgent.indexOf('iPod') > 0 || navigator.userAgent.indexOf('Android') > 0) {
+    alert("すまほ");
+  }else {
+    alert("PC");
+  }
+
   var $recordButton       = $("#recordButton");
   var isInputComment      = false;
   var permissionResolved  = false;
