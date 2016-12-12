@@ -217,7 +217,7 @@ $(function() {
       //どうやって再生していくか
       //順番に再生できる？
       if(nearBySounds.length > 0){
-        $('body').append(`<audio src="http://localhost:3000/sounds/${nearBySounds[0].key}" autoplay/>`);
+        $('body').append(`<audio src="${endPoint}/sounds/${nearBySounds[0].key}" autoplay/>`);
       }
     }
 
@@ -248,7 +248,7 @@ $(function() {
       }
     }).done(function(done) {
       console.log(done);
-      var endPoint = done.endpoint;
+      endPoint = done.endpoint;
       initMemos(done.sounds);
       done.sounds.map(function(sound){
         //ピンを立てる
