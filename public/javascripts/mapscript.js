@@ -208,7 +208,7 @@ $(function() {
       initMemos();
       done.sounds.map(function(sound){
         console.log(sound);
-        $("#memos").prepend(createMemo(done.endpoint, sound));
+        $("#memos").append(createMemo(done.endpoint, sound));
         //ピンを立てる
         var marker = new google.maps.Marker({
           position: new google.maps.LatLng(sound.location_y, sound.location_x),
