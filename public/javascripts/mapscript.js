@@ -4,10 +4,12 @@ $(function() {
                               navigator.mozGetUserMedia ||
                               navigator.msGetUserMedia );
 
-  if ((navigator.userAgent.indexOf('iPhone') > 0 && navigator.userAgent.indexOf('iPad') == -1) || navigator.userAgent.indexOf('iPod') > 0 || navigator.userAgent.indexOf('Android') > 0) {
-    alert("すまほ");
-  }else {
-    alert("PC");
+  var isSmartPhone        = false;
+  if (( navigator.userAgent.indexOf('iPhone') > 0 &&
+        navigator.userAgent.indexOf('iPad') == -1) ||
+        navigator.userAgent.indexOf('iPod') > 0 ||
+        navigator.userAgent.indexOf('Android') > 0) {
+    isSmartPhone = true;
   }
 
   var $recordButton       = $("#recordButton");
@@ -256,7 +258,7 @@ $(function() {
   };
 
   // 録音ボタン
-  $recordButton.mousedown(function(e) {
+  var startRec = function(){
     requestPermission(function(localMediaStream) {
       $('#recordButton i').text("mic");
       setTimeout(function(){
@@ -264,7 +266,8 @@ $(function() {
         startVolumeMeter();
       }, 50);
     }, alert);
-  }).mouseup(function(e) {
+  };
+  var stopRec = function(){
     $('#recordButton i').text("mic_none");
     recorder.stop();
     stopVolumeMeter();
@@ -293,7 +296,21 @@ $(function() {
       alert("export failed");
     });
     console.log(blob);
-  });
+  }
+  if(isSmartPhone){
+    $recordButton.on('touchstart', function(e){
+      startRec();
+    });
+    $recordButton.on('touchend', function(e){
+      stopRec();
+    });
+  }else{
+    $recordButton.mousedown(function(e) {
+      startRec();
+    }).mouseup(function(e) {
+      stopRec();
+    });
+  }
 
   //Rキーで録音
   var isRec = false;
