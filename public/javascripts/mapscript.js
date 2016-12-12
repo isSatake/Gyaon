@@ -28,6 +28,8 @@ $(function() {
   var map;
   var currentPositionMarker;
   var soundMarkers = [];
+  var markerIcon = "../images/sound.png";
+  var playingMarkerIcon = "../images/sound_playing.png";
 
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
@@ -187,12 +189,6 @@ $(function() {
   };
   watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
 
-  //マーカー用アイコン
-  // var soundIcon = new GIcon();
-  // soundIcon.image = "../images/sound.png";
-  // var playingSoundIcon = new GIcon();
-  // playingSoundIcon.image = "../images/sound_playing.png";
-
   //位置を指定して音声リストを取得
   var getSoundsByLocation = function(x1, y1, x2, y2) {
     $.ajax("/map/" + $('#gyaonId').text() + "/location", {
@@ -210,17 +206,18 @@ $(function() {
         console.log(sound);
         $("#memos").append(createMemo(done.endpoint, sound));
         //ピンを立てる
+        //TODO アイコン変更などが面倒臭いのでラッパークラスを作りたい
         var marker = new google.maps.Marker({
           position: new google.maps.LatLng(sound.location_y, sound.location_x),
           map: map,
-          icon: "../images/sound.png"
+          icon: markerIcon
         });
         marker.addListener('mouseover', function(){
           var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
           var $audio = $tr.find('audio')[0];
           $audio.play();
           $tr.attr("data-playing", true);
-          this.setIcon("../images/sound_playing.png");
+          this.setIcon(playingMarkerIcon);
         });
         marker.addListener('mouseout', function(){
           var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
@@ -228,7 +225,7 @@ $(function() {
           $audio.pause();
           $audio.currentTime = 0;
           $tr.removeAttr("data-playing");
-          this.setIcon("../images/sound.png");
+          this.setIcon(markerIcon);
         });
         soundMarkers.push({
           key: sound.key,
@@ -329,6 +326,10 @@ $(function() {
         // startMeter();
         audio.play();
         $this.attr("data-playing", true);
+        var playingMarker = soundMarkers.filter(function(marker){
+          return (marker.key == $this.attr("key"));
+        });
+        playingMarker[0].marker.setIcon(playingMarkerIcon);
       }
       break;
       case "mouseleave":
@@ -337,6 +338,10 @@ $(function() {
         $this.removeAttr("data-playing");
         audio.pause();
         audio.currentTime = 0;
+        var playingMarker = soundMarkers.filter(function(marker){
+          return (marker.key == $this.attr("key"));
+        });
+        playingMarker[0].marker.setIcon(markerIcon);
       }
       break;
       default:
@@ -440,14 +445,14 @@ $(function() {
     var marker = new google.maps.Marker({
       position: new google.maps.LatLng(sound.location_y, sound.location_x),
       map: map,
-      icon: "../images/sound.png"
+      icon: markerIcon
     });
     marker.addListener('mouseover', function(){
       var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
       var $audio = $tr.find('audio')[0];
       $audio.play();
       $tr.attr("data-playing", true);
-      this.setIcon("../images/sound_playing.png");
+      this.setIcon(playingMarkerIcon);
     });
     marker.addListener('mouseout', function(){
       var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
@@ -455,7 +460,7 @@ $(function() {
       $audio.pause();
       $audio.currentTime = 0;
       $tr.removeAttr("data-playing");
-      this.setIcon("../images/sound.png");
+      this.setIcon(markerIcon);
     });
     soundMarkers.push({
       key: key,
