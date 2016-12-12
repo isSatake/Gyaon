@@ -1,0 +1,23 @@
+body {
+  padding: 30px;
+  width: 100%;
+}
+
+/* id非表示 */
+p {
+  display: none;
+}
+/* 音声リスト用div非表示 */
+#tablecontainer {
+  display: none;
+}
+
+#recorder {
+  height: 60px;
+  min-width: 300px;
+}
+
+#volumeMeter {
+  height: 50px;
+  width: 200px;
+}

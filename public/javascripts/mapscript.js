@@ -10,6 +10,8 @@ $(function() {
         navigator.userAgent.indexOf('iPod') > 0 ||
         navigator.userAgent.indexOf('Android') > 0) {
     isSmartPhone = true;
+    $('head').append('<meta name="viewport" content="width=360" >');
+    $('body').append('<link rel="stylesheet" type="text/css" href="../stylesheets/sp.css">');
   }
 
   var $recordButton       = $("#recordButton");
@@ -212,7 +214,6 @@ $(function() {
       initMemos();
       done.sounds.map(function(sound){
         console.log(sound);
-        $("#memos").append(createMemo(done.endpoint, sound));
         //ピンを立てる
         //TODO アイコン変更などが面倒臭いのでラッパークラスを作りたい
         var marker = new google.maps.Marker({
@@ -239,6 +240,8 @@ $(function() {
           key: sound.key,
           marker: marker
         });
+        if(isSmartPhone) return;
+        $("#memos").append(createMemo(done.endpoint, sound));
       });
     }).fail(function(e) {
       alert("failed to get sounds.");
@@ -464,7 +467,6 @@ $(function() {
     var key = data.object.key;
     var sound = data.object;
     console.log(`post: ${key}`);
-    $("#memos").prepend(createMemo(data.endpoint, sound));
     var marker = new google.maps.Marker({
       position: new google.maps.LatLng(sound.location_y, sound.location_x),
       map: map,
@@ -489,6 +491,8 @@ $(function() {
       key: key,
       marker: marker
     });
+    if(isSmartPhone) return;
+    $("#memos").prepend(createMemo(data.endpoint, sound));
   });
 
   deleteSound.on($('#gyaonId').text(), function (data) {
