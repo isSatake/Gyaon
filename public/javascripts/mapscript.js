@@ -37,6 +37,7 @@ $(function() {
   var watchPositionId;
   var map;
   var currentPositionMarker;
+  var sounds = [];
   var soundMarkers = [];
   var markerIcon = "../images/sound.png";
   var playingMarkerIcon = "../images/sound_playing.png";
@@ -170,9 +171,17 @@ $(function() {
     alert("failed to get location.");
   }
 
+  var registerWatchPosition = function(){
+    watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
+  }
+
   var onChangePosition = function(pos){
+    console.log("onchangeposition");
+    navigator.geolocation.clearWatch(watchPositionId);
+
     if(!map){
       initMap();
+      registerWatchPosition();
       return;
     };
     var latitude = pos.coords.latitude;
@@ -185,9 +194,39 @@ $(function() {
         position: new google.maps.LatLng(latitude, longitude),
         map: map
       });
+      registerWatchPosition();
       return;
     }
     currentPositionMarker.setPosition(latlng);
+
+    //現在位置付近の音声を再生
+    if(isSmartPhone){
+      //0.00002度で3mくらいらしい
+      var radius = 0.00002
+      var nearBySounds = sounds.filter(function(sound){
+        if (sound.location_x >= longitude - radius &&
+            sound.location_x <= longitude + radius &&
+            sound.location_y >= latitude - radius &&
+            sound.location_y <= latitude + radius){
+            return true;
+        }
+      });
+      console.log(nearBySounds);
+      //どうやって再生していくか
+      //順番に再生できる？
+      if(nearBySounds.length > 0){
+        var key = nearBySounds[0].key;
+        var $tr = $('#memos').find(`tr[key="${key}"]`);
+        var $audio = $tr.find('audio')[0];
+        $audio.play();
+      }
+    }
+
+    //watchPositionを再登録
+    setTimeout(function(){
+      console.log("あいう");
+      registerWatchPosition();
+    }, 3000);
   }
   var onPositionError = function(err){
     initMap();
@@ -197,7 +236,7 @@ $(function() {
     enableHighAccuracy: true,
     maximumAge: 3000
   };
-  watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
+  registerWatchPosition();
 
   //位置を指定して音声リストを取得
   var getSoundsByLocation = function(x1, y1, x2, y2) {
@@ -211,9 +250,8 @@ $(function() {
       }
     }).done(function(done) {
       console.log(done);
-      initMemos();
+      initMemos(done.sounds);
       done.sounds.map(function(sound){
-        console.log(sound);
         //ピンを立てる
         //TODO アイコン変更などが面倒臭いのでラッパークラスを作りたい
         var marker = new google.maps.Marker({
@@ -240,7 +278,6 @@ $(function() {
           key: sound.key,
           marker: marker
         });
-        if(isSmartPhone) return;
         $("#memos").append(createMemo(done.endpoint, sound));
       });
     }).fail(function(e) {
@@ -253,8 +290,9 @@ $(function() {
   }
 
   //音声一覧初期化
-  var initMemos = function(){
+  var initMemos = function(_sounds){
     $('#memos').empty();
+    sounds = _sounds;
     soundMarkers.map(function(marker){
       marker.marker.setMap(null);
     });
@@ -491,7 +529,6 @@ $(function() {
       key: key,
       marker: marker
     });
-    if(isSmartPhone) return;
     $("#memos").prepend(createMemo(data.endpoint, sound));
   });
 
