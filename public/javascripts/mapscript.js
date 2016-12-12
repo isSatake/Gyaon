@@ -166,6 +166,7 @@ $(function() {
     });
   }
   window.initMap = function(){
+    if(map) return;
     initMap();
   }
 
@@ -179,7 +180,6 @@ $(function() {
 
   var onChangePosition = function(pos){
     console.log("onchangeposition");
-    navigator.geolocation.clearWatch(watchPositionId);
 
     if(!map){
       initMap();
@@ -196,7 +196,6 @@ $(function() {
         position: new google.maps.LatLng(latitude, longitude),
         map: map
       });
-      registerWatchPosition();
       return;
     }
     currentPositionMarker.setPosition(latlng);
@@ -225,11 +224,6 @@ $(function() {
 
       }
     }
-
-    //watchPositionを再登録
-    setTimeout(function(){
-      registerWatchPosition();
-    }, 3000);
   }
   var onPositionError = function(err){
     initMap();
