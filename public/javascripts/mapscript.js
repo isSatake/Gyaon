@@ -217,7 +217,12 @@ $(function() {
       //どうやって再生していくか
       //順番に再生できる？
       if(nearBySounds.length > 0){
-        $('body').append(`<audio src="${endPoint}/sounds/${nearBySounds[0].key}" autoplay/>`);
+        var key = nearBySounds[0].key;
+        var $tr = $('#memos').find(`tr[key="${key}"]`);
+        var $audio = $tr.find('audio')[0];
+        console.log($audio);
+        $audio.play();
+
       }
     }
 
@@ -324,6 +329,7 @@ $(function() {
     formData.append("location_x", map.getCenter().lng());
     formData.append("location_y", map.getCenter().lat());
     formData.append("file", blob, "hoge.wav");
+    console.log(formData);
     $.ajax("/upload", {
       method: "POST",
       data: formData,
