@@ -34,6 +34,8 @@ $(function() {
   var postSound = io.connect('/post');
   var deleteSound = io.connect('/delete');
 
+  var endPoint;
+
   var watchPositionId;
   var map;
   var currentPositionMarker;
@@ -215,16 +217,12 @@ $(function() {
       //どうやって再生していくか
       //順番に再生できる？
       if(nearBySounds.length > 0){
-        var key = nearBySounds[0].key;
-        var $tr = $('#memos').find(`tr[key="${key}"]`);
-        var $audio = $tr.find('audio')[0];
-        $audio.play();
+        $('body').append(`<audio src="http://localhost:3000/sounds/${nearBySounds[0].key}" autoplay/>`);
       }
     }
 
     //watchPositionを再登録
     setTimeout(function(){
-      console.log("あいう");
       registerWatchPosition();
     }, 3000);
   }
@@ -250,6 +248,7 @@ $(function() {
       }
     }).done(function(done) {
       console.log(done);
+      var endPoint = done.endpoint;
       initMemos(done.sounds);
       done.sounds.map(function(sound){
         //ピンを立てる
