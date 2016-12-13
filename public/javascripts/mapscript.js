@@ -230,7 +230,7 @@ $(function() {
     alert("位置情報の利用を許可して下さい");
   }
   var option = {
-    enableHighAccuracy: true,
+    enableHighAccuracy: false,
     maximumAge: 3000
   };
   registerWatchPosition();
