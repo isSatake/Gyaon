@@ -49,4 +49,14 @@ router.get('/:id/location', function(req, res){
        .catch(function (err) { console.error(err.stack || err) });
 });
 
+//解説ページ
+router.get('/document/about', function(req, res){
+  res.render('map-about');
+});
+
+//操作方法ページ
+router.get('/document/howto', function(req, res){
+  res.render('map-howto');
+});
+
 module.exports = router;
