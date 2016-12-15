@@ -536,4 +536,21 @@ $(function() {
     $("[key='" + data + "']").remove();
     //TODO マーカーも消す
   });
+
+  $('#tracking').on("change", function(e){
+    switch($(this).prop('checked')){
+      case true:
+      {
+        getAllSoundsAndLoad();
+        registerWatchPosition();
+      }
+      break;
+      case false:
+      {
+
+      }
+      break;
+      default:
+    }
+  });
 });
