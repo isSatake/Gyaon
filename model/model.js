@@ -13,10 +13,10 @@ exports.promiseGetSounds = function(gyaonId){
   });
 };
 
-exports.promiseGetSoundsByLocation = function(gyaonId, location_1, location_2){
+exports.promiseGetSoundsWithLocation = function(gyaonId){
   return new Promise(function(resolve, reject){
-    debug("get sounds by location");
-    db.promiseGetSoundsByLocation(gyaonId, location_1, location_2)
+    debug("get sounds which have location data.");
+    db.promiseGetSoundsWithLocation(gyaonId)
       .then(resolve)
       .catch(function (err) { console.error(err.stack || err) });
   });

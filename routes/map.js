@@ -34,12 +34,10 @@ router.get('/:id', function(req, res) {
 });
 
 //音声リストを返す
-router.get('/:id/location', function(req, res){
+router.get('/sounds/:id', function(req, res){
   var gyaonId = req.params.id;
-  var location_1 = {x: req.query.x1, y: req.query.y1};
-  var location_2 = {x: req.query.x2, y: req.query.y2};
-  debug(`get sounds by location`);
-  model.promiseGetSoundsByLocation(gyaonId, location_1, location_2)
+  debug(`get sounds which have location data.`);
+  model.promiseGetSoundsWithLocation(gyaonId)
        .then(function(sounds){
          res.send({
            endpoint: endPoint,

@@ -50,18 +50,17 @@ exports.promiseGetSounds = function(gyaonId){
   });
 }
 
-exports.promiseGetSoundsByLocation = function(gyaonId, location_1, location_2){
+exports.promiseGetSoundsWithLocation = function(gyaonId){
   return new Promise(function(resolve, result){
-    debug(`find : ${gyaonId} at ${location_1.x},${location_1.y} ~ ${location_2.x},${location_2.y}`);
+    debug(`find : ${gyaonId} `);
     var query = {
       user: gyaonId,
+
       location_x: {
-        $gte: location_1.x,
-        $lte: location_2.x
+        $exists: true
       },
       location_y: {
-        $gte: location_1.y,
-        $lte: location_2.y
+        $exists: true
       }
     };
     Sound.find(query).sort({lastmodified: -1}).exec(function(err, sounds){
