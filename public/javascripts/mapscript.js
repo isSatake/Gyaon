@@ -18,6 +18,7 @@ $(function() {
   var isInputComment      = false;
   var permissionResolved  = false;
 
+  var AudioContext        = window.AudioContext || window.webkitAudioContext;
   var audioContext        = new AudioContext();
   var exporter            = new AudioExporter();
   var recorder            = new AudioRecorder({ audioContext: audioContext });
@@ -50,6 +51,10 @@ $(function() {
 
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
+    if(navigator.getUserMedia === undefined){
+      fail;
+      return;
+    }
     navigator.getUserMedia({
       video: false,
       audio: true
@@ -72,36 +77,6 @@ $(function() {
       num = "0" + num;
     }
     return num;
-  }
-  var formatDate = function(_date){
-    var date = new Date(_date);
-    var Y = date.getFullYear();
-    var M = toDoubleDigits(date.getMonth() + 1);
-    var D = toDoubleDigits(date.getDate());
-    var h = toDoubleDigits(date.getHours());
-    var m = toDoubleDigits(date.getMinutes());
-    return `${Y}-${M}-${D} ${h}:${m}`;
-  };
-
-  // .memoを追加
-  var createMemo = function(endpoint, sound){
-    var $memo = $(
-        `<tr key="${sound.key}" class="memo">`
-      +   `<td class="date">`
-      +     `${formatDate(sound.lastmodified)}`
-      +     `<audio id="${sound.key}" src="${endpoint}/sounds/${sound.key}" preload="metadata"/>`
-      +   `</td>`
-      +   `<td class="comment"><input type="text"></td>`
-      +   `<td class="delete-button">`
-      +     `<i class="deleteButton tiny material-icons">clear</i>`
-      +   `</td>`
-      +   `<td class="copy-button">`
-      +     `<i class="copyButton tiny material-icons">content_copy</i>`
-      +   `</td>`
-      + `</tr>`
-    );
-
-    return $memo;
   }
 
   //音量メータ描画
@@ -413,7 +388,7 @@ $(function() {
     var $this = $(this);
     var key = $this.parent().attr('key');
     var text = $this.find('input')[0].value;
-    $.ajax(`/comment/${key}`, {
+    $.ajax('/comment/' + key, {
       method: "POST",
       data: { "value": text }
     }).done(function(done) {
