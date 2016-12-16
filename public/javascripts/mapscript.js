@@ -223,15 +223,7 @@ $(function() {
       //どうやって再生していくか
       //順番に再生できる？
       if(nearBySounds.length > 0){
-        // $('recordButton').hover();
-        // document.getElementById('aiu').play();
-        // document.getElementById(nearBySounds[0].key).play();
-        // var key = nearBySounds[0].key;
-        // var $tr = $('#memos').find(`tr[key="${key}"]`);
-        // var $audio = $tr.find('audio')[0];
-        // console.log($audio);
-        //   $audio.play();
-
+        nearBySounds[0].element.play();
       }
     }
   }
@@ -245,43 +237,44 @@ $(function() {
 
   var getAllSoundsAndLoad = function(){
     // document.getElementById('aiu').load();
-    $.ajax("/map/sounds/" + $('#gyaonId').text(), {
-        method: "GET"
-      }).done(function(done) {
-
-        //配列に入れる
-        sounds = done.sounds;
-        //iterateしてaudioElement作る
-        //audioElementの参照を配列に入れる
-        //その配列をiterateして全部load()する
-        sounds.map(function(sound){
-          var $tr = $("#memos").append(createMemo(done.endpoint, sound));
-          sound.element = $tr.find('audio')[0];
-          sound.element.load();
-
-          //ピンを立てる
-          //ピン毎にaudioElementとリンクしたイベントをbindする
-          sound.marker = new google.maps.Marker({
-            position: new google.maps.LatLng(sound.location_y, sound.location_x),
-            map: map,
-            icon: markerIcon
-          });
-          sound.marker.addListener('mouseover', function(){
-            sound.element.play();
-            $tr.attr("data-playing", true);
-            this.setIcon(playingMarkerIcon);
-          });
-          sound.marker.addListener('mouseout', function(){
-            sound.element.pause();
-            sound.element.currentTime = 0;
-            $tr.removeAttr("data-playing");
-            this.setIcon(markerIcon);
-          });
-        });
-        console.log(sounds);
-      }).fail(function(e) {
-        alert("failed to get sounds.");
-      });
+    // $.ajax("/map/sounds/" + $('#gyaonId').text(), {
+    //     method: "GET"
+    //   }).done(function(done) {
+    //
+    //     //配列に入れる
+    //     sounds = done.sounds;
+    //     //iterateしてaudioElement作る
+    //     //audioElementの参照を配列に入れる
+    //     //その配列をiterateして全部load()する
+    //     sounds.map(function(sound){
+    //       var $tr = $("#memos").append(createMemo(done.endpoint, sound));
+    //       sound.element = $tr.find('audio')[0];
+    //       sound.element.play();
+    //       sound.element.pause();
+    //
+    //       //ピンを立てる
+    //       //ピン毎にaudioElementとリンクしたイベントをbindする
+    //       sound.marker = new google.maps.Marker({
+    //         position: new google.maps.LatLng(sound.location_y, sound.location_x),
+    //         map: map,
+    //         icon: markerIcon
+    //       });
+    //       sound.marker.addListener('mouseover', function(){
+    //         sound.element.play();
+    //         $tr.attr("data-playing", true);
+    //         this.setIcon(playingMarkerIcon);
+    //       });
+    //       sound.marker.addListener('mouseout', function(){
+    //         sound.element.pause();
+    //         sound.element.currentTime = 0;
+    //         $tr.removeAttr("data-playing");
+    //         this.setIcon(markerIcon);
+    //       });
+    //     });
+    //     console.log(sounds);
+    //   }).fail(function(e) {
+    //     alert("failed to get sounds.");
+    //   });
   }
 
   // 録音ボタン
@@ -483,8 +476,60 @@ $(function() {
     switch($(this).prop('checked')){
       case true:
       {
-        getAllSoundsAndLoad();
+        sounds = [];
         registerWatchPosition();
+
+        $('.memo').each(function(){
+          var $audio = $(this).find('audio')[0];
+          $audio.load();
+          var object = {
+            element: $audio,
+            location_x: $audio.getAttribute('locationx'),
+            location_y: $audio.getAttribute('locationy')
+          };
+          sounds.push(object);
+        });
+
+        // document.getElementById('aiu').load();
+        // $.ajax("/map/sounds/" + $('#gyaonId').text(), {
+        //     method: "GET"
+        //   }).done(function(done) {
+        //
+        //     //配列に入れる
+        //     sounds = done.sounds;
+        //     //iterateしてaudioElement作る
+        //     //audioElementの参照を配列に入れる
+        //     //その配列をiterateして全部load()する
+        //     sounds.map(function(sound){
+        //       var $tr = $("#memos").append(createMemo(done.endpoint, sound));
+        //       sound.element = $tr.find('audio')[0];
+        //       // sound.element.load();
+        //       document.getElementById(sound.key).load();
+        //
+        //       //ピンを立てる
+        //       //ピン毎にaudioElementとリンクしたイベントをbindする
+        //       sound.marker = new google.maps.Marker({
+        //         position: new google.maps.LatLng(sound.location_y, sound.location_x),
+        //         map: map,
+        //         icon: markerIcon
+        //       });
+        //       sound.marker.addListener('mouseover', function(){
+        //         sound.element.play();
+        //         $tr.attr("data-playing", true);
+        //         this.setIcon(playingMarkerIcon);
+        //       });
+        //       sound.marker.addListener('mouseout', function(){
+        //         sound.element.pause();
+        //         sound.element.currentTime = 0;
+        //         $tr.removeAttr("data-playing");
+        //         this.setIcon(markerIcon);
+        //       });
+        //     });
+        //     console.log(sounds);
+        //   }).fail(function(e) {
+        //     alert("failed to get sounds.");
+        //   });
+        // registerWatchPosition();
       }
       break;
       case false:
