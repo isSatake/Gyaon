@@ -17,10 +17,14 @@ var s3EndPoint  = 'https://s3-us-west-2.amazonaws.com/gyaon';
 /* Gyaon Map */
 var index = function(req, res, gyaonId){
   debug("gyaonId : " + gyaonId);
-  res.render('map', {
-    id: gyaonId,
-    endpoint: endPoint
-  });
+  model.promiseGetSoundsWithLocation(gyaonId).then(function(result){
+    res.render('map', {
+      id: gyaonId,
+      endpoint: endPoint,
+      sounds: result,
+      format: formatDate
+    });
+  }).catch(function (err) { console.error(err.stack || err) });
 }
 
 router.get('/', function(req, res) {

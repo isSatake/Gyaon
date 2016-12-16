@@ -1,6 +1,7 @@
 extends layout
 
 block content
+  audio(id="aiu", src="http://ejje.westatic.com/audio/perpendicular.wav")
   p your id :
     span#gyaonId #{id}
   div#recorder
@@ -14,8 +15,19 @@ block content
   div#mapcontainer
     div#map
     div#tablecontainer
-      table#memos.highlight
-        tr
+    table#memos.highlight
+      each sound in sounds
+        tr.memo(key=sound.key)
+          td.date #{format(sound.lastmodified)}
+            audio(src=endpoint+"/sounds/"+sound.key, preload="metadata", locationx = sound.location_x, locationy = sound.location_y)
+            div.progress.transparent
+              div.determinate
+          td.comment #{sound.memo}
+            input(type="text", value=sound.comment)
+          td.delete-button
+            i.deleteButton.tiny.material-icons="clear"
+          td.copy-button
+            i.copyButton.tiny.material-icons="content_copy"
 
 
 block scripts
