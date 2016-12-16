@@ -1,25 +1,7 @@
 extends layout
 
 block content
-  p your id :
-    span#gyaonId #{id}
-  div#recorder
-    button#recordButton.btn-floating.btn-large.red.disabled
-      i.material-icons mic_none
-    canvas#volumeMeter("width=500 height=50")
-  table#memos.highlight
-    each sound in sounds
-      tr.memo(key=sound.key)
-        td.date #{format(sound.lastmodified)}
-          audio(src=endpoint+"/sounds/"+sound.key, preload="metadata")
-          div.progress.transparent
-            div.determinate
-        td.comment #{sound.memo}
-          input(type="text", value=sound.comment)
-        td.delete-button
-          i.deleteButton.tiny.material-icons="clear"
-        td.copy-button
-          i.copyButton.tiny.material-icons="content_copy"
+  h1 これは何
 
 
 block scripts
