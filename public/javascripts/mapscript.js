@@ -198,9 +198,6 @@ $(function() {
     maximumAge: 3000
   };
 
-  var getAllSoundsAndLoad = function(){
-  }
-
   // 録音ボタン
   var startRec = function(){
     requestPermission(function(localMediaStream) {
@@ -409,6 +406,7 @@ $(function() {
           var $audio = $(this).find('audio')[0];
           $audio.load();
 
+          var key = $audio.getAttribute('key');
           var x = $audio.getAttribute('locationx');
           var y = $audio.getAttribute('locationy');
 
@@ -445,6 +443,7 @@ $(function() {
 
           var sound = {
             element: $audio,
+            key: key,
             location_x: x,
             location_y: y,
             marker: marker
