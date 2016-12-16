@@ -319,12 +319,12 @@ $(function() {
       contentType: false
     }).done(function(done) {
       console.log(done);
-      // $("#memos").prepend(createMemo(done.endpoint, done.object));
     }).fail(function(e) {
       alert("export failed");
     });
     console.log(blob);
   }
+
   if(isSmartPhone){
     $recordButton.on('touchstart', function(e){
       startRec();
@@ -377,10 +377,6 @@ $(function() {
         // startMeter();
         audio.play();
         $this.attr("data-playing", true);
-        var playingMarker = soundMarkers.filter(function(marker){
-          return (marker.key == $this.attr("key"));
-        });
-        playingMarker[0].marker.setIcon(playingMarkerIcon);
       }
       break;
       case "mouseleave":
@@ -389,10 +385,6 @@ $(function() {
         $this.removeAttr("data-playing");
         audio.pause();
         audio.currentTime = 0;
-        var playingMarker = soundMarkers.filter(function(marker){
-          return (marker.key == $this.attr("key"));
-        });
-        playingMarker[0].marker.setIcon(markerIcon);
       }
       break;
       default:
@@ -485,44 +477,6 @@ $(function() {
     }).fail(function(e) {
       alert("save failed");
     });
-  });
-
-  //アップロード,削除されたら同期
-  postSound.on($('#gyaonId').text(), function (data) {
-    var key = data.object.key;
-    var sound = data.object;
-    console.log(`post: ${key}`);
-    var marker = new google.maps.Marker({
-      position: new google.maps.LatLng(sound.location_y, sound.location_x),
-      map: map,
-      icon: markerIcon
-    });
-    marker.addListener('mouseover', function(){
-      var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
-      var $audio = $tr.find('audio')[0];
-      $audio.play();
-      $tr.attr("data-playing", true);
-      this.setIcon(playingMarkerIcon);
-    });
-    marker.addListener('mouseout', function(){
-      var $tr = $('#memos').find(`tr[key="${sound.key}"]`);
-      var $audio = $tr.find('audio')[0];
-      $audio.pause();
-      $audio.currentTime = 0;
-      $tr.removeAttr("data-playing");
-      this.setIcon(markerIcon);
-    });
-    soundMarkers.push({
-      key: key,
-      marker: marker
-    });
-    $("#memos").prepend(createMemo(data.endpoint, sound));
-  });
-
-  deleteSound.on($('#gyaonId').text(), function (data) {
-    console.log(`delete: ${data}`);
-    $("[key='" + data + "']").remove();
-    //TODO マーカーも消す
   });
 
   $('#tracking').on("change", function(e){
