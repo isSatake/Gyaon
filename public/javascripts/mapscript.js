@@ -65,9 +65,7 @@ $(function() {
   var setPermissionResolved = function(resolved) {
     permissionResolved = resolved;
     if (resolved) {
-      $recordButton.removeClass("disabled");
-    } else {
-      $recordButton.addClass("disabled");
+      1
     }
   }
 
@@ -404,6 +402,8 @@ $(function() {
       {
         sounds = [];
 
+        $recordButton.removeClass("disabled");
+
         $('.memo').each(function(){
           var $audio = $(this).find('audio')[0];
           $audio.load();
@@ -457,6 +457,7 @@ $(function() {
       case false:
       {
         clearWatchPosition();
+        $recordButton.addClass("disabled");
       }
       break;
       default:
