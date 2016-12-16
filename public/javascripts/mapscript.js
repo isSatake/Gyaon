@@ -236,6 +236,7 @@ $(function() {
       contentType: false
     }).done(function(done) {
       console.log(done);
+      location.reload();
     }).fail(function(e) {
       alert("export failed");
     });
