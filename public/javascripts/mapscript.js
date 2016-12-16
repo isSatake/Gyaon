@@ -160,21 +160,7 @@ $(function() {
       center: new google.maps.LatLng(35.388664, 139.427951) //SFC学事
     };
     map = new google.maps.Map(document.getElementById("map"), opts);
-
-    //地図の移動イベント
-    map.addListener('idle', function() {
-      //表示領域の左下・右上座標を取得
-      var swLatlng = map.getBounds().getSouthWest();
-      var neLatlng = map.getBounds().getNorthEast();
-      // getSoundsByLocation(swLatlng.lng(), swLatlng.lat(), neLatlng.lng(), neLatlng.lat());
-    });
-
-    // registerWatchPosition();
   }
-
-  $('#regist').click(function(e){
-    registerWatchPosition();
-  });
 
   window.initMap = function(){
     if(map) return;
@@ -182,11 +168,15 @@ $(function() {
   }
 
   if(!navigator.geolocation){
-    alert("failed to get location.");
+    alert("位置情報の利用を許可してください");
   }
 
   var registerWatchPosition = function(){
     watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
+  }
+
+  var clearWatchPosition = function(){
+    navigator.geolocation.clearWatch(watchPositionId);
   }
 
   var onChangePosition = function(pos){
@@ -228,7 +218,7 @@ $(function() {
     }
   }
   var onPositionError = function(err){
-    alert("位置情報の利用を許可して下さい");
+    console.log("watchPosition onError");
   }
   var option = {
     enableHighAccuracy: false,
@@ -236,45 +226,6 @@ $(function() {
   };
 
   var getAllSoundsAndLoad = function(){
-    // document.getElementById('aiu').load();
-    // $.ajax("/map/sounds/" + $('#gyaonId').text(), {
-    //     method: "GET"
-    //   }).done(function(done) {
-    //
-    //     //配列に入れる
-    //     sounds = done.sounds;
-    //     //iterateしてaudioElement作る
-    //     //audioElementの参照を配列に入れる
-    //     //その配列をiterateして全部load()する
-    //     sounds.map(function(sound){
-    //       var $tr = $("#memos").append(createMemo(done.endpoint, sound));
-    //       sound.element = $tr.find('audio')[0];
-    //       sound.element.play();
-    //       sound.element.pause();
-    //
-    //       //ピンを立てる
-    //       //ピン毎にaudioElementとリンクしたイベントをbindする
-    //       sound.marker = new google.maps.Marker({
-    //         position: new google.maps.LatLng(sound.location_y, sound.location_x),
-    //         map: map,
-    //         icon: markerIcon
-    //       });
-    //       sound.marker.addListener('mouseover', function(){
-    //         sound.element.play();
-    //         $tr.attr("data-playing", true);
-    //         this.setIcon(playingMarkerIcon);
-    //       });
-    //       sound.marker.addListener('mouseout', function(){
-    //         sound.element.pause();
-    //         sound.element.currentTime = 0;
-    //         $tr.removeAttr("data-playing");
-    //         this.setIcon(markerIcon);
-    //       });
-    //     });
-    //     console.log(sounds);
-    //   }).fail(function(e) {
-    //     alert("failed to get sounds.");
-    //   });
   }
 
   // 録音ボタン
@@ -534,7 +485,7 @@ $(function() {
       break;
       case false:
       {
-
+        clearWatchPosition();
       }
       break;
       default:
