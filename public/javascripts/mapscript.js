@@ -200,7 +200,7 @@ $(function() {
     //現在位置付近の音声を再生
     if(isSmartPhone){
       //0.00002度で3mくらいらしい
-      var radius = 0.00002
+      var radius = 0.0002
       var nearBySounds = sounds.filter(function(sound){
         if (sound.location_x >= longitude - radius &&
             sound.location_x <= longitude + radius &&
@@ -428,59 +428,55 @@ $(function() {
       case true:
       {
         sounds = [];
-        registerWatchPosition();
 
         $('.memo').each(function(){
           var $audio = $(this).find('audio')[0];
           $audio.load();
-          var object = {
+
+          var x = $audio.getAttribute('locationx');
+          var y = $audio.getAttribute('locationy');
+
+          var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(y, x),
+            map: map,
+            icon: markerIcon
+          });
+          marker.addListener('mouseover', function(){
+            $audio.play();
+            this.setIcon(playingMarkerIcon);
+          });
+          marker.addListener('mouseout', function(){
+            $audio.pause();
+            $audio.currentTime = 0;
+            this.setIcon(markerIcon);
+          });
+
+          $(this).find('audio').on("play pause", function(e){
+            switch(e.type){
+              case "play":
+              {
+                marker.setIcon(playingMarkerIcon);
+              }
+              break;
+              case "pause":
+              {
+                marker.setIcon(markerIcon);
+              }
+              break;
+              default:
+            }
+          });
+
+          var sound = {
             element: $audio,
-            location_x: $audio.getAttribute('locationx'),
-            location_y: $audio.getAttribute('locationy')
+            location_x: x,
+            location_y: y,
+            marker: marker
           };
-          sounds.push(object);
+          sounds.push(sound);
         });
 
-        // document.getElementById('aiu').load();
-        // $.ajax("/map/sounds/" + $('#gyaonId').text(), {
-        //     method: "GET"
-        //   }).done(function(done) {
-        //
-        //     //配列に入れる
-        //     sounds = done.sounds;
-        //     //iterateしてaudioElement作る
-        //     //audioElementの参照を配列に入れる
-        //     //その配列をiterateして全部load()する
-        //     sounds.map(function(sound){
-        //       var $tr = $("#memos").append(createMemo(done.endpoint, sound));
-        //       sound.element = $tr.find('audio')[0];
-        //       // sound.element.load();
-        //       document.getElementById(sound.key).load();
-        //
-        //       //ピンを立てる
-        //       //ピン毎にaudioElementとリンクしたイベントをbindする
-        //       sound.marker = new google.maps.Marker({
-        //         position: new google.maps.LatLng(sound.location_y, sound.location_x),
-        //         map: map,
-        //         icon: markerIcon
-        //       });
-        //       sound.marker.addListener('mouseover', function(){
-        //         sound.element.play();
-        //         $tr.attr("data-playing", true);
-        //         this.setIcon(playingMarkerIcon);
-        //       });
-        //       sound.marker.addListener('mouseout', function(){
-        //         sound.element.pause();
-        //         sound.element.currentTime = 0;
-        //         $tr.removeAttr("data-playing");
-        //         this.setIcon(markerIcon);
-        //       });
-        //     });
-        //     console.log(sounds);
-        //   }).fail(function(e) {
-        //     alert("failed to get sounds.");
-        //   });
-        // registerWatchPosition();
+        registerWatchPosition();
       }
       break;
       case false:
