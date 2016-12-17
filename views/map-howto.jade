@@ -1,19 +1,62 @@
 extends layout
-
+block head
+  meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1.0")
 block content
-  h1 つかいかた
-
+  nav
+    div.nav-wrapper.container
+      a.brand-logo(href="#")
+        i.material-icons mic
+  div.container
+    div.row
+      div.col.s12
+        h4.center-align つかいかた
+        div.section
+          h5 はじめに
+          p このアプリケーションは位置情報を利用します。
+            予めスマートフォンでの位置情報の利用を許可しておいてください。
+        div.divider
+        div.section
+          h5 音声を聞く
+          p 左上のTrackingスイッチをONにして、位置情報のトラッキングを有効にします。
+          img.materialboxed.z-depth-1(src="../../images/switch.png", width="100%")
+          p すると現在位置を追従するように地図が表示され、音声が記録されている場所にスピーカーのマーカーが出現します。
+          img.materialboxed.z-depth-1(src="../../images/geo.png", width="100%")
+          p マーカーに近づくように移動すると、音声が再生されます。
+          img.materialboxed.z-depth-1(src="../../images/playing.png", width="100%")
+        div.divider
+        div.section
+          h5 音声を止める
+          p TrackingスイッチをOFFにすることで位置情報のトラッキングが停止され、音声は再生されなくなります。
+        div.divider
+        div.section
+          h5 録音する
+          p 位置情報のトラッキングを有効にすると左下の録音ボタンが赤くなり、録音が可能になります。
+          p このボタンを長押ししている間、マイクからの音声を録音することができます。
+          p 録音中は音量メーターが表示されます。
+          img.materialboxed.z-depth-1(src="../../images/meter.png", width="100%")
+          p ボタンを離すと録音が終了し、位置情報が関連付けられ、音声がアップロードされます。
+          p アップロードが完了するとブラウザが更新されます。再びトラッキングを有効にすることで録音した音声を実際に聞くことができます。
+        div.divider
+        div.section
+          h5 iPhoneをご利用の方へ
+          p 古いバージョンのSafariは音声の録音・再生に対応していません。
+            問題がある場合は
+            a(href="https://itunes.apple.com/jp/app/chrome-google-nou-ebuburauza/id535886823?mt=8") Chrome
+            をインストールして再度アクセスしてみてください。
+        div.divider
+        div.section
+          h5 Androidをご利用の方へ
+          p 古いバージョンのChromeでは動作しない場合があります。
+            問題がある場合はアップデートを行い再度アクセスしてみてください。
+        div.divider
+        div.section
+          h5 その他問題がある場合
+          p ブラウザの更新ボタンを押してみてください。
 
 block scripts
   link(rel='icon', sizes='16x16 32x32 48x48 64x64', href='favicon.ico')
   link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css')
-  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/stylesheets/map-document.css')
   link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js')
-  script(src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js')
-  script(src='javascripts/recorder.js')
-  script(src='javascripts/exporter.js')
-  script(src='javascripts/volume-meter.js')
-  script(src='javascripts/script.js')
-  script(src='javascripts/socket.io.js')
