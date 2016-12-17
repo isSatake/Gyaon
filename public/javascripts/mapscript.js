@@ -458,6 +458,9 @@ $(function() {
       {
         clearWatchPosition();
         $recordButton.addClass("disabled");
+        for(var i in sounds){
+          sounds[i].element.pause();
+        }
       }
       break;
       default:
