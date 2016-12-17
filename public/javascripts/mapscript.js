@@ -136,7 +136,6 @@ $(function() {
   }
 
   window.initMap = function(){
-    if(map) return;
     initMap();
   }
 
