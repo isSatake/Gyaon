@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node app.js --debug",
-    "build": "watchify --verbose --debug assets/public/js/index.js --transform babelify --outfile public/javascripts/app.js"
+    "build": "babel assets/public/js/index.js --outfile public/javascripts/app.js",
+    "watch": "watchify --verbose --debug assets/public/js/index.js --transform babelify --outfile public/javascripts/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -54,5 +55,8 @@
   },
   "engines": {
     "node": "5.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0"
   }
 }
