@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js --debug",
-    "build": "babel assets/public/js/index.js --outfile public/javascripts/app.js",
+    "postinstall": "npm run build",
+    "start": "node app.js",
+    "start:dev": "node-dev app.js",
+    "build": "browserify assets/public/js/index.js --transform babelify --outfile public/javascripts/app.js",
     "watch": "watchify --verbose --debug assets/public/js/index.js --transform babelify --outfile public/javascripts/app.js"
   },
   "author": "",
@@ -55,8 +57,5 @@
   },
   "engines": {
     "node": "5.0.0"
-  },
-  "devDependencies": {
-    "babel-cli": "^6.18.0"
   }
 }

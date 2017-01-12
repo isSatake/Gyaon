@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import Request from 'superagent'
 import SoundTable from './SoundTable'
 import UserId from '../components/UserId'
 import Recorder from '../components/Recorder'
@@ -16,7 +17,10 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 injectTapEventPlugin()
 
 //NODE_ENV? エンドポイント取得APIを生やす？
-export const ENDPOINT = process.env.BASE_URL || 'http://localhost:3000'
+// async function getEndpoint(){
+//   return await Request.get('/getendpoint')
+// }
+export const ENDPOINT = window.location.origin
 export const GYAON_ID = window.location.pathname.substring(1)
 
 class GyaonApp extends Component {

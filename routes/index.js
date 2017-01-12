@@ -34,6 +34,10 @@ router.get('/:gyaonId', function(req, res, next) {
   res.render('index');
 });
 
+router.get('/getendpoint', function(req, res, next){
+  res.send(endpoint);
+})
+
 router.get('/sounds/:gyaonId', function(req, res){
   //ユーザの音声リストを返却
   var gyaonId = req.params.gyaonId

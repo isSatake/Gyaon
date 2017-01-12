@@ -3,7 +3,6 @@ var http        = require('http');
 var app         = express();
 
 var path        = require('path');
-var favicon     = require('serve-favicon');
 var logger      = require('morgan');
 var bodyParser  = require('body-parser');
 var debug       = require('debug')('gyaon:server');
