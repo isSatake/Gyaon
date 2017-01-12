@@ -1,8 +1,10 @@
 public/mp3
 public/tmp
+public/javascripts/app.js
 node_modules/
 .DS_Store
 .config.json
+.env
 *.swp
 *.log
 .env

@@ -1,77 +1,13 @@
-body {
-  padding: 50px;
-}
-
-a {
-  color: #00B7FF;
-}
-
-.memo {
-  cursor: pointer;
-}
-
-#memos {
-  margin-top: 20px;
-}
-
-td {
-  font-size: 20px;
-  font-weight: 300;
-  padding: 5px;
-}
-
-.date {
-  width: 200px;
-  letter-spacing: 2px;
-  position: relative;
-}
-
-td.delete-button, td.copy-button {
-  width: 10px;
-}
-
-.progress {
-  bottom: 0;
-  left: 0;
-  position: absolute;
+html {
+  height: 100%;
   margin: 0;
-}
-
-.determinate {
-  transition: none !important;
-}
-
-.comment input {
-  border: none;
-  font-size: 15px;
-  height: inherit;
-  margin-bottom: 8px;
-  padding-bottom: 2px;
+  font-family: 'Roboto', sans-serif;
   font-weight: 300;
 }
 
-.actions {
-  bottom: 5px;
-  position: absolute;
-}
-
-.actions i {
-  cursor: pointer;
-  margin-right: 5px;
-}
-
-#recorder {
-  min-width: 585px;
-}
-
-#recordButton {
-  margin-left: 10px;
-  float: left;
-}
-
-#volumeMeter {
-  margin-top: 3px;
-  margin-left: 15px;
+body {
+  height: 100%;
+  margin: 0;
 }
 
 #map {

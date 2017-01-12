@@ -24,27 +24,25 @@ var promiseUploadDir = function() {
   });
 }
 
-var index = function(req, res, gyaonId){
-  debug("gyaonId : " + gyaonId);
-  model.promiseGetSounds(gyaonId).then(function(result){
-    res.render('index', {
-      id: gyaonId,
-      endpoint: endPoint,
-      sounds: result,
-      format: formatDate
-    });
-  }).catch(function (err) { console.error(err.stack || err) });
-}
-
-/* GET home page. */
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
   var gyaonId = shortid.generate();
-  index(req, res, gyaonId);
+  res.redirect('/' + gyaonId);
 });
 
-router.get('/:id', function(req, res) {
-  var gyaonId = req.params.id;
-  index(req, res, gyaonId);
+router.get('/:gyaonId', function(req, res, next) {
+  var gyaonId = req.params.gyaonId;
+  res.render('index');
+});
+
+router.get('/sounds/:gyaonId', function(req, res){
+  //ユーザの音声リストを返却
+  var gyaonId = req.params.gyaonId
+  model.promiseGetSounds(gyaonId).then(function(result){
+    res.send({
+      endpoint: endPoint,
+      sounds: result
+    });
+  }).catch(function (err) { console.error(err.stack || err) });
 });
 
 //音声データをリダイレクト
@@ -55,7 +53,7 @@ router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
 });
 
 /* 音声データ受け取り */
-router.post('/upload', function(req, res) {
+router.post('/upload/:gyaonId', function(req, res) {
   promiseUploadDir().then(function() {
     var form = new formidable.IncomingForm();
     form.encoding = "utf-8";
@@ -69,10 +67,9 @@ router.post('/upload', function(req, res) {
           endpoint: endPoint,
           object: sound
         }).end();
-        //socket.ioで通知
         req.app.get('socket.io').of('/post').emit(fields.gyaonId, { endpoint: endPoint ,object: sound });
       });
-    })
+    });
     form.on('error', function(err){
       console.error(err.stack || err);
     });

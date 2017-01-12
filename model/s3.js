@@ -6,6 +6,7 @@ require('dotenv').config();
 AWS.config.accessKeyId = process.env.accessKeyId;
 AWS.config.secretAccessKey = process.env.secretAccessKey;
 AWS.config.region = process.env.region;
+debug(AWS.config);
 var bucket = new AWS.S3({params: {Bucket: 'gyaon'}});
 
 exports.promiseUpload = function(params){

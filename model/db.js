@@ -27,6 +27,7 @@ var Sound = mongoose.model('Sound', soundSchema);
 
 var createSound = function(s3Data, location, file){
   debug("createSound");
+  debug(s3Data);
   debug(location.x);
   var now = new Date;
   return new Sound({
@@ -35,6 +36,7 @@ var createSound = function(s3Data, location, file){
     name: s3Data.key.split("/")[1],
     size: file.size,
     user: s3Data.key.split("/")[0],
+    comment: "",
     location_x: location.x,
     location_y: location.y
   })
