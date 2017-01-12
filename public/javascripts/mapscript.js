@@ -4,10 +4,21 @@ $(function() {
                               navigator.mozGetUserMedia ||
                               navigator.msGetUserMedia );
 
+  var isSmartPhone        = false;
+  if (( navigator.userAgent.indexOf('iPhone') > 0 &&
+        navigator.userAgent.indexOf('iPad') == -1) ||
+        navigator.userAgent.indexOf('iPod') > 0 ||
+        navigator.userAgent.indexOf('Android') > 0) {
+    isSmartPhone = true;
+    $('head').append('<meta name="viewport" content="width=360" >');
+    $('body').append('<link rel="stylesheet" type="text/css" href="../stylesheets/sp.css">');
+  }
+
   var $recordButton       = $("#recordButton");
   var isInputComment      = false;
   var permissionResolved  = false;
 
+  var AudioContext        = window.AudioContext || window.webkitAudioContext;
   var audioContext        = new AudioContext();
   var exporter            = new AudioExporter();
   var recorder            = new AudioRecorder({ audioContext: audioContext });
@@ -24,8 +35,26 @@ $(function() {
   var postSound = io.connect('/post');
   var deleteSound = io.connect('/delete');
 
+  var endPoint;
+
+  var watchPositionId;
+  var map;
+  var currentPositionMarker;
+  var sounds = [];
+  var audioElements = [];
+  var canPlay = false;
+
+
+  var soundMarkers = [];
+  var markerIcon = "../images/sound.png";
+  var playingMarkerIcon = "../images/sound_playing.png";
+
   // 録音のパーミッションをリクエストする
   var requestPermission = function(success, fail) {
+    if(navigator.getUserMedia === undefined){
+      fail;
+      return;
+    }
     navigator.getUserMedia({
       video: false,
       audio: true
@@ -36,9 +65,7 @@ $(function() {
   var setPermissionResolved = function(resolved) {
     permissionResolved = resolved;
     if (resolved) {
-      $recordButton.removeClass("disabled");
-    } else {
-      $recordButton.addClass("disabled");
+      1
     }
   }
 
@@ -48,37 +75,6 @@ $(function() {
       num = "0" + num;
     }
     return num;
-  }
-  var formatDate = function(_date){
-    var date = new Date(_date);
-    var Y = date.getFullYear();
-    var M = toDoubleDigits(date.getMonth() + 1);
-    var D = toDoubleDigits(date.getDate());
-    var h = toDoubleDigits(date.getHours());
-    var m = toDoubleDigits(date.getMinutes());
-    return `${Y}-${M}-${D} ${h}:${m}`;
-  };
-
-  // .memoを追加
-  var createMemo = function(endpoint, sound){
-    var $memo = $(
-        `<tr key="${sound.key}" class="memo">`
-      +   `<td class="date">`
-      +     `${formatDate(sound.lastmodified)}`
-      +     `<audio src="${endpoint}/sounds/${sound.key}" preload="metadata"/>`
-      +   `</td>`
-      +   `<td class="comment"><input type="text"></td>`
-      +   `<td class="delete-button">`
-      +     `<i class="deleteButton tiny material-icons">clear</i>`
-      +   `</td>`
-      +   `<td class="copy-button">`
-      +     `<i class="copyButton tiny material-icons">content_copy</i>`
-      +   `</td>`
-      + `</tr>`
-    );
-    $memo.find("audio")[0].play();
-
-    return $memo;
   }
 
   //音量メータ描画
@@ -125,8 +121,84 @@ $(function() {
     console.error(err);
   });
 
+  /* 緯度 == y軸 == latitude
+   * 経度 == x軸 == longitude
+   */
+  //GoogleMap関連
+  //初期化
+  var initMap = function(){
+    console.log("initialize Google Map.")
+    var opts = {
+      zoom: 15,
+      center: new google.maps.LatLng(35.388664, 139.427951) //SFC学事
+    };
+    map = new google.maps.Map(document.getElementById("map"), opts);
+  }
+
+  window.initMap = function(){
+    initMap();
+  }
+
+  if(!navigator.geolocation){
+    alert("位置情報の利用を許可してください");
+  }
+
+  var registerWatchPosition = function(){
+    watchPositionId = navigator.geolocation.watchPosition(onChangePosition, onPositionError, option);
+  }
+
+  var clearWatchPosition = function(){
+    navigator.geolocation.clearWatch(watchPositionId);
+  }
+
+  var onChangePosition = function(pos){
+    console.log("onchangeposition");
+    if(!map) return;
+
+    var latitude = pos.coords.latitude;
+    var longitude = pos.coords.longitude;
+    console.log("moved to " + latitude + " " + longitude);
+    var latlng = new google.maps.LatLng(latitude, longitude);
+    map.panTo(latlng);
+    if(!currentPositionMarker){
+      currentPositionMarker = new google.maps.Marker({
+        position: new google.maps.LatLng(latitude, longitude),
+        map: map
+      });
+      return;
+    }
+    currentPositionMarker.setPosition(latlng);
+
+    //現在位置付近の音声を再生
+    if(isSmartPhone){
+      //0.00002度で3mくらいらしい
+      var radius = 0.0002
+      var nearBySounds = sounds.filter(function(sound){
+        if (sound.location_x >= longitude - radius &&
+            sound.location_x <= longitude + radius &&
+            sound.location_y >= latitude - radius &&
+            sound.location_y <= latitude + radius){
+            return true;
+        }
+      });
+      console.log(nearBySounds);
+      //どうやって再生していくか
+      //順番に再生できる？
+      if(nearBySounds.length > 0){
+        nearBySounds[0].element.play();
+      }
+    }
+  }
+  var onPositionError = function(err){
+    console.log("watchPosition onError");
+  }
+  var option = {
+    enableHighAccuracy: false,
+    maximumAge: 3000
+  };
+
   // 録音ボタン
-  $recordButton.mousedown(function(e) {
+  var startRec = function(){
     requestPermission(function(localMediaStream) {
       $('#recordButton i').text("mic");
       setTimeout(function(){
@@ -134,7 +206,8 @@ $(function() {
         startVolumeMeter();
       }, 50);
     }, alert);
-  }).mouseup(function(e) {
+  };
+  var stopRec = function(){
     $('#recordButton i').text("mic_none");
     recorder.stop();
     stopVolumeMeter();
@@ -148,7 +221,10 @@ $(function() {
     // file名は使ってない
     var formData = new FormData();
     formData.append("gyaonId", $('#gyaonId').text());
+    formData.append("location_x", map.getCenter().lng());
+    formData.append("location_y", map.getCenter().lat());
     formData.append("file", blob, "hoge.wav");
+    console.log(formData);
     $.ajax("/upload", {
       method: "POST",
       data: formData,
@@ -156,12 +232,27 @@ $(function() {
       contentType: false
     }).done(function(done) {
       console.log(done);
-      // $("#memos").prepend(createMemo(done.endpoint, done.object));
+      location.reload();
     }).fail(function(e) {
       alert("export failed");
     });
     console.log(blob);
-  });
+  }
+
+  if(isSmartPhone){
+    $recordButton.on('touchstart', function(e){
+      startRec();
+    });
+    $recordButton.on('touchend', function(e){
+      stopRec();
+    });
+  }else{
+    $recordButton.mousedown(function(e) {
+      startRec();
+    }).mouseup(function(e) {
+      stopRec();
+    });
+  }
 
   //Rキーで録音
   var isRec = false;
@@ -292,7 +383,7 @@ $(function() {
     var $this = $(this);
     var key = $this.parent().attr('key');
     var text = $this.find('input')[0].value;
-    $.ajax(`/comment/${key}`, {
+    $.ajax('/comment/' + key, {
       method: "POST",
       data: { "value": text }
     }).done(function(done) {
@@ -302,13 +393,76 @@ $(function() {
     });
   });
 
-  //アップロード,削除されたら同期
-  postSound.on($('#gyaonId').text(), function (data) {
-    console.log(`post: ${data.object.key}`);
-    $("#memos").prepend(createMemo(data.endpoint, data.object));
-  });
-  deleteSound.on($('#gyaonId').text(), function (data) {
-    console.log(`delete: ${data}`);
-    $("[key='" + data + "']").remove();
+  $('#tracking').on("change", function(e){
+    switch($(this).prop('checked')){
+      case true:
+      {
+        sounds = [];
+
+        $recordButton.removeClass("disabled");
+
+        $('.memo').each(function(){
+          var $audio = $(this).find('audio')[0];
+          $audio.load();
+
+          var key = $audio.getAttribute('key');
+          var x = $audio.getAttribute('locationx');
+          var y = $audio.getAttribute('locationy');
+
+          var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(y, x),
+            map: map,
+            icon: markerIcon
+          });
+          marker.addListener('mouseover', function(){
+            $audio.play();
+            this.setIcon(playingMarkerIcon);
+          });
+          marker.addListener('mouseout', function(){
+            $audio.pause();
+            $audio.currentTime = 0;
+            this.setIcon(markerIcon);
+          });
+
+          $(this).find('audio').on("play pause", function(e){
+            switch(e.type){
+              case "play":
+              {
+                marker.setIcon(playingMarkerIcon);
+              }
+              break;
+              case "pause":
+              {
+                marker.setIcon(markerIcon);
+              }
+              break;
+              default:
+            }
+          });
+
+          var sound = {
+            element: $audio,
+            key: key,
+            location_x: x,
+            location_y: y,
+            marker: marker
+          };
+          sounds.push(sound);
+        });
+
+        registerWatchPosition();
+      }
+      break;
+      case false:
+      {
+        clearWatchPosition();
+        $recordButton.addClass("disabled");
+        for(var i in sounds){
+          sounds[i].element.pause();
+        }
+      }
+      break;
+      default:
+    }
   });
 });
