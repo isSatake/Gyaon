@@ -16,7 +16,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 injectTapEventPlugin()
 
 //NODE_ENV? エンドポイント取得APIを生やす？
-export const ENDPOINT = 'http://localhost:3000'
+export const ENDPOINT = process.env.BASE_URL || 'http://localhost:3000'
 export const GYAON_ID = window.location.pathname.substring(1)
 
 class GyaonApp extends Component {

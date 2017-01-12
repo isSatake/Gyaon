@@ -13,6 +13,15 @@ exports.promiseGetSounds = function(gyaonId){
   });
 };
 
+exports.promiseGetSoundsWithLocation = function(gyaonId){
+  return new Promise(function(resolve, reject){
+    debug("get sounds which have location data.");
+    db.promiseGetSoundsWithLocation(gyaonId)
+      .then(resolve)
+      .catch(function (err) { console.error(err.stack || err) });
+  });
+};
+
 exports.promiseFindSound = function(gyaonId, name){
   return new Promise(function(resolve, reject){
     debug("find sound");
@@ -22,7 +31,7 @@ exports.promiseFindSound = function(gyaonId, name){
   });
 }
 
-exports.promiseUploadSound = function(gyaonId, file){
+exports.promiseUploadSound = function(gyaonId, location, file){
   return new Promise(function(resolve, result){
     fs.readFile(file.path, function(err, data){
       if(err) throw err;
@@ -32,7 +41,7 @@ exports.promiseUploadSound = function(gyaonId, file){
         Body: data
       };
       s3.promiseUpload(params).then(function(data){
-        db.promiseUpload(data, fn, file).then(function(sound){
+        db.promiseUpload(data, location, file).then(function(sound){
           debug(`uploaded : ${sound}`);
           err ? resolve(err) : resolve(sound);
         }).catch(function (err) { console.error(err.stack || err) });

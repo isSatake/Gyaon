@@ -11,8 +11,8 @@ var debug       = require("debug")("index");
 var model       = require('../model/model');
 var formatDate  = require('../util/formatdate');
 
-var endPoint = process.env.BASE_URL || 'http://localhost:3000';
-var strageEndPoint = 'https://s3-us-west-2.amazonaws.com/gyaon';
+var endPoint    = process.env.BASE_URL || 'http://localhost:3000';
+var s3EndPoint  = 'https://s3-us-west-2.amazonaws.com/gyaon';
 
 //create tmp folder
 var promiseUploadDir = function() {
@@ -49,7 +49,7 @@ router.get('/sounds/:gyaonId', function(req, res){
 router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function(req, res){
   var gyaonId = req.params.id;
   var fileName = req.params.name;
-  res.redirect(strageEndPoint + "/" + gyaonId + "/" + fileName);
+  res.redirect(s3EndPoint + "/" + gyaonId + "/" + fileName);
 });
 
 /* 音声データ受け取り */
@@ -60,8 +60,8 @@ router.post('/upload/:gyaonId', function(req, res) {
     form.uploadDir = "./public/tmp";
     form.parse(req, function(err, fields, files){
       debug(fields);
-      model.promiseUploadSound(fields.gyaonId, files.file).then(function(sound){
-        debug(sound);
+      var location = {x: fields.location_x, y: fields.location_y};
+      model.promiseUploadSound(fields.gyaonId, location || '', files.file).then(function(sound){
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.status(200).set("Content-Type", "application/json").json({
           endpoint: endPoint,
@@ -98,5 +98,12 @@ router.delete('/:id/:name', function(req, res){
     req.app.get('socket.io').of('/delete').emit(gyaonId, key);
   }).catch(function (err) { console.error(err.stack || err) });
 });
+
+/* herokuを寝かさない */
+if(process.env.IS_HEROKU){
+  setInterval(function(){
+    request.head(endPoint)
+  }, 1000 * 60 * 20)
+}
 
 module.exports = router;

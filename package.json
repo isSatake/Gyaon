@@ -51,5 +51,8 @@
     "superagent": "^2.3.0",
     "utf-8-validate": "^1.2.1",
     "watchify": "^3.7.0"
+  },
+  "engines": {
+    "node": "5.0.0"
   }
 }

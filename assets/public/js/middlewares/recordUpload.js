@@ -156,7 +156,7 @@ function preview(){
   if(previewBufferSource) previewBufferSource.stop()
   const src = audioContext.createBufferSource()
   const buffer = [...tempPreRecArray, ...audioBufferArray]
-  console.log(buffer.length * BUFFER_SIZE / SAMPLE_RATE)
+  console.log(buffer.length * BUFFER_SIZE / SAMPLE_RATE) /* TODOO durationをサーバにも送る？ */
   src.buffer = getAudioBuffer(buffer)
   src.connect(audioContext.destination)
   src.start()
