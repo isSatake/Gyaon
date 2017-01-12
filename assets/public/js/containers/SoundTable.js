@@ -54,6 +54,7 @@ export default class SoundTable extends Component {
         <table
           id={'gyaonContainer'}
           style={{
+            tableLayout: 'fixed',
             borderCollapse: 'collapse',
             width: '100%'
           }}>

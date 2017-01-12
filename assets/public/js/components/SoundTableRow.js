@@ -75,7 +75,9 @@ export default class SoundTableRow extends ReactAudioPlayer {
     //TODO render soundTableRow.message as tool tip
     const { index, action, gyaonAppActionBind, object } = this.props
     const backgroundColor = object.highlight ? grey200 : 'white' /* TODO フェードしたい */
-    const buttonStyle = {width: '15px'}
+    const buttonTdStyle = { width: '35px' } /* tdのstyle */
+    const iconStyle = { width: '15px', height: '15px' } /* SVGアイコンの大きさ */
+    const iconButtonStyle = { width: '35px', height: '35px', padding: '6px' } /* アイコンを入れるボタン */
     const src = ENDPOINT + '/sounds/' + object.key
     const date = object.lastmodified //TODO show HH:MM
     this.prevComment = object.comment
@@ -86,6 +88,7 @@ export default class SoundTableRow extends ReactAudioPlayer {
         onMouseLeave={::this.onMouseLeave}
         style={{
           backgroundColor: backgroundColor,
+          transition: 'background-color .25s ease',
           cursor: 'pointer',
           fontSize: '20px'
         }}>
@@ -119,49 +122,32 @@ export default class SoundTableRow extends ReactAudioPlayer {
           className={"duration"}
           style={{
             width: '50px',
-            padding: '5px'
+            padding: '5px 10px 5px 5px'
            }}>
           {object.duration}
         </td>
         <td
-          style={{
-            width: '10px',
-            padding: '5px'
-           }}>
+          style={buttonTdStyle}>
           <IconButton
             className={"delete-button"}
-            iconStyle={{
-              width: '15px'
-            }}
-            style={{
-              width: '20px',
-              padding: 0
-            }}
+            iconStyle={iconStyle}
+            style={iconButtonStyle}
             onClick={::this.deleteItem}
-            tooltip="copy URL">
+            tooltip="delete">
             <Clear />
           </IconButton>
         </td>
         <CopyToClipboard
-          text={src}
-          onCopy={::this.copyUrl}>
+          text={src}>
           <td
-            style={{
-              width: '10px',
-              padding: '5px'
-             }}
+            style={buttonTdStyle}
             className={"copy-button"}>
             <IconButton
-              className={"delete-button"}
-              iconStyle={{
-                width: '15px'
-              }}
-              style={{
-                width: '20px',
-                padding: 0
-              }}
-              onClick={::this.deleteItem}
-              tooltip="delete">
+              className={"copy-button"}
+              iconStyle={iconStyle}
+              style={iconButtonStyle}
+              onClick={::this.copyUrl}
+              tooltip="copy URL">
               <Copy />
             </IconButton>
             </td>
