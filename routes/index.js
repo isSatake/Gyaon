@@ -63,15 +63,15 @@ router.post('/upload/:gyaonId', function(req, res) {
     form.encoding = "utf-8";
     form.uploadDir = "./public/tmp";
     form.parse(req, function(err, fields, files){
-      debug(fields);
+      var gyaonId = req.params.gyaonId
       var location = {x: fields.location_x, y: fields.location_y};
-      model.promiseUploadSound(fields.gyaonId, location || '', files.file).then(function(sound){
+      model.promiseUploadSound(gyaonId, location || '', files.file).then(function(sound){
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.status(200).set("Content-Type", "application/json").json({
           endpoint: endPoint,
           object: sound
         }).end();
-        req.app.get('socket.io').of('/post').emit(fields.gyaonId, { endpoint: endPoint ,object: sound });
+        req.app.get('socket.io').of('/post').emit(gyaonId, { endpoint: endPoint ,object: sound });
       });
     });
     form.on('error', function(err){

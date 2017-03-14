@@ -223,7 +223,6 @@ export const uploader = store => next => action => {
   }
   const gyaonId = action.gyaonId
   const formData = new FormData()
-  formData.append("gyaonId", gyaonId)
   formData.append("file", exportBlob(), "hoge.wav")
   Request
     .post('/upload/' + gyaonId)
