@@ -32,8 +32,6 @@ exports.promiseFindSound = function(gyaonId, name){
 }
 
 exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
-  console.log("model!")
-  console.log(`id: ${gyaonId}, locale: ${location}, file: ${file.path}`)
   return new Promise(function(resolve, result){
     fs.readFile(file.path, function(err, data){
       if(err) throw err;
