@@ -53,7 +53,7 @@ router.get('/sounds/:gyaonId', function (req, res) {
 });
 
 //音声データをリダイレクト
-router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function (req, res) {
+router.get('/sounds/:id/:name', function (req, res) {
   var gyaonId = req.params.id;
   var fileName = req.params.name;
   res.redirect(s3EndPoint + "/" + gyaonId + "/" + fileName);
@@ -62,46 +62,17 @@ router.get('/sounds/:id/:name:ext(.wav|.mp3)?', function (req, res) {
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})
 router.post('/upload/:gyaonId', upload.single('file'), function (req, res) {
-  console.log(`originalname: ${req.file.originalname}`)
-  console.log(`path: ${req.file.path}`)
-  model.promiseUploadSound(req.params.gyaonId, '', req.file).then(function (sound) {
+  var extension = '.' + req.file.originalname.split('.').pop() || '.wav'
+  var mime = req.file.mimetype || 'audio/wav'
+  model.promiseUploadSound(req.params.gyaonId, '', req.file, extension, mime).then(function (sound) {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.send(JSON.stringify({ok: true}))
-    // res.status(200).set("Content-Type", "application/json").json({
-    //   endpoint: endPoint,
-    //   object: sound
-    // }).end();
-    // req.app.get('socket.io').of('/post').emit(gyaonId, {endpoint: endPoint, object: sound});
+    res.send(JSON.stringify({
+      ok: true,
+      endpoint: endPoint,
+      object: sound
+    }))
+    req.app.get('socket.io').of('/post').emit(gyaonId, {endpoint: endPoint, object: sound});
   });
-  
-  // form.encoding = "utf-8";
-  // form.uploadDir = path.resolve("./public/tmpu");
-  // form.parse(req, function (err, fields, _files) {
-  //   gyaonId = req.params.gyaonId
-  //   location = {x: fields.location_x, y: fields.location_y};
-  //   files = _files
-  // });
-  // form.on('error', function (err) {
-  //   console.error(err.stack || err);
-  // });
-  // form.on('file', function(name, file) {
-  //   console.log("file")
-  //   console.log(file)
-  //   fs.stat(file.path, function(err, stats) {
-  //     console.log(stats)
-  //   })
-  //   model.promiseUploadSound(gyaonId, location || '', file).then(function (sound) {
-  //     res.setHeader("Access-Control-Allow-Origin", "*");
-  //     res.status(200).set("Content-Type", "application/json").json({
-  //       endpoint: endPoint,
-  //       object: sound
-  //     }).end();
-  //     req.app.get('socket.io').of('/post').emit(gyaonId, {endpoint: endPoint, object: sound});
-  //   });
-  // })
-  // form.on('end', function () {
-  //   console.log("end")
-  // })
 })
 
 /* コメント編集 */

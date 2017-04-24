@@ -31,7 +31,7 @@ exports.promiseFindSound = function(gyaonId, name){
   });
 }
 
-exports.promiseUploadSound = function(gyaonId, location, file){
+exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
   console.log("model!")
   console.log(`id: ${gyaonId}, locale: ${location}, file: ${file.path}`)
   return new Promise(function(resolve, result){
@@ -39,8 +39,9 @@ exports.promiseUploadSound = function(gyaonId, location, file){
       if(err) throw err;
       var fn = id.generate();
       var params = {
-        Key: gyaonId + "/" + fn,
-        Body: data
+        Key: gyaonId + "/" + fn + extension,
+        Body: data,
+        ContentType: mime
       };
       s3.promiseUpload(params).then(function(data){
         db.promiseUpload(data, location, file).then(function(sound){
