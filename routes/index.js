@@ -61,10 +61,11 @@ router.get('/sounds/:id/:name', function (req, res) {
 
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})
-router.post('/upload/:gyaonId', upload.single('file'), function (req, res) {
+router.post('/upload/:id', upload.single('file'), function (req, res) {
+  var gyaonId = req.params.id;
   var extension = '.' + req.file.originalname.split('.').pop() || '.wav'
   var mime = req.file.mimetype || 'audio/wav'
-  model.promiseUploadSound(req.params.gyaonId, '', req.file, extension, mime).then(function (sound) {
+  model.promiseUploadSound(gyaonId, '', req.file, extension, mime).then(function (sound) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.send(JSON.stringify({
       ok: true,
