@@ -76,7 +76,8 @@ exports.promiseFind = function(gyaonId, name){
   return new Promise(function(resolve, result){
     debug(`find : ${gyaonId}/${name}`);
     var _key = `${gyaonId}/${name}`;
-    Sound.find({key: _key}).exec(function(err, sound){
+    var regexp = new RegExp(_key + '.*')
+    Sound.find({key:regexp}).exec(function(err, sound){
       debug(sound);
       err ? resolve(err) : resolve(sound);
     });

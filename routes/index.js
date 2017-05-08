@@ -55,8 +55,10 @@ router.get('/sounds/:gyaonId', function (req, res) {
 //音声データをリダイレクト
 router.get('/sounds/:id/:name', function (req, res) {
   var gyaonId = req.params.id;
-  var fileName = req.params.name;
-  res.redirect(s3EndPoint + "/" + gyaonId + "/" + fileName);
+  var fileName = req.params.name.split('.')[0];
+  model.promiseFindSound(gyaonId, fileName).then(function(sound){
+    res.redirect(s3EndPoint + "/" + gyaonId + "/" + sound[0].name);
+  })
 });
 
 /* 音声データ受け取り */
