@@ -62,7 +62,7 @@ router.get('/sounds/:id/:name', function (req, res) {
 });
 
 //音声リストのltsv
-router.get('/:id/ltsv', function(req, res) {
+router.get('/:id.ltsv', function(req, res) {
   var gyaonId = req.params.id
   // model.promiseExportLtsv(gyaonId).then(function(){
     res.redirect(endPoint + "/" + gyaonId + ".ltsv");
