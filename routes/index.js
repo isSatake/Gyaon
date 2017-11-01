@@ -61,6 +61,14 @@ router.get('/sounds/:id/:name', function (req, res) {
   })
 });
 
+//音声リストのltsv
+router.get('/:id/ltsv', function(req, res) {
+  var gyaonId = req.params.id
+  // model.promiseExportLtsv(gyaonId).then(function(){
+    res.redirect(endPoint + "/" + gyaonId + ".ltsv");
+  // })
+})
+
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})
 router.post('/upload/:id', upload.single('file'), function (req, res) {
