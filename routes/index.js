@@ -62,12 +62,25 @@ router.get('/sounds/:id/:name', function (req, res) {
 });
 
 //音声リストのltsv
-router.get('/:id.ltsv', function(req, res) {
+router.get('/ltsv/:id.ltsv', function(req, res) {
   var gyaonId = req.params.id
-  // model.promiseExportLtsv(gyaonId).then(function(){
-    res.redirect(endPoint + "/" + gyaonId + ".ltsv");
-  // })
+  model.promiseGetSounds(gyaonId).then(function(result){
+    // console.log(result)
+    let ltsv = "title:" + gyaonId + "'s Gyaon"
+    result.forEach(function(item){
+      ltsv += '\n title:' + formatDate(item.lastmodified) + '\turl:' + endPoint + item.key
+    })
+    console.log(ltsv)
+
+    fs.writeFile('./public/' + gyaonId + '.ltsv', ltsv, function(err){
+      if(err) console.error(err)
+      console.log('done')
+      res.redirect(endPoint + "/" + gyaonId + ".ltsv");
+    })
+  // コメントがあったら入れたい
+  })
 })
+
 
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})
