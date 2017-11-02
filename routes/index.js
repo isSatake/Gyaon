@@ -68,7 +68,7 @@ router.get('/ltsv/:id.ltsv', function(req, res) {
     // console.log(result)
     var ltsv = "title:" + gyaonId + "'s Gyaon"
     result.forEach(function(item){
-      ltsv += '\n title:' + formatDate(item.lastmodified) + '\turl:' + endPoint + item.key
+      ltsv += '\n title:' + formatDate(item.lastmodified) + '\turl:' + endPoint + '/' + item.key
     })
     console.log(ltsv)
 
