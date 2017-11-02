@@ -66,7 +66,7 @@ router.get('/ltsv/:id.ltsv', function(req, res) {
   var gyaonId = req.params.id
   model.promiseGetSounds(gyaonId).then(function(result){
     // console.log(result)
-    let ltsv = "title:" + gyaonId + "'s Gyaon"
+    var ltsv = "title:" + gyaonId + "'s Gyaon"
     result.forEach(function(item){
       ltsv += '\n title:' + formatDate(item.lastmodified) + '\turl:' + endPoint + item.key
     })
