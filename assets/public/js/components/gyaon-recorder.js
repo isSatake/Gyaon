@@ -24,11 +24,7 @@ export default class GyaonRecorder extends React.Component {
     this.recordKeyCode = 82
 
     debug(this.gyaonId)
-
-    navigator.getUserMedia = (navigator.getUserMedia ||
-      navigator.webkitGetUserMedia ||
-      navigator.mozGetUserMedia ||
-      navigator.msGetUserMedia);
+    getUserMedia()
 
     this.permissionResolved = false;
     this.audioContext = new AudioContext()
@@ -157,4 +153,11 @@ export default class GyaonRecorder extends React.Component {
       </FloatingActionButton>
     )
   }
+}
+
+const getUserMedia = () => {
+  navigator.getUserMedia = (navigator.getUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    navigator.msGetUserMedia);
 }
