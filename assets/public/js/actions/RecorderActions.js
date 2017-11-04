@@ -54,10 +54,11 @@ export function stopRecord(){
   }
 }
 
-export function uploadSound(id){
+export function uploadSound(id, location){
   return {
     type: START_UPLOAD,
-    gyaonId: id
+    gyaonId: id,
+    location: location
   }
 }
 

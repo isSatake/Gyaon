@@ -26,8 +26,10 @@ export default class Recorder extends Component {
     //クリック時(≠長押し)時はonMouseDownしか発火しない
     if(recorder.recordingStatus === RecordingStatus.RECORDING){
       action.stopRecord()
-      action.uploadSound(GYAON_ID)
       action.playPreview()
+      navigator.geolocation.getCurrentPosition(function(position) {
+        action.uploadSound(GYAON_ID, {x: position.coords.longitude, y: position.coords.latitude}) //x, y
+      })
     }else{
       action.startRecord()
     }
