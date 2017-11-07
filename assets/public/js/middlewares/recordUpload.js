@@ -224,8 +224,8 @@ export const uploader = store => next => action => {
   const gyaonId = action.gyaonId
   const formData = new FormData()
   formData.append("file", exportBlob(), "hoge.wav")
-  formData.append("location_x", action.location.x)
-  formData.append("location_y", action.location.y)
+  formData.append("lat", action.location.lat)
+  formData.append("lon", action.location.lon)
   Request
     .post('/upload/' + gyaonId)
     .set('form')

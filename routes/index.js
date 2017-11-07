@@ -87,7 +87,7 @@ router.get('/ltsv/:id.ltsv', function(req, res) {
 const upload = multer({dest: path.resolve("./public/tmp")})
 router.post('/upload/:id', upload.single('file'), function (req, res) {
   var gyaonId = req.params.id
-  var location = {x: req.body.location_x, y: req.body.location_y}
+  var location = {lat: req.body.lat, lon: req.body.lon}
   var extension = '.' + req.file.originalname.split('.').pop() || '.wav'
   var mime = req.file.mimetype || 'audio/wav'
 

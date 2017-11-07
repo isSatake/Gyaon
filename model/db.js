@@ -19,8 +19,8 @@ var soundSchema = mongoose.Schema({
   size: Number,
   time: Number,
   comment: String,
-  location_x: Number,
-  location_y: Number
+  lat: Number,
+  lon: Number
 });
 
 var Sound = mongoose.model('Sound', soundSchema);
