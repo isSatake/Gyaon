@@ -19,8 +19,8 @@ var soundSchema = mongoose.Schema({
   size: Number,
   time: Number,
   comment: String,
-  location_x: Number,
-  location_y: Number
+  lat: Number,
+  lon: Number
 });
 
 var Sound = mongoose.model('Sound', soundSchema);
@@ -37,8 +37,8 @@ var createSound = function(s3Data, location, file){
     size: file.size,
     user: s3Data.key.split("/")[0],
     comment: "",
-    location_x: location.x,
-    location_y: location.y
+    lat: location.lat,
+    lon: location.lon
   })
 }
 

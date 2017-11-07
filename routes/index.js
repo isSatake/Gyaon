@@ -64,7 +64,8 @@ router.get('/sounds/:id/:name', function (req, res) {
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})
 router.post('/upload/:id', upload.single('file'), function (req, res) {
-  var gyaonId = req.params.id;
+  var gyaonId = req.params.id
+  var location = {lat: req.body.lat, lon: req.body.lon}
   var extension = '.' + req.file.originalname.split('.').pop() || '.wav'
   var mime = req.file.mimetype || 'audio/wav'
   model.promiseUploadSound(gyaonId, '', req.file, extension, mime).then(function (sound) {
