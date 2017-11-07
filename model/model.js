@@ -31,7 +31,7 @@ exports.promiseFindSound = function(gyaonId, name){
   });
 }
 
-exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
+exports.promiseUploadSound = function(gyaonId, location, weatherIconId, file, extension, mime){
   return new Promise(function(resolve, result){
     fs.readFile(file.path, function(err, data){
       if(err) throw err;
@@ -42,7 +42,7 @@ exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
         ContentType: mime
       };
       s3.promiseUpload(params).then(function(data){
-        db.promiseUpload(data, location, file).then(function(sound){
+        db.promiseUpload(data, location, weatherIconId, file).then(function(sound){
           debug(`uploaded : ${sound}`);
           err ? resolve(err) : resolve(sound);
         }).catch(function (err) { console.error(err.stack || err) });

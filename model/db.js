@@ -25,10 +25,9 @@ var soundSchema = mongoose.Schema({
 
 var Sound = mongoose.model('Sound', soundSchema);
 
-var createSound = function(s3Data, location, file){
+var createSound = function(s3Data, location, weatherIconId, file){
   debug("createSound");
   debug(s3Data);
-  debug(location.x);
   var now = new Date;
   return new Sound({
     key: s3Data.key,
@@ -38,7 +37,8 @@ var createSound = function(s3Data, location, file){
     user: s3Data.key.split("/")[0],
     comment: "",
     lat: location.lat,
-    lon: location.lon
+    lon: location.lon,
+    weatherIcon: weatherIconId
   })
 }
 
@@ -84,9 +84,9 @@ exports.promiseFind = function(gyaonId, name){
   });
 }
 
-exports.promiseUpload = function(s3Data, location, file){
+exports.promiseUpload = function(s3Data, location, weatherIconId, file){
   return new Promise(function(resolve, result){
-    createSound(s3Data, location, file).save(function(err, sound){
+    createSound(s3Data, location, weatherIconId, file).save(function(err, sound){
       debug("uploaded");
       err ? resolve(err) : resolve(sound);
     });
