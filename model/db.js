@@ -36,14 +36,9 @@ var createSound = function(s3Data, location, weatherIconId, file){
     size: file.size,
     user: s3Data.key.split("/")[0],
     comment: "",
-<<<<<<< Updated upstream
-    location_x: location.x,
-    location_y: location.y
-=======
     lat: location.lat,
     lon: location.lon,
     weatherIcon: weatherIconId
->>>>>>> Stashed changes
   })
 }
 
