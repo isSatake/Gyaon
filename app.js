@@ -70,6 +70,7 @@ function onError(error) {
     throw error;
   }
 
+  var port = app.get('port')
   var bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;

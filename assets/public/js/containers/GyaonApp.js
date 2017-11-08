@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import Request from 'superagent'
 import SoundTable from './SoundTable'
-import UserId from '../components/UserId'
+import UserInfo from '../components/UserInfo'
 import Recorder from '../components/Recorder'
 import { getMuiTheme } from 'material-ui/styles';
 import { MuiThemeProvider } from 'material-ui/styles';
@@ -16,10 +15,6 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 //https://github.com/callemall/material-ui/issues/4758
 injectTapEventPlugin()
 
-//NODE_ENV? エンドポイント取得APIを生やす？
-// async function getEndpoint(){
-//   return await Request.get('/getendpoint')
-// }
 export const ENDPOINT = window.location.origin
 export const GYAON_ID = window.location.pathname.substring(1)
 
@@ -38,10 +33,12 @@ class GyaonApp extends Component {
               top: '50px',
               left: '50px',
               right: '50px',
-              height: '110px'
+              height: '140px',
             }}
             className='header' >
-            <UserId id={GYAON_ID} />
+            <UserInfo
+              id={GYAON_ID}
+              gyaonAppActionBind={gyaonAppActionBind} />
             <Recorder
               recorder={recorder}
               gyaonApp={gyaonApp}

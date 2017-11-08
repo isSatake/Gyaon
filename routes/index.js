@@ -32,12 +32,19 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/:gyaonId', function (req, res, next) {
-  var gyaonId = req.params.gyaonId;
   res.render('index');
 });
 
 router.get('/getendpoint', function (req, res, next) {
   res.send(endpoint);
+})
+
+router.get('/info/:gyaonId', function(req, res, next){
+  model.promiseGetUserInfo(req.params.gyaonId).then(function(result){
+    res.send(result)
+  }).catch(function (err) {
+    console.error(err.stack || err)
+  });
 })
 
 router.get('/sounds/:gyaonId', function (req, res) {
@@ -66,19 +73,16 @@ router.get('/sounds/:id/:name', function (req, res) {
 router.get('/ltsv/:id.ltsv', function(req, res) {
   var gyaonId = req.params.id
   model.promiseGetSounds(gyaonId).then(function(result){
-    // console.log(result)
     var ltsv = "title:" + gyaonId + "'s Gyaon"
     result.forEach(function(item){
       ltsv += '\n title:' + formatDate(item.lastmodified) + '\turl:' + endPoint + '/sounds/' + item.key
     })
-    console.log(ltsv)
 
     fs.writeFile('./public/' + gyaonId + '.ltsv', ltsv, function(err){
       if(err) console.error(err)
       console.log('done')
       res.redirect(endPoint + "/" + gyaonId + ".ltsv");
     })
-  // コメントがあったら入れたい
   })
 })
 
@@ -114,6 +118,15 @@ router.post('/comment/:id/:name', function (req, res) {
     res.status(200).end();
   });
 });
+
+router.post('/scrapbox/:id', function(req, res){
+  var gyaonId = req.params.id;
+  var scrapboxTitle = req.body.title;
+  debug(`${gyaonId}'s scrapbox: ${scrapboxTitle}`); //TODO 作り込み
+  model.promiseConfigScrapbox(gyaonId, scrapboxTitle).then(function(){
+    res.status(200).end();
+  })
+})
 
 /* 音声削除 */
 router.delete('/:id/:name', function (req, res) {
