@@ -48,6 +48,14 @@ router.get('/info/:gyaonId', function(req, res, next){
   });
 })
 
+router.get('/info/:id/:name', function(req, res, next){
+  var gyaonId = req.params.id;
+  var fileName = req.params.name.split('.')[0];
+  model.promiseFindSound(gyaonId, fileName).then(function(sound){
+    res.send(sound[0])
+  })
+})
+
 router.get('/sounds/:gyaonId', function (req, res) {
   //ユーザの音声リストを返却
   var gyaonId = req.params.gyaonId
