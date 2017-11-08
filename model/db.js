@@ -20,10 +20,17 @@ var soundSchema = mongoose.Schema({
   time: Number,
   comment: String,
   lat: Number,
-  lon: Number
+  lon: Number,
+  weatherIcon: String
 });
 
+var userSchema = mongoose.Schema({
+  id: String,
+  scrapbox: String
+})
+
 var Sound = mongoose.model('Sound', soundSchema);
+var User = mongoose.model('User', userSchema)
 
 var createSound = function(s3Data, location, weatherIconId, file){
   debug("createSound");
@@ -42,6 +49,24 @@ var createSound = function(s3Data, location, weatherIconId, file){
   })
 }
 
+var createUser = function(id, scrapbox){
+  debug("createUser");
+  return new User({
+    id: id,
+    scrapbox: scrapbox
+  })
+}
+
+exports.promiseGetUserInfo = function(gyaonId){
+  return new Promise(function(resolve, result){
+    debug(`${gyaonId}'s info'`);
+    User.find({id: gyaonId}).exec(function(err, info){
+      debug(info);
+      err ? resolve(err) : resolve(info);
+    });
+  });
+}
+
 exports.promiseGetSounds = function(gyaonId){
   return new Promise(function(resolve, result){
     debug(`find : ${gyaonId}`);
@@ -57,7 +82,6 @@ exports.promiseGetSoundsWithLocation = function(gyaonId){
     debug(`find : ${gyaonId} `);
     var query = {
       user: gyaonId,
-
       location_x: {
         $exists: true
       },
@@ -110,10 +134,23 @@ exports.promiseUpdateComment = function(gyaonId, name, text){
     debug(`comment on ${_key} : ${text}`);
     Sound.update(
       {key: _key},
-      {$set: {comment: text}
-    }).exec(function(err, sound){
+      {$set: {comment: text}}
+    ).exec(function(err, sound){
       debug(sound);
       err ? resolve(err) : resolve();
     });
+  });
+}
+
+exports.promiseConfigScrapbox = function(gyaonId, scrapboxTitle){
+  return new Promise(function(resolve, result){
+    debug(gyaonId + ': ' + scrapboxTitle);
+    User.findOneAndUpdate(
+      {id: gyaonId},
+      {id: gyaonId, scrapbox: scrapboxTitle},
+      {upsert: true}
+    ).exec(function(err, res){
+      err ? resolve(err) : resolve();
+    })
   });
 }

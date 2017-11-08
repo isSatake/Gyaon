@@ -44,7 +44,7 @@ export default class SoundTable extends Component {
       <Paper
         style={{
           position: 'absolute',
-          top: '200px',
+          top: '250px',
           bottom: '50px',
           left: '50px',
           right: '50px',

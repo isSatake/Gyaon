@@ -4,6 +4,15 @@ var id = require("../util/id");
 var fs = require("fs");
 var debug = require("debug")("model");
 
+exports.promiseGetUserInfo = function(gyaonId){
+  return new Promise(function(resolve, reject){
+    debug("get user info");
+    db.promiseGetUserInfo(gyaonId).then(function(result){
+      resolve(result);
+    }).catch(function (err) { console.error(err.stack || err) });
+  });
+};
+
 exports.promiseGetSounds = function(gyaonId){
   return new Promise(function(resolve, reject){
     debug("get sounds");
@@ -71,5 +80,20 @@ exports.promiseEditComment = function(gyaonId, name, text){
       debug("complete edit comment");
       resolve();
     }).catch(function (err) { console.error(err.stack || err) });
+  });
+}
+
+exports.promiseConfigScrapbox = function(gyaonId, scrapboxTitle){
+  return new Promise(function(resolve, result){
+    db.promiseConfigScrapbox(gyaonId, scrapboxTitle).then(function(){
+      debug("config scrapbox")
+      resolve();
+    }).catch(function (err) { console.error(err.stack || err) });
+    // User.find({id: gyaonId})
+    //     .update({$set: {scrapbox: scrapboxTitle}})
+    //     .exec(function(err, user){
+    //       debug(user);
+    //       err ? resolve(err) : resolve();
+    //     });
   });
 }
