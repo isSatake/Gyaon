@@ -24,7 +24,8 @@ var soundSchema = mongoose.Schema({
   lon: Number,
   weatherIcon: String,
   url: String,
-  address: String
+  address: String,
+  mapimg: String
 });
 
 var userSchema = mongoose.Schema({
@@ -68,7 +69,8 @@ const addMetadata = (sound) => {
       {$set: {
         weatherIcon: obj.weatherIconId,
         url: obj.url,
-        address: obj.address
+        address: obj.address,
+        mapimg: obj.mapimg
       }}
     ).exec(function(err, sound){
       err ? console.error(err) : debug(sound)

@@ -13,17 +13,21 @@ exports.promiseGetMetadata = function(gyaonId, location){
     let obj = {
       weatherIconId: '',
       url: '',
-      address: ''
+      address: '',
+      mapimg: ''
     }
     promiseGetWeatherIcon(location)
       .then(icon => promiseGetRatestPage(gyaonId)
         .then(url => promiseGetAddress(location)
-          .then(address => {
-            obj.weatherIconId = icon
-            obj.url = url
-            obj.address = address
-            resolve(obj)
-          }))).catch(err => resolve(err))
+          .then(address => promiseGetMapImg(location)
+            .then(mapimg => {
+              obj.weatherIconId = icon
+              obj.url = url
+              obj.address = address
+              obj.mapimg = mapimg
+              console.log(mapimg)
+              resolve(obj)
+            })))).catch(err => resolve(err))
   })
 }
 
@@ -64,6 +68,28 @@ const promiseGetAddress = function(location){
       .get(`https://map.yahooapis.jp/geoapi/V1/reverseGeoCoder?lat=${location.lat}&lon=${location.lon}&output=json&appid=${YAHOOID}`)
       .then(res => {
         resolve(res.body.Feature[0].Property.Address)
+      }).catch(err => resolve(err))
+  });
+}
+
+const promiseGetMapImg = function(location){
+  return new Promise(function(resolve, result){
+    Request
+      .get(`https://maps.googleapis.com/maps/api/staticmap?center=${location.lat},${location.lon}&zoom=15&size=600x300&maptype=roadmap
+&markers=${location.lat},${location.lon}&key=AIzaSyDB5d4w7q0YomDmsrQgJepmYZpg7elDjKA`)
+      .then(res => {
+        Request
+          .post('https://upload.gyazo.com/api/upload')
+          .type('form')
+          .send({
+            referer_url: 'https://gyaon.herokuapp.com/',
+            client_id: 'bfe375d0b3ec5c50f339ebdda59b9ff8a96298cb0fb59782d20b24fcf587cdf0',
+            access_token: '00252e72bef882b4849ba9246e751f9515b461be068a9cfe02037f710c0f8192',
+            image_url: 'data:image/png;base64,' + res.body.toString('base64')
+          })
+          .then(res => {
+            resolve(res.body.url)
+          })
       }).catch(err => resolve(err))
   });
 }
