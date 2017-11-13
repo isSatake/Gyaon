@@ -67,7 +67,13 @@ const promiseGetAddress = function(location){
     Request
       .get(`https://map.yahooapis.jp/geoapi/V1/reverseGeoCoder?lat=${location.lat}&lon=${location.lon}&output=json&appid=${YAHOOID}`)
       .then(res => {
-        resolve(res.body.Feature[0].Property.Address)
+        let address = ''
+        res.body.Feature[0].Property.AddressElement.forEach(element => {
+          if(element.Name){
+            address += element.Name + ','
+          }
+        })
+        resolve(address)
       }).catch(err => resolve(err))
   });
 }
