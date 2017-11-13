@@ -36,7 +36,6 @@ router.get('/:gyaonId', function (req, res, next) {
   const ltsv = `title:${gyaonId}'s Gyaon\n`
   try{
     fs.writeFile('./public/ltsv/' + gyaonId + '.ltsv', ltsv, function(err){
-      if(err) throw err;
       console.log('ltsv')
     })
   }catch(e){
