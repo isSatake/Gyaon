@@ -31,6 +31,17 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/:gyaonId', function (req, res, next) {
+  var gyaonId = req.params.gyaonId
+  //ltsvがあるか
+  const ltsv = `title:${gyaonId}'s Gyaon\n`
+  try{
+    fs.writeFile('./public/' + gyaonId + '.ltsv', ltsv, function(err){
+      if(err) throw err;
+      console.log('ltsv')
+    })
+  }catch(e){
+    //ltsv is already created
+  }
   res.render('index');
 });
 
@@ -79,20 +90,8 @@ router.get('/sounds/:id/:name', function (req, res) {
 //音声リストのltsv
 router.get('/ltsv/:id.ltsv', function(req, res) {
   var gyaonId = req.params.id
-  model.promiseGetSounds(gyaonId).then(function(result){
-    var ltsv = "title:" + gyaonId + "'s Gyaon"
-    result.forEach(function(item){
-      ltsv += '\n title:' + formatDate(item.lastmodified) + '\turl:' + endPoint + '/sounds/' + item.key
-    })
-
-    fs.writeFile('./public/' + gyaonId + '.ltsv', ltsv, function(err){
-      if(err) console.error(err)
-      console.log('done')
-      res.redirect(endPoint + "/" + gyaonId + ".ltsv");
-    })
-  })
+  res.redirect(endPoint + "/" + gyaonId + ".ltsv");
 })
-
 
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})

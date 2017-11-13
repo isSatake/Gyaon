@@ -25,7 +25,6 @@ exports.promiseGetMetadata = function(gyaonId, location){
               obj.url = url
               obj.address = address
               obj.mapimg = mapimg
-              console.log(mapimg)
               resolve(obj)
             })))).catch(err => resolve(err))
   })
