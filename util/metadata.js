@@ -53,7 +53,7 @@ const promiseGetRatestPage = function(gyaonId){
         })
         .catch(err => console.error(err))
     }).catch(function (err) {
-      resolve(err);
+      resolve('');
     });
   });
 }
