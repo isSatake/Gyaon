@@ -11,7 +11,6 @@ var multer = require("multer")
 
 var model = require('../model/model');
 var formatDate = require('../util/formatdate');
-var metadata = require('../util/metadata');
 
 var endPoint = process.env.BASE_URL || 'http://localhost:3000';
 var s3EndPoint = 'https://s3-us-west-2.amazonaws.com/gyaon';
@@ -103,17 +102,15 @@ router.post('/upload/:id', upload.single('file'), function (req, res) {
   var extension = '.' + req.file.originalname.split('.').pop() || '.wav'
   var mime = req.file.mimetype || 'audio/wav'
 
-  metadata.promiseGetMetadata(gyaonId, location).then(function(obj){
-    model.promiseUploadSound(gyaonId, location, obj.weatherIconId, obj.address, obj.url, req.file, extension, mime).then(function (sound) {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.send(JSON.stringify({
-        ok: true,
-        endpoint: endPoint,
-        object: sound
-      }))
-      req.app.get('socket.io').of('/post').emit(gyaonId, {endpoint: endPoint, object: sound});
-    });
-  })
+  model.promiseUploadSound(gyaonId, location, req.file, extension, mime).then(function (sound) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.send(JSON.stringify({
+      ok: true,
+      endpoint: endPoint,
+      object: sound
+    }))
+    req.app.get('socket.io').of('/post').emit(gyaonId, {endpoint: endPoint, object: sound});
+  });
 })
 
 /* コメント編集 */

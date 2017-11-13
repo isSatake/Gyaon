@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var metadata = require('../util/metadata');
 var debug = require("debug")("db");
 
 require('dotenv').config();
@@ -34,7 +35,7 @@ var userSchema = mongoose.Schema({
 var Sound = mongoose.model('Sound', soundSchema);
 var User = mongoose.model('User', userSchema)
 
-var createSound = function(s3Data, location, weatherIconId, address, url, file){
+var createSound = function(s3Data, location, fileSize){
   debug("createSound");
   debug(s3Data);
   var now = new Date;
@@ -42,14 +43,11 @@ var createSound = function(s3Data, location, weatherIconId, address, url, file){
     key: s3Data.key,
     lastmodified: Date.now(),
     name: s3Data.key.split("/")[1],
-    size: file.size,
+    size: fileSize,
     user: s3Data.key.split("/")[0],
     comment: "",
     lat: location.lat,
     lon: location.lon,
-    weatherIcon: weatherIconId,
-    url: url,
-    address: address
   })
 }
 
@@ -58,6 +56,23 @@ var createUser = function(id, scrapbox){
   return new User({
     id: id,
     scrapbox: scrapbox
+  })
+}
+
+const addMetadata = (sound) => {
+  debug('addMetadata')
+  const location = {lat: sound.lat, lon: sound.lon}
+  metadata.promiseGetMetadata(sound.user, location).then(obj => {
+    Sound.update(
+      {key: sound.key},
+      {$set: {
+        weatherIcon: obj.weatherIconId,
+        url: obj.url,
+        address: obj.address
+      }}
+    ).exec(function(err, sound){
+      err ? console.error(err) : debug(sound)
+    });
   })
 }
 
@@ -112,11 +127,12 @@ exports.promiseFind = function(gyaonId, name){
   });
 }
 
-exports.promiseUpload = function(s3Data, location, weatherIconId, address, url, file){
+exports.promiseUpload = function(s3Data, location, fileSize){
   return new Promise(function(resolve, result){
-    createSound(s3Data, location, weatherIconId, address, url, file).save(function(err, sound){
+    createSound(s3Data, location, fileSize).save(function(err, sound){
       debug("uploaded");
       err ? resolve(err) : resolve(sound);
+      addMetadata(sound)
     });
   });
 }
