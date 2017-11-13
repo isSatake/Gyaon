@@ -88,10 +88,10 @@ router.get('/sounds/:id/:name', function (req, res) {
 });
 
 //音声リストのltsv
-router.get('/ltsv/:id.ltsv', function(req, res) {
-  var gyaonId = req.params.id
-  res.redirect(endPoint + "/" + gyaonId + ".ltsv");
-})
+// router.get('/ltsv/:id.ltsv', function(req, res) {
+//   var gyaonId = req.params.id
+//   res.redirect(endPoint + "/" + gyaonId + ".ltsv");
+// })
 
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})
