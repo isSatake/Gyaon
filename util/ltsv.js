@@ -6,7 +6,7 @@ var weatherToEmoji = require('../util/weather');
 exports.promiseSaveLtsv = (gyaonId) => {
   return new Promise(function(resolve, result){
     model.promiseGetSounds(gyaonId).then(function(result){
-      const path = `./public/ltsv/${gyaonId}.ltsv`
+      const path = `./public/${gyaonId}.ltsv`
       let ltsv = `title:${gyaonId}'s Gyaon\n`
 
       result.forEach(function(item){
