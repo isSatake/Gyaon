@@ -83,6 +83,26 @@ exports.promiseEditComment = function(gyaonId, name, text){
   });
 }
 
+exports.promiseUpdateLtsv = (gyaonId, path) => {
+  return new Promise(function(resolve, result){
+
+    fs.readFile(path, function(err, data){
+      if(err) throw err;
+      var params = {
+        Key: `${gyaonId}.ltsv`,
+        Body: data,
+        ContentType: 'text/plain'
+      };
+      s3.promiseUpload(params).then(function(data){
+        resolve(data.Location)
+      }).catch(function (err) { console.error(err.stack || err) });
+    });
+    fs.unlink(path, function(err){
+      if(err) throw err;
+    });
+  })
+}
+
 exports.promiseConfigScrapbox = function(gyaonId, scrapboxTitle){
   return new Promise(function(resolve, result){
     db.promiseConfigScrapbox(gyaonId, scrapboxTitle).then(function(){

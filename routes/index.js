@@ -11,6 +11,7 @@ var multer = require("multer")
 
 var model = require('../model/model');
 var formatDate = require('../util/formatdate');
+var ltsv = require('../util/ltsv')
 
 var endPoint = process.env.BASE_URL || 'http://localhost:3000';
 var s3EndPoint = 'https://s3-us-west-2.amazonaws.com/gyaon';
@@ -32,15 +33,9 @@ router.get('/', function (req, res, next) {
 
 router.get('/:gyaonId', function (req, res, next) {
   var gyaonId = req.params.gyaonId
-  //ltsvがあるか
-  const ltsv = `title:${gyaonId}'s Gyaon\n`
-  try{
-    fs.writeFile('./public/ltsv/' + gyaonId + '.ltsv', ltsv, function(err){
-      console.log('ltsv')
-    })
-  }catch(e){
-    //ltsv is already created
-  }
+  ltsv.promiseSaveLtsv(gyaonId).then(path => {
+    model.promiseUpdateLtsv(gyaonId, path).then()
+  }).catch(err => console.error)
   res.render('index');
 });
 
@@ -85,12 +80,6 @@ router.get('/sounds/:id/:name', function (req, res) {
     res.redirect(s3EndPoint + "/" + gyaonId + "/" + sound[0].name);
   })
 });
-
-//音声リストのltsv
-// router.get('/ltsv/:id.ltsv', function(req, res) {
-//   var gyaonId = req.params.id
-//   res.redirect(endPoint + "/" + gyaonId + ".ltsv");
-// })
 
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})

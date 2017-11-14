@@ -139,35 +139,7 @@ exports.promiseUpload = function(s3Data, location, fileSize){
     createSound(s3Data, location, fileSize).save(function(err, sound){
       debug("uploaded");
       err ? resolve(err) : resolve(sound);
-      promiseAddMetadata(sound).then(obj => {
-        //ltsv
-        const date = formatDate(sound.lastmodified)
-        const title = `${date} by ${sound.user}`
-        let address = ''
-        obj.address.split(',').forEach(element => {
-          if(element){
-            address += '[' + element + ']'
-          }
-        })
-        const url = `https://scrapbox.io/satake-bookmarks/${title}?body=` +
-          encodeURIComponent(
-            `[${obj.mapimg}]\n `+
-            `[音声 https://gyaon.herokuapp.com/sounds/${sound.key}]\n` +
-            '[* コメント]\n' +
-            ' \n' +
-            '[* 天気]\n' +
-            ` ${weatherToEmoji(obj.weatherIconId)}\n` +
-            '[* 位置]\n' +
-            ` ${address}付近\n` +
-            '[* 日時]\n' +
-            ` ${date}\n` +
-            '[* 見ていたURL]\n'
-          ) + ` ${obj.url}`
-        const ltsv = ` title:${title}\turl:${url}\n`
-        fs.appendFile('./public/' + sound.user + '.ltsv', ltsv, function(err){
-          if(err) throw err;
-        })
-      }).catch(err => console.error(err))
+      promiseAddMetadata(sound).then().catch(err => console.error(err))
     });
   });
 }
