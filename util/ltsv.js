@@ -32,7 +32,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
             '[* コメント]\n' +
             ` ${item.comment}\n` +
             '[* 天気]\n' +
-            ` ${weatherToEmoji(weather)}\n` +
+            ` [${weatherToEmoji(weather)}]\n` +
             '[* 位置]\n' +
             ` ${address}付近\n` +
             '[* 日時]\n' +
