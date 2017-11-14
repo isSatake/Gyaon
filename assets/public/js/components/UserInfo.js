@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import TextField from 'material-ui/TextField'
+import RaisedButton from 'material-ui/RaisedButton'
 import Request from 'superagent'
 
 export default class UserInfo extends Component {
@@ -44,6 +45,10 @@ export default class UserInfo extends Component {
       .catch(err => console.error(err))
   }
 
+  onClickLtsv(){
+    window.prompt('Your ltsv', `https://gyaon.s3-us-west-2.amazonaws.com/${this.state.id}.ltsv`)
+  }
+
   render(){
     const { gyaonAppActionBind } = this.props
     return (
@@ -70,7 +75,9 @@ export default class UserInfo extends Component {
         <TextField
           style={{
             flexGrow: '1',
-            width: 'auto'
+            width: 'auto',
+            marginLeft: '20px',
+            marginRight: '20px'
           }}
           name={"scrapbox-title-field"}
           fullWidth={true}
@@ -78,6 +85,10 @@ export default class UserInfo extends Component {
           onFocus={gyaonAppActionBind.startEditComment}
           onChange={::this.onChangeScrapbox}
           onBlur={::this.onFinishEditComment} />
+        <RaisedButton
+          style={{ flexGrow: '2' }}
+          label="GET ltsv"
+          onClick={::this.onClickLtsv} />
       </div>
     )
   }

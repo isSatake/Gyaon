@@ -1,5 +1,8 @@
 var mongoose = require('mongoose');
+var fs = require('fs');
 var metadata = require('../util/metadata');
+var formatDate = require('../util/formatdate');
+var weatherToEmoji = require('../util/weather');
 var debug = require("debug")("db");
 
 require('dotenv').config();
@@ -60,21 +63,23 @@ var createUser = function(id, scrapbox){
   })
 }
 
-const addMetadata = (sound) => {
-  debug('addMetadata')
-  const location = {lat: sound.lat, lon: sound.lon}
-  metadata.promiseGetMetadata(sound.user, location).then(obj => {
-    Sound.update(
-      {key: sound.key},
-      {$set: {
-        weatherIcon: obj.weatherIconId,
-        url: obj.url,
-        address: obj.address,
-        mapimg: obj.mapimg
-      }}
-    ).exec(function(err, sound){
-      err ? console.error(err) : debug(sound)
-    });
+const promiseAddMetadata = (sound) => {
+  return new Promise(function(resolve, result){
+    debug('addMetadata')
+    const location = {lat: sound.lat, lon: sound.lon}
+    metadata.promiseGetMetadata(sound.user, location).then(obj => {
+      Sound.update(
+        {key: sound.key},
+        {$set: {
+          weatherIcon: obj.weatherIconId,
+          url: obj.url,
+          address: obj.address,
+          mapimg: obj.mapimg
+        }}
+      ).exec(function(err, sound){
+        err ? resolve(err) : resolve(obj)
+      });
+    })
   })
 }
 
@@ -134,7 +139,7 @@ exports.promiseUpload = function(s3Data, location, fileSize){
     createSound(s3Data, location, fileSize).save(function(err, sound){
       debug("uploaded");
       err ? resolve(err) : resolve(sound);
-      addMetadata(sound)
+      promiseAddMetadata(sound).then().catch(err => console.error(err))
     });
   });
 }
