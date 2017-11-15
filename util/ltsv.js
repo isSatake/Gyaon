@@ -28,7 +28,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
         const url = `https://scrapbox.io/${gyaonId}-gyaon/${title}?body=` +
           encodeURIComponent(
             `[${mapimg}]\n `+
-            `[音声 https://gyaon.herokuapp.com/sounds/${item.key}]\n` +
+            `[音声 https://gyaon.herokuapp.com/sounds/${item.key.split('.')[0]}.mp3]\n` +
             '[* コメント]\n' +
             ` ${item.comment}\n` +
             '[* 天気]\n' +
