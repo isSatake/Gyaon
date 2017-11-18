@@ -36,9 +36,7 @@ class GyaonApp extends Component {
               height: '140px',
             }}
             className='header' >
-            <UserInfo
-              id={GYAON_ID}
-              gyaonAppActionBind={gyaonAppActionBind} />
+            <UserInfo id={GYAON_ID} />
             <Recorder
               recorder={recorder}
               gyaonApp={gyaonApp}

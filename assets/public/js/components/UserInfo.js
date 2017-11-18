@@ -9,40 +9,6 @@ export default class UserInfo extends Component {
     this.state = {
       id: this.props.id
     }
-    this.prevScrapbox = ''
-
-    Request
-      .get('/info/' + this.props.id)
-      .then(res => {
-        this.setState({
-          scrapbox: res.body[0].scrapbox
-        })
-        this.prevScrapbox = res.body[0].scrapbox
-      })
-      .catch(err => console.error(err))
-  }
-
-  onChangeScrapbox(text){
-    this.setState({
-      scrapbox: text.target.value
-    })
-  }
-
-  onFinishEditComment(){
-    const { gyaonAppActionBind } = this.props
-    gyaonAppActionBind.finishEditComment()
-
-    if(this.prevScrapbox === this.state.scrapbox){
-      return
-    }
-
-    Request
-      .post('/scrapbox/' + this.state.id)
-      .send({ title: this.state.scrapbox })
-      .then(res => {
-        this.prevScrapbox = this.state.scrapbox
-      })
-      .catch(err => console.error(err))
   }
 
   onClickLtsv(){
@@ -65,26 +31,6 @@ export default class UserInfo extends Component {
           }}>
           your id: {this.state.id}
         </div>
-        <div
-          style={{
-            fontWeight: '400',
-            flexGrow: '1'
-          }}>
-          scrapbox:
-        </div>
-        <TextField
-          style={{
-            flexGrow: '1',
-            width: 'auto',
-            marginLeft: '20px',
-            marginRight: '20px'
-          }}
-          name={"scrapbox-title-field"}
-          fullWidth={true}
-          value={this.state.scrapbox}
-          onFocus={gyaonAppActionBind.startEditComment}
-          onChange={::this.onChangeScrapbox}
-          onBlur={::this.onFinishEditComment} />
         <RaisedButton
           style={{ flexGrow: '2' }}
           label="GET ltsv"

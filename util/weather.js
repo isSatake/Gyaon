@@ -12,6 +12,5 @@ const map = {
 
 module.exports = function(weatherIconId){
   const id = weatherIconId.substr(0, 2)
-  console.log(id)
   return map[id];
 };
