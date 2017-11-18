@@ -1,7 +1,7 @@
 var fs = require('fs');
-var model = require('../model/model');
-var formatDate = require('../util/formatdate');
-var weatherToEmoji = require('../util/weather');
+var format = require('date-format')
+var model = require('../model/model')
+var weatherToEmoji = require('../util/weather')
 
 exports.promiseSaveLtsv = (gyaonId) => {
   return new Promise(function(resolve, result){
@@ -10,7 +10,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
       let ltsv = `title:${gyaonId}'s Gyaon\n`
 
       result.forEach(function(item){
-        const date = formatDate(item.lastmodified)
+        const date = format('yyyy-MM-dd hh:mm:ss', item.lastmodified)
         const title = `${date} by ${item.user}`
         const mapimg = item.mapimg ? item.mapimg : ''
         const weather = item.weatherIcon ? item.weatherIcon : ''

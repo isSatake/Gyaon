@@ -7,7 +7,7 @@ import ReactAudioPlayer from 'react-audio-player'
 import Snackbar from 'material-ui/Snackbar'
 import TextField from 'material-ui/TextField'
 import IconButton from 'material-ui/IconButton'
-import { getFullDateTime } from '../util/formatdate'
+import asString from 'date-format'
 
 import { ENDPOINT } from '../containers/GyaonApp'
 
@@ -78,7 +78,7 @@ export default class SoundTableRow extends ReactAudioPlayer {
     const iconStyle = { width: '15px', height: '15px' } /* SVGアイコンの大きさ */
     const iconButtonStyle = { width: '35px', height: '35px', padding: '6px' } /* アイコンを入れるボタン */
     const src = ENDPOINT + '/sounds/' + object.key
-    const date = object.lastmodified //TODO show HH:MM
+    const date = new Date(object.lastmodified)
     this.prevComment = object.comment
     return (
       //ReactAudioPlayerからcontrolsだけ消した
@@ -104,7 +104,7 @@ export default class SoundTableRow extends ReactAudioPlayer {
             padding: '5px'
            }}
           className={"date"}>
-          {getFullDateTime(date)}
+          {asString('yyyy-MM-dd hh:mm', date)}
         </td>
         <td
           style={{ padding: '5px 20px 5px 20px' }}

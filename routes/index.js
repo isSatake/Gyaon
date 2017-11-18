@@ -10,7 +10,6 @@ var debug = require("debug")("index");
 var multer = require("multer")
 
 var model = require('../model/model');
-var formatDate = require('../util/formatdate');
 var ltsv = require('../util/ltsv')
 
 var endPoint = process.env.BASE_URL || 'http://localhost:3000';

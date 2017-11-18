@@ -8,8 +8,6 @@ var bodyParser  = require('body-parser');
 var debug       = require('debug')('gyaon:server');
 
 var routes      = require('./routes/index');
-var map       = require('./routes/map');
-
 
 /**
  * server setup
@@ -28,7 +26,6 @@ app.use(function(req, res, next) {
 });
 
 app.use('/', routes);
-app.use('/map', map);
 
 var server = http.createServer(app);
 var io = require('socket.io')(server);

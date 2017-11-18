@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 var fs = require('fs');
 var metadata = require('../util/metadata');
-var formatDate = require('../util/formatdate');
 var weatherToEmoji = require('../util/weather');
 var debug = require("debug")("db");
 
