@@ -8,14 +8,36 @@ exports.promiseSaveLtsv = (gyaonId) => {
     model.promiseGetSounds(gyaonId).then(function(result){
       const path = `./public/${gyaonId}.ltsv`
       let ltsv = `title:${gyaonId}'s Gyaon\n`
+      let curyear = ''
+      let curmonth = ''
+      let curday = ''
 
       result.forEach(function(item){
-        const date = format('yyyy-MM-dd hh:mm:ss', item.lastmodified)
-        const title = `${date} by ${item.user}`
+        const year = format('yyyy', item.lastmodified)
+        const month = format('MM', item.lastmodified)
+        const day = format('dd', item.lastmodified)
+        const pageTitle = `${format('yyyy-MM-dd hh:mm:ss', item.lastmodified)} by ${item.user}`
+        const ltsvTitle = `${format('hh : mm : ss', item.lastmodified)}`
         const mapimg = item.mapimg ? item.mapimg : ''
         const weather = item.weatherIcon ? item.weatherIcon : ''
         const bookmarkUrl = item.url ? item.url : ''
         let address = ''
+        let indent = ' '
+
+        if(curyear != year){
+          ltsv += `${indent}title:${year}年\n`
+          curyear = year
+        }
+        indent += ' '
+        if(curmonth != month){
+          ltsv += `${indent}title:${month}月\n`
+          curmonth = month
+        }
+        indent += ' '
+        if(curday != day){
+          ltsv += `${indent}title:${month}/${day}\n`
+          curday = day
+        }
 
         if(item.address){
           item.address.split(',').forEach(element => {
@@ -25,7 +47,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
           })
         }
 
-        const url = `https://scrapbox.io/${gyaonId}-gyaon/${title}?body=` +
+        const url = `https://scrapbox.io/${gyaonId}-gyaon/${pageTitle}?body=` +
           encodeURIComponent(
             `[${mapimg}]\n `+
             `[音声 https://gyaon.herokuapp.com/sounds/${item.key.split('.')[0]}.mp3]\n` +
@@ -36,10 +58,11 @@ exports.promiseSaveLtsv = (gyaonId) => {
             '[* 位置]\n' +
             ` ${address}付近\n` +
             '[* 日時]\n' +
-            ` ${date}\n` +
-            '[* 見ていたURL]\n'
-          ) + ` ${bookmarkUrl}`
-        ltsv += ` title:${title}\turl:${url}\n`
+            ` [${year}-${month}]-${format('dd hh:mm:ss', item.lastmodified)}\n`
+          )
+
+        indent += ' '
+        ltsv += `${indent}title:${ltsvTitle}\turl:${url}\n`
       })
 
       fs.writeFile(path, ltsv, function(err){
