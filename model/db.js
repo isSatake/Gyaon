@@ -27,7 +27,8 @@ var soundSchema = mongoose.Schema({
   weatherIcon: String,
   url: String,
   address: String,
-  mapimg: String
+  mapimg: String,
+  img: String
 });
 
 var userSchema = mongoose.Schema({
@@ -166,6 +167,20 @@ exports.promiseUpdateComment = function(gyaonId, name, text){
       err ? resolve(err) : resolve();
     });
   });
+}
+
+exports.promiseLinkImage = (gyaonId, name, url) => {
+  return new Promise((resolve, result) => {
+    var _key = `${gyaonId}/${name}`;
+    debug(`link ${url} to ${_key}`);
+    Sound.update(
+      {key: _key},
+      {$set: {img: url}}
+    ).exec(function(err, sound){
+      debug(sound);
+      err ? resolve(err) : resolve();
+    });
+  })
 }
 
 exports.promiseConfigScrapbox = function(gyaonId, scrapboxTitle){

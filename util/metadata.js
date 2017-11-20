@@ -56,7 +56,7 @@ const promiseGetAddress = function(location){
 const promiseGetMapImg = function(location){
   return new Promise(function(resolve, result){
     Request
-      .get(`https://maps.googleapis.com/maps/api/staticmap?center=${location.lat},${location.lon}&zoom=15&size=600x300&maptype=roadmap
+      .get(`https://maps.googleapis.com/maps/api/staticmap?center=${location.lat},${location.lon}&zoom=15&size=300x300&maptype=roadmap
 &markers=${location.lat},${location.lon}&key=AIzaSyDB5d4w7q0YomDmsrQgJepmYZpg7elDjKA`)
       .then(res => {
         Request

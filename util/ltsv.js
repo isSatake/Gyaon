@@ -18,8 +18,9 @@ exports.promiseSaveLtsv = (gyaonId) => {
         const day = format('dd', item.lastmodified)
         const pageTitle = `${format('yyyy-MM-dd hh:mm:ss', item.lastmodified)} by ${item.user}`
         const ltsvTitle = `${format('hh : mm : ss', item.lastmodified)}`
-        const mapimg = item.mapimg ? item.mapimg : ''
-        const weather = item.weatherIcon ? item.weatherIcon : ''
+        const mapimg = item.mapimg ? `[${item.mapimg}]` : ''
+        const img = item.img ? `[${item.img}]` : ''
+        const weather = item.weatherIcon ? `[${weatherToEmoji(item.weatherIcon)}]` : ''
         const bookmarkUrl = item.url ? item.url : ''
         let address = ''
         let indent = ' '
@@ -49,12 +50,12 @@ exports.promiseSaveLtsv = (gyaonId) => {
 
         const url = `https://scrapbox.io/${gyaonId}-gyaon/${pageTitle}?body=` +
           encodeURIComponent(
-            `[${mapimg}]\n `+
+            `${mapimg}${img}\n `+
             `[音声 https://gyaon.herokuapp.com/sounds/${item.key.split('.')[0]}.mp3]\n` +
             '[* コメント]\n' +
             ` ${item.comment}\n` +
             '[* 天気]\n' +
-            ` [${weatherToEmoji(weather)}]\n` +
+            ` ${weather}\n` +
             '[* 位置]\n' +
             ` ${address}付近\n` +
             '[* 日時]\n' +

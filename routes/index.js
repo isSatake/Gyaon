@@ -83,6 +83,7 @@ router.get('/sounds/:id/:name', function (req, res) {
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})
 router.post('/upload/:id', upload.single('file'), function (req, res) {
+  console.log(req)
   var gyaonId = req.params.id
   var location = {lat: req.body.lat, lon: req.body.lon}
   var extension = '.' + req.file.originalname.split('.').pop() || '.wav'
@@ -100,12 +101,24 @@ router.post('/upload/:id', upload.single('file'), function (req, res) {
 })
 
 /* コメント編集 */
-router.post('/comment/:id/:name', function (req, res) {
+router.post('/comment/:id/:fileName', function (req, res) {
   var gyaonId = req.params.id;
-  var fileName = req.params.name;
+  var fileName = req.params.fileName;
   var text = req.body.value;
+  console.log(req)
   debug(`comment on ${gyaonId}/${fileName} : ${text}`);
   model.promiseEditComment(gyaonId, fileName, text).then(function () {
+    res.status(200).end();
+  });
+});
+
+/* 画像とリンク */
+router.post('/image/:id/:fileName/', function(req, res) {
+  var gyaonId = req.params.id;
+  var fileName = req.params.fileName;
+  console.log(req)
+  var imgUrl = req.body.imgurl;
+  model.promiseLinkImage(gyaonId, fileName, imgUrl).then(() => {
     res.status(200).end();
   });
 });

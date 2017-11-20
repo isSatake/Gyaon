@@ -83,6 +83,15 @@ exports.promiseEditComment = function(gyaonId, name, text){
   });
 }
 
+exports.promiseLinkImage = (gyaonId, name, url) => {
+  return new Promise((resolve, result) => [
+    db.promiseLinkImage(gyaonId, name, url).then(() => {
+      debug("complete link image")
+      resolve()
+    }).catch(err => { console.error(err.stack || err) })
+  ])
+}
+
 exports.promiseUpdateLtsv = (gyaonId, path) => {
   return new Promise(function(resolve, result){
 
