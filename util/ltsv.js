@@ -18,8 +18,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
         const day = format('dd', item.lastmodified)
         const pageTitle = `${format('yyyy-MM-dd hh:mm:ss', item.lastmodified)}`
         const ltsvTitle = `${format('hh : mm : ss', item.lastmodified)}`
-        const mapimg = item.mapimg ? `[${item.mapimg}]` : ''
-        const img = item.img ? `[${item.img}]` : ''
+        const images = item.img ? `[${item.img} ${item.mapimg}]` : `[${item.mapimg}]`
         const weather = item.weatherIcon ? `${weatherToEmoji(item.weatherIcon)}` : ''
         const bookmarkUrl = item.url ? item.url : ''
         let address = ''
@@ -50,7 +49,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
 
         const url = `https://scrapbox.io/${gyaonId}-gyaon/${pageTitle}?body=` +
           encodeURIComponent(
-            `${img}    ${mapimg}\n `+
+            `${images}\n `+
             `[音声 https://gyaon.herokuapp.com/sounds/${item.key.split('.')[0]}.mp3]\n` +
             '[* コメント]\n' +
             ` ${item.comment}\n` +
