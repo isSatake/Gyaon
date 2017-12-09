@@ -20,7 +20,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
         const ltsvTitle = `${format('hh : mm : ss', item.lastmodified)}`
         const mapimg = item.mapimg ? `[${item.mapimg}]` : ''
         const img = item.img ? `[${item.img}]` : ''
-        const weather = item.weatherIcon ? `[${weatherToEmoji(item.weatherIcon)}]` : ''
+        const weather = item.weatherIcon ? `${weatherToEmoji(item.weatherIcon)}` : ''
         const bookmarkUrl = item.url ? item.url : ''
         let address = ''
         let indent = ' '
