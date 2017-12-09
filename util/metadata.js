@@ -44,7 +44,7 @@ const promiseGetAddress = function(location){
       .then(res => {
         let address = ''
         res.body.Feature[0].Property.AddressElement.forEach(element => {
-          if(element.Name){
+          if(element.Level == "prefecture" || element.Level == "city" || element.Level == "oaza"){
             address += element.Name + ','
           }
         })
