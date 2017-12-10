@@ -32,7 +32,7 @@ router.get('/', function (req, res, next) {
 
 // 'GET /:gyaonId より先に定義しないといけない'
 router.get('/:gyaonId.ltsv', function(req, res, next){
-  ltsv.promiseGetLtsv(req.params.gyaonId).then(result => {
+  ltsv.promiseGetLtsv(endPoint, req.params.gyaonId).then(result => {
     res.send(result)
   }).catch(err => console.error(err.stack || err))
 })
@@ -146,12 +146,5 @@ router.delete('/:id/:name', function (req, res) {
     console.error(err.stack || err)
   });
 });
-
-/* herokuを寝かさない */
-if (process.env.IS_HEROKU) {
-  setInterval(function () {
-    request.head(endPoint)
-  }, 1000 * 60 * 20)
-}
 
 module.exports = router;

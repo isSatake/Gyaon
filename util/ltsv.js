@@ -2,7 +2,7 @@ var format = require('date-format')
 var model = require('../model/model')
 var weatherToEmoji = require('../util/weather')
 
-exports.promiseGetLtsv = (gyaonId) => {
+exports.promiseGetLtsv = (endPoint, gyaonId) => {
   return new Promise(function(resolve, result){
     model.promiseGetSounds(gyaonId).then(function(result){
       let ltsv = ''
@@ -48,7 +48,7 @@ exports.promiseGetLtsv = (gyaonId) => {
         const url = `https://scrapbox.io/${gyaonId}-gyaon/${pageTitle}?body=` +
           encodeURIComponent(
             `${images}\n `+
-            `[音声 https://gyaon.herokuapp.com/sounds/${item.key.split('.')[0]}.mp3]\n` +
+            `[音声 ${endPoint}/sounds/${item.key.split('.')[0]}.mp3]\n` +
             '[* コメント]\n' +
             ` ${item.comment}\n` +
             '[* 天気]\n' +
