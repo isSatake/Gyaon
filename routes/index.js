@@ -32,14 +32,13 @@ router.get('/', function (req, res, next) {
 
 // 'GET /:gyaonId より先に定義しないといけない'
 router.get('/:gyaonId.ltsv', function(req, res, next){
-  res.send(`title:${req.params.gyaonId}'s ltsv\n title:testtitle\turl:https://scrapbox.io/masuilab`)
+  ltsv.promiseGetLtsv(req.params.gyaonId).then(result => {
+    res.send(result)
+  }).catch(err => console.error(err.stack || err))
 })
 
 router.get('/:gyaonId', function (req, res, next) {
   var gyaonId = req.params.gyaonId
-  ltsv.promiseSaveLtsv(gyaonId).then(path => {
-    model.promiseUpdateLtsv(gyaonId, path).then()
-  }).catch(err => console.error)
   res.render('index');
 });
 
