@@ -16,7 +16,7 @@ exports.promiseGetLtsv = (gyaonId) => {
         const day = format('dd', item.lastmodified)
         const pageTitle = `${format('yyyy-MM-dd hh:mm:ss', item.lastmodified)}`
         const ltsvTitle = `${format('hh : mm : ss', item.lastmodified)}`
-        const images = item.img ? `[${item.img} ${item.mapimg}]` : `[${item.mapimg}]`
+        const images = item.img ? `[${item.img}] [${item.mapimg}]` : `[${item.mapimg}]`
         const weather = item.weatherIcon ? `${weatherToEmoji(item.weatherIcon)}` : ''
         const bookmarkUrl = item.url ? item.url : ''
         let address = ''
