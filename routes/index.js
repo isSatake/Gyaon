@@ -30,6 +30,11 @@ router.get('/', function (req, res, next) {
   res.redirect('/' + gyaonId);
 });
 
+// 'GET /:gyaonId より先に定義しないといけない'
+router.get('/:gyaonId.ltsv', function(req, res, next){
+  res.send(`title:${req.params.gyaonId}'s ltsv\n title:testtitle\turl:https://scrapbox.io/masuilab`)
+})
+
 router.get('/:gyaonId', function (req, res, next) {
   var gyaonId = req.params.gyaonId
   ltsv.promiseSaveLtsv(gyaonId).then(path => {
