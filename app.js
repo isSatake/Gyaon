@@ -25,6 +25,15 @@ app.use(function(req, res, next) {
   next();
 });
 
+function forceHttps(req, res, next){
+  if (process.env.FORCE_SSL === 'true' && req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "http") {
+    res.redirect('https://' + req.headers.host + req.url);
+  }else {
+    return next();
+  }
+};
+
+app.all('*', forceHttps)
 app.use('/', routes);
 
 var server = http.createServer(app);
