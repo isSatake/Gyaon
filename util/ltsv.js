@@ -1,13 +1,11 @@
-var fs = require('fs');
 var format = require('date-format')
 var model = require('../model/model')
 var weatherToEmoji = require('../util/weather')
 
-exports.promiseSaveLtsv = (gyaonId) => {
+exports.promiseGetLtsv = (gyaonId) => {
   return new Promise(function(resolve, result){
     model.promiseGetSounds(gyaonId).then(function(result){
-      const path = `./public/${gyaonId}.ltsv`
-      let ltsv = `title:${gyaonId}'s Gyaon\n`
+      let ltsv = ''
       let curyear = ''
       let curmonth = ''
       let curday = ''
@@ -22,7 +20,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
         const weather = item.weatherIcon ? `${weatherToEmoji(item.weatherIcon)}` : ''
         const bookmarkUrl = item.url ? item.url : ''
         let address = ''
-        let indent = ' '
+        let indent = ''
 
         if(curyear != year){
           ltsv += `${indent}title:${year}年\n`
@@ -65,10 +63,7 @@ exports.promiseSaveLtsv = (gyaonId) => {
         ltsv += `${indent}title:${ltsvTitle}\turl:${url}\n`
       })
 
-      fs.writeFile(path, ltsv, function(err){
-        if(err) resolve(err);
-        resolve(path)
-      })
-    })
+      resolve(ltsv)
+    }).catch(err => resolve(err))
   })
 }

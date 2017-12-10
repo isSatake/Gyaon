@@ -3,6 +3,8 @@ import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import Request from 'superagent'
 
+import { ENDPOINT } from '../containers/GyaonApp'
+
 export default class UserInfo extends Component {
   constructor(props){
     super(props)
@@ -12,7 +14,7 @@ export default class UserInfo extends Component {
   }
 
   onClickLtsv(){
-    window.prompt('Your ltsv', `https://gyaon.s3-us-west-2.amazonaws.com/${this.state.id}.ltsv`)
+    window.prompt('Your ltsv', `${ENDPOINT}/${this.state.id}.ltsv`)
   }
 
   render(){
