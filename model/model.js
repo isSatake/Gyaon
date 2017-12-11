@@ -111,12 +111,3 @@ exports.promiseUpdateLtsv = (gyaonId, path) => {
     });
   })
 }
-
-exports.promiseConfigScrapbox = function(gyaonId, scrapboxTitle){
-  return new Promise(function(resolve, result){
-    db.promiseConfigScrapbox(gyaonId, scrapboxTitle).then(function(){
-      debug("config scrapbox")
-      resolve();
-    }).catch(function (err) { console.error(err.stack || err) });
-  });
-}

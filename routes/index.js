@@ -124,15 +124,6 @@ router.post('/image/:id/:fileName/', function(req, res) {
   });
 });
 
-router.post('/scrapbox/:id', function(req, res){
-  var gyaonId = req.params.id;
-  var scrapboxTitle = req.body.title;
-  debug(`${gyaonId}'s scrapbox: ${scrapboxTitle}`); //TODO 作り込み
-  model.promiseConfigScrapbox(gyaonId, scrapboxTitle).then(function(){
-    res.status(200).end();
-  })
-})
-
 /* 音声削除 */
 router.delete('/:id/:name', function (req, res) {
   var gyaonId = req.params.id;

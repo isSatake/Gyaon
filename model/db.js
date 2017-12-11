@@ -182,16 +182,3 @@ exports.promiseLinkImage = (gyaonId, name, url) => {
     });
   })
 }
-
-exports.promiseConfigScrapbox = function(gyaonId, scrapboxTitle){
-  return new Promise(function(resolve, result){
-    debug(gyaonId + ': ' + scrapboxTitle);
-    User.findOneAndUpdate(
-      {id: gyaonId},
-      {id: gyaonId, scrapbox: scrapboxTitle},
-      {upsert: true}
-    ).exec(function(err, res){
-      err ? resolve(err) : resolve();
-    })
-  });
-}
