@@ -16,9 +16,9 @@ mongoose.connect(
 
 var soundSchema = mongoose.Schema({
   lastmodified: Date,
+  key: String,
   user: String,
   name: String,
-  key: String,
   size: Number,
   time: Number,
   comment: String,
@@ -39,16 +39,16 @@ var userSchema = mongoose.Schema({
 var Sound = mongoose.model('Sound', soundSchema);
 var User = mongoose.model('User', userSchema)
 
-var createSound = function(s3Data, location, fileSize){
+var createSound = function(gyaonId, s3Data, location, fileSize){
   debug("createSound");
   debug(s3Data);
   var now = new Date;
   return new Sound({
-    key: s3Data.key,
     lastmodified: Date.now(),
-    name: s3Data.key.split("/")[1],
+    key: s3Data.key,
+    name: s3Data.key,
     size: fileSize,
-    user: s3Data.key.split("/")[0],
+    user: gyaonId,
     comment: "",
     lat: location.lat,
     lon: location.lon,
@@ -69,7 +69,7 @@ const promiseAddMetadata = (sound) => {
     const location = {lat: sound.lat, lon: sound.lon}
     metadata.promiseGetMetadata(sound.user, location).then(obj => {
       Sound.update(
-        {key: sound.key},
+        {name: sound.name},
         {$set: {
           weatherIcon: obj.weatherIconId,
           url: obj.url,
@@ -133,9 +133,9 @@ exports.promiseFind = function(name){
   });
 }
 
-exports.promiseUpload = function(s3Data, location, fileSize){
+exports.promiseUpload = function(gyaonId, s3Data, location, fileSize){
   return new Promise(function(resolve, result){
-    createSound(s3Data, location, fileSize).save(function(err, sound){
+    createSound(gyaonId, s3Data, location, fileSize).save(function(err, sound){
       debug("uploaded");
       err ? resolve(err) : resolve(sound);
       promiseAddMetadata(sound).then().catch(err => console.error(err))
@@ -143,23 +143,21 @@ exports.promiseUpload = function(s3Data, location, fileSize){
   });
 }
 
-exports.promiseDelete = function(gyaonId, name){
+exports.promiseDelete = function(name){
   return new Promise(function(resolve, result){
-    debug(`delete : ${gyaonId}/${name}`);
-    var _key = `${gyaonId}/${name}`;
-    Sound.remove({key: _key}, function(err, result){
+    debug(`delete : ${name}`);
+    Sound.remove({name: name}, function(err, result){
       debug("deleted");
       err ? resolve(err) : resolve();
     });
   });
 }
 
-exports.promiseUpdateComment = function(gyaonId, name, text){
+exports.promiseUpdateComment = function(name, text){
   return new Promise(function(resolve, result){
-    var _key = `${gyaonId}/${name}`;
-    debug(`comment on ${_key} : ${text}`);
+    debug(`comment on ${name} : ${text}`);
     Sound.update(
-      {key: _key},
+      {name: name},
       {$set: {comment: text}}
     ).exec(function(err, sound){
       debug(sound);
@@ -168,12 +166,11 @@ exports.promiseUpdateComment = function(gyaonId, name, text){
   });
 }
 
-exports.promiseLinkImage = (gyaonId, name, url) => {
+exports.promiseLinkImage = (name, url) => {
   return new Promise((resolve, result) => {
-    var _key = `${gyaonId}/${name}`;
-    debug(`link ${url} to ${_key}`);
+    debug(`link ${url} to ${name}`);
     Sound.update(
-      {key: _key},
+      {name: name},
       {$set: {img: url}}
     ).exec(function(err, sound){
       debug(sound);

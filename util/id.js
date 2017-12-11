@@ -6,7 +6,7 @@ var md5Hex = function(src) {
   return md5.digest('hex');
 }
 
-exports.generate = function(){
-  var seed = Math.random() * Date.now();
+exports.generate = function(gyaonId){
+  var seed = Math.random() * Date.now() + gyaonId;
   return md5Hex(String(seed));
 }

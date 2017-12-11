@@ -48,7 +48,7 @@ exports.promiseGetLtsv = (endPoint, gyaonId) => {
         const url = `https://scrapbox.io/${gyaonId}/${pageTitle}?body=` +
           encodeURIComponent(
             `${images}\n `+
-            `[音声 ${endPoint}/sound/${item.key.split('.')[0]}.mp3]\n` +
+            `[音声 ${endPoint}/sound/${item.name.split('.')[0]}.mp3]\n` +
             '[* コメント]\n' +
             ` ${item.comment}\n` +
             '[* 天気]\n' +

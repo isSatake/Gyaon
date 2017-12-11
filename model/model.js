@@ -44,14 +44,14 @@ exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
   return new Promise(function(resolve, result){
     fs.readFile(file.path, function(err, data){
       if(err) throw err;
-      var fn = id.generate();
+      var fn = id.generate(gyaonId);
       var params = {
-        Key: gyaonId + "/" + fn + extension,
+        Key: fn + extension,
         Body: data,
         ContentType: mime
       };
       s3.promiseUpload(params).then(function(data){
-        db.promiseUpload(data, location, file.Size).then(function(sound){
+        db.promiseUpload(gyaonId, data, location, file.Size).then(function(sound){
           debug(`uploaded : ${sound}`);
           err ? resolve(err) : resolve(sound);
         }).catch(function (err) { console.error(err.stack || err) });
@@ -63,10 +63,10 @@ exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
   });
 }
 
-exports.promiseDeleteSound = function(gyaonId, name){
+exports.promiseDeleteSound = function(name){
   return new Promise(function(resolve, result){
-    s3.promiseDelete(gyaonId, name).then(function(){
-      db.promiseDelete(gyaonId, name).then(function(){
+    s3.promiseDelete(name).then(function(){
+      db.promiseDelete(name).then(function(){
         debug("deleted");
         resolve();
       }).catch(function (err) { console.error(err.stack || err) });
@@ -74,18 +74,18 @@ exports.promiseDeleteSound = function(gyaonId, name){
   });
 }
 
-exports.promiseEditComment = function(gyaonId, name, text){
+exports.promiseEditComment = function(name, text){
   return new Promise(function(resolve, result){
-    db.promiseUpdateComment(gyaonId, name, text).then(function(){
+    db.promiseUpdateComment(name, text).then(function(){
       debug("complete edit comment");
       resolve();
     }).catch(function (err) { console.error(err.stack || err) });
   });
 }
 
-exports.promiseLinkImage = (gyaonId, name, url) => {
+exports.promiseLinkImage = (name, url) => {
   return new Promise((resolve, result) => [
-    db.promiseLinkImage(gyaonId, name, url).then(() => {
+    db.promiseLinkImage(name, url).then(() => {
       debug("complete link image")
       resolve()
     }).catch(err => { console.error(err.stack || err) })
