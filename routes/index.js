@@ -75,12 +75,20 @@ router.get('/user/:gyaonId', function (req, res) {
   });
 });
 
-//音声データをリダイレクト
-router.get('/sound/:name', function (req, res) {
-  var fileName = req.params.name.split('.')[0];
-  model.promiseFindSound(fileName).then(function(sound){
-    res.redirect(s3EndPoint + "/" + sound[0].name);
+const getSound = (name, req, res) => {
+  model.promiseFindSound(name.split('.')[0]).then((sound) => {
+    res.redirect(s3EndPoint + "/" + sound[0].name)
   })
+}
+
+//音声データをリダイレクト(旧)
+router.get('/sounds/:id/:name', (req, res) => {
+  getSound(req.params.name, req, res)
+});
+
+//音声データをリダイレクト
+router.get('/sound/:name', (req, res) => {
+  getSound(req.params.name, req, res)
 });
 
 /* 音声データ受け取り */
