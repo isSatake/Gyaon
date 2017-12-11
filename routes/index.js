@@ -46,23 +46,7 @@ router.get('/getendpoint', function (req, res, next) {
   res.send(endpoint);
 })
 
-router.get('/info/:gyaonId', function(req, res, next){
-  model.promiseGetUserInfo(req.params.gyaonId).then(function(result){
-    res.send(result)
-  }).catch(function (err) {
-    console.error(err.stack || err)
-  });
-})
-
-router.get('/info/:id/:name', function(req, res, next){
-  var gyaonId = req.params.id;
-  var fileName = req.params.name.split('.')[0];
-  model.promiseFindSound(gyaonId, fileName).then(function(sound){
-    res.send(sound[0])
-  })
-})
-
-router.get('/sounds/:gyaonId', function (req, res) {
+router.get('/user/:gyaonId', function (req, res) {
   //ユーザの音声リストを返却
   var gyaonId = req.params.gyaonId
   model.promiseGetSounds(gyaonId).then(function (result) {
@@ -75,19 +59,29 @@ router.get('/sounds/:gyaonId', function (req, res) {
   });
 });
 
-//音声データをリダイレクト
-router.get('/sounds/:id/:name', function (req, res) {
-  var gyaonId = req.params.id;
-  var fileName = req.params.name.split('.')[0];
-  model.promiseFindSound(gyaonId, fileName).then(function(sound){
-    res.redirect(s3EndPoint + "/" + gyaonId + "/" + sound[0].name);
+const getSound = (name, req, res) => {
+  model.promiseFindSound(name.split('.')[0]).then((sound) => {
+    if(!sound[0]){
+      res.status(404).end();
+    }
+    res.redirect(s3EndPoint + "/" + sound[0].name)
   })
+}
+
+//音声データをリダイレクト(旧)
+router.get('/sounds/:id/:name', (req, res) => {
+  getSound(req.params.name, req, res)
+});
+
+//音声データをリダイレクト
+router.get('/sound/:name', (req, res) => {
+  getSound(req.params.name, req, res)
 });
 
 /* 音声データ受け取り */
 const upload = multer({dest: path.resolve("./public/tmp")})
-router.post('/upload/:id', upload.single('file'), function (req, res) {
-  var gyaonId = req.params.id
+router.post('/upload/:gyaonId', upload.single('file'), function (req, res) {
+  var gyaonId = req.params.gyaonId
   var location = {lat: req.body.lat, lon: req.body.lon}
   var extension = '.' + req.file.originalname.split('.').pop() || '.wav'
   var mime = req.file.mimetype || 'audio/wav'
@@ -104,38 +98,35 @@ router.post('/upload/:id', upload.single('file'), function (req, res) {
 })
 
 /* コメント編集 */
-router.post('/comment/:id/:fileName', function (req, res) {
-  var gyaonId = req.params.id;
-  var fileName = req.params.fileName;
+router.post('/comment/:name', function (req, res) {
+  var fileName = req.params.name;
   var text = req.body.value;
-  debug(`comment on ${gyaonId}/${fileName} : ${text}`);
-  model.promiseEditComment(gyaonId, fileName, text).then(function () {
+  debug(`comment on ${fileName} : ${text}`);
+  model.promiseEditComment(fileName, text).then(function () {
     res.status(200).end();
   });
 });
 
 /* 画像とリンク */
-router.post('/image/:id/:fileName/', function(req, res) {
-  var gyaonId = req.params.id;
-  var fileName = req.params.fileName;
+router.post('/image/:name/', function(req, res) {
+  var fileName = req.params.name;
   var imgUrl = req.body.imgurl;
-  model.promiseLinkImage(gyaonId, fileName, imgUrl).then(() => {
+  model.promiseLinkImage(fileName, imgUrl).then(() => {
     res.status(200).end();
   });
 });
 
 /* 音声削除 */
-router.delete('/:id/:name', function (req, res) {
-  var gyaonId = req.params.id;
-  var fileName = req.params.name;
-  var key = `${gyaonId}/${fileName}`;
-  debug(`delete ${key}`);
-  model.promiseDeleteSound(gyaonId, fileName).then(function () {
-    res.status(200).end();
-    req.app.get('socket.io').of('/delete').emit(gyaonId, key);
+router.delete('/:gyaonId/:name', function (req, res) {
+  const gyaonId = req.params.gyaonId
+  var fileName = req.params.name
+  debug(`delete ${fileName}`)
+  model.promiseDeleteSound(fileName).then(function () {
+    res.status(200).end()
+    req.app.get('socket.io').of('/delete').emit(gyaonId, fileName)
   }).catch(function (err) {
     console.error(err.stack || err)
-  });
-});
+  })
+})
 
 module.exports = router;

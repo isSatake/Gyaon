@@ -43,7 +43,7 @@ export default function soundTable(state = initialState, action){
       })
     case DELETE_LOCAL_ITEM:
       return Object.assign({}, state, {
-        items: state.items.filter(item => item.key !== action.key)
+        items: state.items.filter(item => item.name !== action.name)
       })
     case ON_MOUSE_ENTER:
       return update(state, {
