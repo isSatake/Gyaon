@@ -58,13 +58,13 @@ export default class SoundTableRow extends ReactAudioPlayer {
       return
     }
     const { action, gyaonAppActionBind, object } = this.props
-    action.updateComment(object.key, this.comment)
+    action.updateComment(object.name, this.comment)
     gyaonAppActionBind.finishEditComment()
 
   }
   deleteItem(){
     const { object, action } = this.props
-    action.deleteItem(object.key)
+    action.deleteItem(object.name)
   }
   copyUrl(){
     const { index, action } = this.props
@@ -77,7 +77,7 @@ export default class SoundTableRow extends ReactAudioPlayer {
     const buttonTdStyle = { width: '35px' } /* tdのstyle */
     const iconStyle = { width: '15px', height: '15px' } /* SVGアイコンの大きさ */
     const iconButtonStyle = { width: '35px', height: '35px', padding: '6px' } /* アイコンを入れるボタン */
-    const src = ENDPOINT + '/sound/' + object.key
+    const src = ENDPOINT + '/sound/' + object.name
     const date = new Date(object.lastmodified)
     this.prevComment = object.comment
     return (
