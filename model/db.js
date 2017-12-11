@@ -122,12 +122,11 @@ exports.promiseGetSoundsWithLocation = function(gyaonId){
   });
 }
 
-exports.promiseFind = function(gyaonId, name){
+exports.promiseFind = function(name){
   return new Promise(function(resolve, result){
-    debug(`find : ${gyaonId}/${name}`);
-    var _key = `${gyaonId}/${name}`;
-    var regexp = new RegExp(_key + '.*')
-    Sound.find({key:regexp}).exec(function(err, sound){
+    debug(`find : ${name}`);
+    var regexp = new RegExp(`${name}.*`)
+    Sound.find({name:regexp}).exec(function(err, sound){
       debug(sound);
       err ? resolve(err) : resolve(sound);
     });

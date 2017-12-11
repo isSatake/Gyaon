@@ -77,7 +77,7 @@ export default class SoundTableRow extends ReactAudioPlayer {
     const buttonTdStyle = { width: '35px' } /* tdのstyle */
     const iconStyle = { width: '15px', height: '15px' } /* SVGアイコンの大きさ */
     const iconButtonStyle = { width: '35px', height: '35px', padding: '6px' } /* アイコンを入れるボタン */
-    const src = ENDPOINT + '/sounds/' + object.key
+    const src = ENDPOINT + '/sound/' + object.key
     const date = new Date(object.lastmodified)
     this.prevComment = object.comment
     return (

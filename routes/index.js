@@ -62,7 +62,7 @@ router.get('/info/:id/:name', function(req, res, next){
   })
 })
 
-router.get('/sounds/:gyaonId', function (req, res) {
+router.get('/user/:gyaonId', function (req, res) {
   //ユーザの音声リストを返却
   var gyaonId = req.params.gyaonId
   model.promiseGetSounds(gyaonId).then(function (result) {
@@ -76,11 +76,10 @@ router.get('/sounds/:gyaonId', function (req, res) {
 });
 
 //音声データをリダイレクト
-router.get('/sounds/:id/:name', function (req, res) {
-  var gyaonId = req.params.id;
+router.get('/sound/:name', function (req, res) {
   var fileName = req.params.name.split('.')[0];
-  model.promiseFindSound(gyaonId, fileName).then(function(sound){
-    res.redirect(s3EndPoint + "/" + gyaonId + "/" + sound[0].name);
+  model.promiseFindSound(fileName).then(function(sound){
+    res.redirect(s3EndPoint + "/" + sound[0].name);
   })
 });
 

@@ -31,10 +31,10 @@ exports.promiseGetSoundsWithLocation = function(gyaonId){
   });
 };
 
-exports.promiseFindSound = function(gyaonId, name){
+exports.promiseFindSound = function(name){
   return new Promise(function(resolve, reject){
     debug("find sound");
-    db.promiseFind(gyaonId, name).then(function(sound){
+    db.promiseFind(name).then(function(sound){
       resolve(sound);
     }).catch(function (err) { console.error(err.stack || err) });
   });

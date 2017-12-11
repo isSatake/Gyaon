@@ -45,7 +45,7 @@ export function get() {
   return dispatch => {
     dispatch({ type: REQUEST_GET_ITEMS })
     return Request
-      .get('/sounds/' + GYAON_ID)
+      .get('/user/' + GYAON_ID)
       .then(res => {
         dispatch({
           type: SUCCEEDED_GET_ITEMS,
