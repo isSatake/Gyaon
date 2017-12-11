@@ -61,6 +61,9 @@ router.get('/user/:gyaonId', function (req, res) {
 
 const getSound = (name, req, res) => {
   model.promiseFindSound(name.split('.')[0]).then((sound) => {
+    if(!sound[0]){
+      res.status(404).end();
+    }
     res.redirect(s3EndPoint + "/" + sound[0].name)
   })
 }
