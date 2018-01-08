@@ -38,8 +38,7 @@ router.get('/:gyaonId.ltsv', function(req, res, next){
 })
 
 router.get('/:gyaonId', function (req, res, next) {
-  var gyaonId = req.params.gyaonId
-  res.render('index');
+  res.sendfile('./views/index.html')
 });
 
 router.get('/getendpoint', function (req, res, next) {
