@@ -45,7 +45,7 @@ export function get() {
   return dispatch => {
     dispatch({ type: REQUEST_GET_ITEMS })
     return Request
-      .get('/sounds/' + GYAON_ID)
+      .get('/user/' + GYAON_ID)
       .then(res => {
         dispatch({
           type: SUCCEEDED_GET_ITEMS,
@@ -63,10 +63,10 @@ export function addLocalItem(data) {
   }
 }
 
-export function deleteLocalItem(key) {
+export function deleteLocalItem(name) {
   return {
     type: DELETE_LOCAL_ITEM,
-    key: key
+    name: name
   }
 }
 
@@ -126,10 +126,10 @@ export function finishEditComment(){
 
 //async POST
 //don't mutate state
-export function updateComment(key, text){
+export function updateComment(name, text){
   return dispatch => {
     return Request
-      .post('/comment/' + key)
+      .post('/comment/' + name)
       .send({ value: text })
       .then(() => dispatch({ type: SUCCEEDED_UPDATE_COMMENT }))
       .catch(() => dispatch({ type: FAILED_UPDATE_COMMENT }))
@@ -146,13 +146,13 @@ export function copyUrl(index){
 
 //async DELETE
 //delete component by SoundTable (use middleware)
-export function deleteItem(key){
+export function deleteItem(name){
   return dispatch => {
     if(!window.confirm('削除しますか?')){
       return
     }
     return Request
-      .delete('/' + key)
+      .delete('/' + GYAON_ID + '/' + name)
       .then(() => dispatch({ type: SUCCEEDED_DELETE_ITEM }))
       .catch(() => dispatch({ type: FAILED_DELETE_ITEM }))
   }

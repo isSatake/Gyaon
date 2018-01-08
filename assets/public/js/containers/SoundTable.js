@@ -17,8 +17,8 @@ export default class SoundTable extends Component {
     postSound.on(GYAON_ID, function (data) {
       action.addLocalItem(data.object)
     })
-    deleteSound.on(GYAON_ID, function (key) {
-      action.deleteLocalItem(key)
+    deleteSound.on(GYAON_ID, function (name) {
+      action.deleteLocalItem(name)
     })
   }
   render() {
