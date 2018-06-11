@@ -27,8 +27,10 @@ export default class Recorder extends Component {
     if(recorder.recordingStatus === RecordingStatus.RECORDING){
       action.stopRecord();
       action.playPreview();
-      navigator.geolocation.getCurrentPosition(function(position) {
+      navigator.geolocation.getCurrentPosition(position => {
         action.uploadSound(GYAON_ID, {lat: position.coords.latitude, lon: position.coords.longitude})
+      }, () => {
+        action.uploadSound(GYAON_ID)
       })
     }else{
       action.startRecord()
