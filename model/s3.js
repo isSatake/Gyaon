@@ -16,7 +16,7 @@ exports.promiseUpload = function(params){
       err ? resolve(err) : resolve(data);
     });
   });
-}
+};
 
 exports.promiseDelete = function(name){
   return new Promise(function(resolve, reject){
@@ -26,4 +26,4 @@ exports.promiseDelete = function(name){
       err ? resolve(err) : resolve();
     });
   });
-}
+};

@@ -13,17 +13,17 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 
 //Warning: Unknown prop `onTouchTap`回避
 //https://github.com/callemall/material-ui/issues/4758
-injectTapEventPlugin()
+injectTapEventPlugin();
 
-export const ENDPOINT = window.location.origin
-export const GYAON_ID = window.location.pathname.substring(1)
+export const ENDPOINT = window.location.origin;
+export const GYAON_ID = window.location.pathname.substring(1);
 
 class GyaonApp extends Component {
   constructor(props){
     super(props)
   }
-  render(){
-    const { gyaonApp, recorder, soundTable, gyaonAppActionBind, recorderActionBind, soundTableActionBind } = this.props
+  render = () => {
+    const { gyaonApp, recorder, soundTable, gyaonAppActionBind, recorderActionBind, soundTableActionBind } = this.props;
     return(
       <MuiThemeProvider>
         <div>
@@ -52,26 +52,26 @@ class GyaonApp extends Component {
   }
 }
 
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   return {
     gyaonApp: state.gyaonApp,
     recorder: state.recorder,
     soundTable: state.soundTable,
   }
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     gyaonAppActionBind: bindActionCreators(gyaonAppActions, dispatch),
     recorderActionBind: bindActionCreators(recorderActions, dispatch),
     soundTableActionBind: bindActionCreators(soundTableActions, dispatch),
   }
-}
+};
 
-export default connect(
+module.exports = connect(
   mapStateToProps,
   mapDispatchToProps
-)(GyaonApp)
+)(GyaonApp);
 
 //Material-UIのテーマ
 //http://qiita.com/usagi-f/items/24418c50faa6a5931ba8

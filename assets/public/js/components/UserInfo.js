@@ -7,18 +7,18 @@ import { ENDPOINT } from '../containers/GyaonApp'
 
 export default class UserInfo extends Component {
   constructor(props){
-    super(props)
+    super(props);
     this.state = {
       id: this.props.id
     }
   }
 
-  onClickLtsv(){
+  onClickLtsv = () => {
     window.prompt('Your ltsv', `${ENDPOINT}/${this.state.id}.ltsv`)
-  }
+  };
 
-  render(){
-    const { gyaonAppActionBind } = this.props
+  render = () => {
+    const { gyaonAppActionBind } = this.props;
     return (
       <div
         style={{
@@ -36,7 +36,7 @@ export default class UserInfo extends Component {
         <RaisedButton
           style={{ flexGrow: '2' }}
           label="GET ltsv"
-          onClick={::this.onClickLtsv} />
+          onClick={this.onClickLtsv} />
       </div>
     )
   }

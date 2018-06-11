@@ -5,46 +5,47 @@ const initialState = {
   isProcessing: false,
   items: [],
   message: null
-}
+};
 
-function initializeItem(item) {
-  item.isProcessing = true
-  item.highlight = false
-  item.isPlaying = false
-  item.duration = '00:00'
-  item.currentTime = 0
-  item.message = null
+const initializeItem = (item) => {
+  item.isProcessing = true;
+  item.highlight = false;
+  item.isPlaying = false;
+  item.duration = '00:00';
+  item.currentTime = 0;
+  item.message = null;
   return item
-}
+};
 
-export default function soundTable(state = initialState, action){
+export const soundTable = (state = initialState, action) => {
+  console.log(`soundTable ${action.type}`);
   switch(action.type){
     case REQUEST_GET_ITEMS:
       return Object.assign({}, state, {
         isProcessing: true,
         message: Messages.PROCESSING
-      })
+      });
     case SUCCEEDED_GET_ITEMS:
-      const newitem = action.items
-      newitem.map(initializeItem)
+      const newitem = action.items;
+      newitem.map(initializeItem);
       return Object.assign({}, state, {
         isProcessing: false,
         items: newitem,
         message: null
-      })
+      });
     case FAILED_GET_ITEMS:
       return Object.assign({}, state, {
         isProcessing: false,
         message: Messages.FAILED
-      })
+      });
     case ADD_LOCAL_ITEM: /* TODO socketが切れてたらsocketを介さずに更新したい */
       return Object.assign({}, state, {
         items: [initializeItem(action.data), ...state.items]
-      })
+      });
     case DELETE_LOCAL_ITEM:
       return Object.assign({}, state, {
         items: state.items.filter(item => item.name !== action.name)
-      })
+      });
     case ON_MOUSE_ENTER:
       return update(state, {
         items: {
@@ -52,7 +53,7 @@ export default function soundTable(state = initialState, action){
             highlight: {$set: true}
           }
         }
-      })
+      });
     case ON_MOUSE_LEAVE:
       return update(state, {
         items: {
@@ -60,7 +61,7 @@ export default function soundTable(state = initialState, action){
             highlight: {$set: false}
           }
         }
-      })
+      });
     case ON_CAN_PLAY:
       return update(state, {
         items: {
@@ -68,7 +69,7 @@ export default function soundTable(state = initialState, action){
             duration: {$set: action.duration}
           }
         }
-      })
+      });
     case PLAY_SOUND:
       return update(state, {
         items: {
@@ -77,7 +78,7 @@ export default function soundTable(state = initialState, action){
             isPlaying: {$set: true}
           }
         }
-      })
+      });
     case STOP_SOUND:
       return update(state, {
         items: {
@@ -87,23 +88,23 @@ export default function soundTable(state = initialState, action){
             currentTime: {$set: 0}
           }
         }
-      })
+      });
     case SUCCEEDED_UPDATE_COMMENT:
       return Object.assign({}, state, {
         message: Messages.SUCCEEDED_UPDATE_COMMENT
-      })
+      });
     case FAILED_UPDATE_COMMENT:
       return Object.assign({}, state, {
         message: Messages.FAILED_UPDATE_COMMENT
-      })
+      });
     case COPY_URL:
       return Object.assign({}, state, {
         message: Messages.COPIED
-      })
+      });
     case FAILED_DELETE_SOUND:
       return Object.assign({}, state, {
         message: Messages.FAILED_DELETE_SOUND
-      })
+      });
     default:
       return state
   }

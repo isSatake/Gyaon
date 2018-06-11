@@ -5,9 +5,9 @@ import Perf from 'react-addons-perf'
 
 //TODO: redux-devtools-extensionをつかう
 
-window.Perf = Perf
+window.Perf = Perf;
 
 ReactDOM.render(
-  <Root />,
-  document.getElementById('container')
-)
+    <Root/>,
+    document.getElementById('container')
+);

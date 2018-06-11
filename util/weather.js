@@ -8,9 +8,9 @@ const map = {
   '11': '⛈',
   '13': '❄️',
   '50': '☁️'
-}
+};
 
-module.exports = function(weatherIconId){
-  const id = weatherIconId.substr(0, 2)
+module.exports = (weatherIconId) => {
+  const id = weatherIconId.substr(0, 2);
   return map[id];
 };

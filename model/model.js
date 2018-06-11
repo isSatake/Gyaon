@@ -38,7 +38,7 @@ exports.promiseFindSound = function(name){
       resolve(sound);
     }).catch(function (err) { console.error(err.stack || err) });
   });
-}
+};
 
 exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
   return new Promise(function(resolve, result){
@@ -61,7 +61,7 @@ exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
       if(err) throw err;
     });
   });
-}
+};
 
 exports.promiseDeleteSound = function(name){
   return new Promise(function(resolve, result){
@@ -72,7 +72,7 @@ exports.promiseDeleteSound = function(name){
       }).catch(function (err) { console.error(err.stack || err) });
     }).catch(function (err) { console.error(err.stack || err) });
   });
-}
+};
 
 exports.promiseEditComment = function(name, text){
   return new Promise(function(resolve, result){
@@ -81,16 +81,16 @@ exports.promiseEditComment = function(name, text){
       resolve();
     }).catch(function (err) { console.error(err.stack || err) });
   });
-}
+};
 
 exports.promiseLinkImage = (name, url) => {
   return new Promise((resolve, result) => [
     db.promiseLinkImage(name, url).then(() => {
-      debug("complete link image")
+      debug("complete link image");
       resolve()
     }).catch(err => { console.error(err.stack || err) })
   ])
-}
+};
 
 exports.promiseUpdateLtsv = (gyaonId, path) => {
   return new Promise(function(resolve, result){
@@ -110,4 +110,4 @@ exports.promiseUpdateLtsv = (gyaonId, path) => {
       if(err) throw err;
     });
   })
-}
+};

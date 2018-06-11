@@ -7,26 +7,26 @@ import { GYAON_ID } from './GyaonApp'
 
 export default class SoundTable extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     //watch gyaon DB
-    const { action } = this.props
-    action.get()
+    const { action } = this.props;
+    action.get();
     const postSound = io.connect('/post');
     const deleteSound = io.connect('/delete');
     postSound.on(GYAON_ID, function (data) {
       action.addLocalItem(data.object)
-    })
+    });
     deleteSound.on(GYAON_ID, function (name) {
       action.deleteLocalItem(name)
     })
   }
-  render() {
+  render = () => {
     //TODO 更新中かどうか示すインジゲータを置く
     //push item per day
-    const { soundTable, gyaonAppActionBind, action } = this.props
-    let rows = []
-    let lastDate = null
+    const { soundTable, gyaonAppActionBind, action } = this.props;
+    let rows = [];
+    let lastDate = null;
     if(soundTable.items){
       soundTable.items.forEach((item, index) => {
         rows.push(
