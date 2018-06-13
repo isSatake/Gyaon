@@ -1,0 +1,17 @@
+version: "3"
+services:
+  gyaon:
+    image: gyaon:latest
+    environment:
+      MONGODB_URI: mongodb://mongo:27017
+      S3_ENDPOINT: s3rver:5000
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongo
+      - s3rver
+  mongo:
+    image: mongo
+    restart: always
+  s3rver:
+    image: jbergknoff/s3rver
