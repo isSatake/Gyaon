@@ -1,4 +1,4 @@
-FROM node:9.10-alpine
+FROM node:10.4.1-alpine
 WORKDIR /workspace
 RUN apk update --no-cache \
     && apk add git curl bash
