@@ -49,18 +49,18 @@ export default class Meter extends Component {
     if(divs > 60){
       backgroundColor = 'red'
     }
-    const split = (
-      <div
-        style={{
-          backgroundColor: backgroundColor,
-          width: '3px',
-          height: '100%',
-          marginRight: '2px',
-          float: 'left'
-        }} />
-    );
-    for(var i = 0; i < divs; i++){
-      panel.push(split)
+    for(let i = 0; i < divs; i++){
+      panel.push((
+        <div
+          key={`meter-bar-${i}`}
+          style={{
+            backgroundColor: backgroundColor,
+            width: '3px',
+            height: '100%',
+            marginRight: '2px',
+            float: 'left'
+          }} />
+      ))
     }
     return (
       <div
