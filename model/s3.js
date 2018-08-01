@@ -9,6 +9,10 @@ AWS.config.region = process.env.region;
 debug(AWS.config);
 var bucket = new AWS.S3({params: {Bucket: 'gyaon'}});
 
+exports.getFileStream = function(key){
+  return bucket.getObject({Key: key}).createReadStream();
+}
+
 exports.promiseUpload = function(params){
   return new Promise(function(resolve, reject){
     bucket.upload(params, function(err, data) {

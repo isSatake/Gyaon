@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var request = require('request');
+var Request = require('superagent');
 var fs = require('fs');
 var path = require('path');
 var shortid = require('shortid');
@@ -10,6 +10,7 @@ var debug = require("debug")("index");
 var multer = require("multer");
 
 var model = require('../model/model');
+var s3 = require("../model/s3");
 var ltsv = require('../util/ltsv');
 
 var endPoint = process.env.BASE_URL || 'http://localhost:3000';
@@ -63,7 +64,9 @@ const getSound = (name, req, res) => {
     if (!sound[0]) {
       res.status(404).end();
     }
-    res.redirect(s3EndPoint + "/" + sound[0].name)
+    res.writeHead(200, {'Content-Type': 'audio/wav'})
+    const fileStream = s3.getFileStream(sound[0].name)
+    fileStream.pipe(res)
   })
 };
 
