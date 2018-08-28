@@ -7,8 +7,8 @@ build:
 in:
 	docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
 	docker exec -it gyaon /bin/bash
-start: build
-	npx node dist/src/app.js"
+start:
+	npx node dist/app.js
 dev: build-js watch
 	DEBUG=* npx node-dev dist/app.js
 build-js: build-src

@@ -12,8 +12,8 @@ if (!S3_ENDPOINT) {
   AWS.config.update({accessKeyId, secretAccessKey, region});
 } else {
   AWS.config.update({
-    accessKeyId: "dummyId",
-    secretAccessKey: "dummySecret"
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey
   });
 }
 const bucket = new AWS.S3({
@@ -39,9 +39,9 @@ if (S3_ENDPOINT) {
 
 debug(AWS.config);
 export async function promiseUpload({Key,Body,ContentType})  {
+  debug("upload");
   await ensureBucketPromise;
-  await bucket.upload({Bucket, Key, Body, ContentType}).promise();
-  debug("uploaded");
+  return await bucket.upload({Bucket, Key, Body, ContentType}).promise();
 }
 
 export async function promiseDelete (Key) {
