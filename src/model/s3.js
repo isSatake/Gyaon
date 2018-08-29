@@ -12,6 +12,8 @@ if (!S3_ENDPOINT) {
   AWS.config.update({accessKeyId, secretAccessKey, region});
 } else {
   AWS.config.update({
+    endpoint: new AWS.Endpoint(S3_ENDPOINT),
+    s3ForcePathStyle: true,
     accessKeyId: accessKeyId,
     secretAccessKey: secretAccessKey
   });
@@ -38,14 +40,21 @@ if (S3_ENDPOINT) {
 }
 
 debug(AWS.config);
-export async function promiseUpload({Key,Body,ContentType})  {
+
+export async function promiseUpload({Key, Body, ContentType}) {
   debug("upload");
   await ensureBucketPromise;
   return await bucket.upload({Bucket, Key, Body, ContentType}).promise();
 }
 
-export async function promiseDelete (Key) {
+export async function promiseDelete(Key) {
   await ensureBucketPromise;
   await bucket.deleteObject({Bucket, Key}).promise();
   debug(`delete : ${Key}`);
+}
+
+export async function getFileStream(Key) {
+  await ensureBucketPromise;
+  debug(`getFileStream : ${Key}`);
+  return bucket.getObject({Bucket, Key}).createReadStream()
 }
