@@ -60,13 +60,13 @@ router.get('/user/:gyaonId', (req, res) => {
 });
 
 const getSound = (name, req, res) => {
-  model.promiseFindSound(name.split('.')[0]).then((sound) => {
+  model.promiseFindSound(name.split('.')[0]).then(async (sound) => {
     if (!sound[0]) {
       res.status(404).end();
     }
-    res.writeHead(200, {'Content-Type': 'audio/wav'})
-    const fileStream = s3.getFileStream(sound[0].name)
-    fileStream.pipe(res)
+    res.writeHead(200, {'Content-Type': 'audio/wav'});
+    const fileStream = await s3.getFileStream(sound[0].name);
+    fileStream.pipe(res);
   })
 };
 

@@ -11,6 +11,7 @@ import {
   FAILED_UPLOAD,
   ON_TOGGLED_PREREC
 } from '../actions/RecorderActions'
+import {logger} from "../../util/logger";
 
 navigator.getUserMedia = (
     navigator.getUserMedia ||
@@ -19,6 +20,7 @@ navigator.getUserMedia = (
     navigator.msGetUserMedia
 );
 
+const {debug, error} = logger("recordUpload");
 const audioContext = new AudioContext();
 const BUFFER_SIZE = 4096;
 const SAMPLE_RATE = audioContext.sampleRate;
@@ -166,7 +168,7 @@ const preview = () => {
   if (previewBufferSource) previewBufferSource.stop();
   const src = audioContext.createBufferSource();
   const buffer = [...tempPreRecArray, ...audioBufferArray];
-  console.log(buffer.length * BUFFER_SIZE / SAMPLE_RATE);
+  debug(buffer.length * BUFFER_SIZE / SAMPLE_RATE);
   /* TODOO durationをサーバにも送る？ */
   src.buffer = getAudioBuffer(buffer);
   src.connect(audioContext.destination);
@@ -229,7 +231,7 @@ export const recorder = store => next => action => {
 };
 
 export const uploader = store => next => action => {
-  console.log(`uploader ${action.type}`);
+  debug(`uploader ${action.type}`);
   //actionを発行するのは誰だっけ？
   if (action.type !== START_UPLOAD) {
     return next(action)
@@ -241,6 +243,7 @@ export const uploader = store => next => action => {
     formData.append("lat", action.location.lat);
     formData.append("lon", action.location.lon);
   }
+  debug(`アップロード開始: /upload/${gyaonId}`);
   Request
       .post('/upload/' + gyaonId)
       .set('form')
@@ -251,6 +254,9 @@ export const uploader = store => next => action => {
           data: res.data
         })
       })
-      .catch(err => store.dispatch({type: FAILED_UPLOAD}));
+      .catch(err => {
+        error(`failed to upload: ${err}`);
+        store.dispatch({type: FAILED_UPLOAD})
+      });
   next(action)
 };

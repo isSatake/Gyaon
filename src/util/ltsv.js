@@ -1,6 +1,6 @@
 var format = require('date-format');
 var model = require('../model/model');
-var weatherToEmoji = require('../util/weather');
+var weatherToEmoji = require('./weather');
 
 exports.promiseGetLtsv = (endPoint, gyaonId) => {
   return new Promise((resolve, result) => {

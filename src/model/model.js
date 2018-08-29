@@ -40,7 +40,7 @@ exports.promiseFindSound = function(name){
   });
 };
 
-exports.promiseUploadSound = function(gyaonId, location, file, extension, mime){
+exports.promiseUploadSound = async function(gyaonId, location, file, extension, mime){
   return new Promise(function(resolve, result){
     fs.readFile(file.path, function(err, data){
       if(err) throw err;

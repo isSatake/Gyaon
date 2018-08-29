@@ -1,0 +1,20 @@
+version: "3"
+services:
+  gyaon:
+    image: gyaon:latest
+    container_name: gyaon
+    environment:
+      MONGODB_URI: mongodb://mongo:27017
+      S3_ENDPOINT: http://s3rver:5000
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongo
+      - s3rver
+  mongo:
+    container_name: gyaon-mongo
+    image: mongo
+    restart: always
+  s3rver:
+    container_name: gyaon-s3
+    image: jbergknoff/s3rver
